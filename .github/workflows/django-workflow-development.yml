@@ -27,6 +27,7 @@ jobs:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
       LABELS: ${{inputs.DJANGO_CI_LABELS}}
+    secrets: inherit
 
   django-check:
     uses:
@@ -35,3 +36,4 @@ jobs:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
       LABELS: ${{inputs.DJANGO_CI_LABELS}}
+    secrets: inherit

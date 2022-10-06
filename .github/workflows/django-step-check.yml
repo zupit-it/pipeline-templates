@@ -17,6 +17,9 @@ on:
         type: string
         default: ""
 
+#env:
+#  SECRE_KEY: ${{ secrets.SECRET_KEY }}
+
 jobs:
   build:
     runs-on: ${{ fromJson(inputs.LABELS) }}
