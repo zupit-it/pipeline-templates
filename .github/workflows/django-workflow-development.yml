@@ -22,7 +22,7 @@ on:
 jobs:
   django-linter:
     uses:
-      .github/workflows/django-step-linter.yml
+      ./.github/workflows/django-step-linter.yml
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
@@ -30,7 +30,7 @@ jobs:
 
   django-check:
     uses:
-      .github/workflows/django-step-check.yml
+      ./.github/workflows/django-step-check.yml
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
