@@ -27,15 +27,14 @@ jobs:
       - name: Install dependencies
         run: |
           cd ${{ inputs.DJANGO_PATH }}
-          echo "This is not working..."
-#          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-#      - name: Django check and validate templates
-#        run: |
-#         cd ${{ inputs.DJANGO_PATH }}
-#         python manage.py check
-#         python manage.py validate_templates
-#      - name: Django validate migrations
-#        run: |
-#         cd ${{ inputs.DJANGO_PATH }}
-#         python manage.py makemigrations ${DJANGO_MIGRATIONS_CHECK_APPS} --check --dry-run
-#         python manage.py migrate --fake --no-input
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Django check and validate templates
+        run: |
+         cd ${{ inputs.DJANGO_PATH }}
+         python manage.py check
+         python manage.py validate_templates
+      - name: Django validate migrations
+        run: |
+         cd ${{ inputs.DJANGO_PATH }}
+         python manage.py makemigrations ${DJANGO_MIGRATIONS_CHECK_APPS} --check --dry-run
+         python manage.py migrate --fake --no-input
