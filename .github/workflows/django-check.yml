@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd ${{ inputs.DJANGO_PATH }}
-          if [ -f lint-requirements.txt ]; then pip install -r lint-requirements.txt; fi
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Django check and validate templates
         run: |
          cd ${{ inputs.DJANGO_PATH }}
