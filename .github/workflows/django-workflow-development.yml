@@ -26,7 +26,7 @@ on:
 jobs:
   django-linter:
     uses:
-      ZupitSRL/pipeline-templates/.github/workflows/django-linter.yml@${{inputs.PIPELINE_VERSION}}
+      "ZupitSRL/pipeline-templates/.github/workflows/django-linter.yml@${{inputs.PIPELINE_VERSION}}"
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
@@ -34,7 +34,7 @@ jobs:
 
   django-check:
     uses:
-      ZupitSRL/pipeline-templates/.github/workflows/django-check.yml@${{inputs.PIPELINE_VERSION}}
+      "ZupitSRL/pipeline-templates/.github/workflows/django-check.yml@${{inputs.PIPELINE_VERSION}}"
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
