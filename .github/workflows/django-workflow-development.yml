@@ -34,7 +34,7 @@ jobs:
 
   django-check:
     uses:
-      "ZupitSRL/pipeline-templates/.github/workflows/django-step-check.yml@$main"
+      "ZupitSRL/pipeline-templates/.github/workflows/django-step-check.yml@main"
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
