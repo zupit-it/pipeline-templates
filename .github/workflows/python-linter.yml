@@ -15,7 +15,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ inputs.LABELS }}
+    runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.DJANGO_IMAGE }}
 
     steps:
