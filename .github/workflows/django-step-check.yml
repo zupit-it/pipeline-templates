@@ -24,6 +24,12 @@ jobs:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.DJANGO_IMAGE }}
 
+    services:
+      postgres:
+        image: postgres:12.5-alpine
+      redis:
+        image: redis
+
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
