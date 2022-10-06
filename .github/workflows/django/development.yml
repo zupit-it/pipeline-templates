@@ -3,9 +3,7 @@ name: Django Full Workflow
 on:
   workflow_call:
     inputs:
-      DJANGO_CI_LABELS:
-        required: true
-        type: string
+      # Projects inputs
       DJANGO_IMAGE:
         required: true
         type: string
@@ -16,11 +14,19 @@ on:
         required: false
         type: string
         default: ""
+      # Workflow inputs
+      DJANGO_CI_LABELS:
+        required: true
+        type: string
+      PIPELINE_VERSION:
+        required: false
+        type: string
+        default: 'main'
 
 jobs:
   django-linter:
     uses:
-      ZupitSRL/pipeline-templates/.github/workflows/django-linter.yml@main
+      ZupitSRL/pipeline-templates/.github/workflows/django-linter.yml@${{inputs.PIPELINE_VERSION}}
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
@@ -28,7 +34,7 @@ jobs:
 
   django-check:
     uses:
-      ZupitSRL/pipeline-templates/.github/workflows/django-check.yml@main
+      ZupitSRL/pipeline-templates/.github/workflows/django-check.yml@${{inputs.PIPELINE_VERSION}}
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
