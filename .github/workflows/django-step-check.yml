@@ -17,8 +17,7 @@ on:
         type: string
         default: ""
 
-env:
-  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+env: ${{ secrets }}
 
 jobs:
   build:
