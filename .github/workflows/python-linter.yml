@@ -3,6 +3,9 @@ name: Python package
 on:
   workflow_call:
     inputs:
+      LABELS:
+        required: true
+        type: string
       DJANGO_IMAGE:
         required: true
         type: string
@@ -12,8 +15,7 @@ on:
 
 jobs:
   build:
-
-    runs-on: test-pipeline
+    runs-on: ${{ inputs.LABELS }}
     container: ${{ inputs.DJANGO_IMAGE }}
 
     steps:
