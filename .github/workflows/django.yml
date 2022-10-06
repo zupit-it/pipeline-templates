@@ -1,0 +1,35 @@
+ame: Django Full Workflow
+
+on:
+  workflow_call:
+    inputs:
+      DJANGO_CI_LABELS:
+        required: true
+        type: string
+      DJANGO_IMAGE:
+        required: true
+        type: string
+      DJANGO_PATH:
+        required: true
+        type: string
+      DJANGO_MIGRATIONS_CHECK_APPS:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  django-linter:
+    uses:
+      ZupitSRL/pipeline-templates/.github/workflows/django-linter.yml@main
+    with:
+      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
+      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+
+  django-check:
+    uses:
+      ZupitSRL/pipeline-templates/.github/workflows/django-check.yml@main
+    with:
+      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
+      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+      LABELS: ${{inputs.DJANGO_CI_LABELS}}
