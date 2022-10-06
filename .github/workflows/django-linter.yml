@@ -1,4 +1,4 @@
-name: Python package
+name: Django Linter Workflow
 
 on:
   workflow_call:
