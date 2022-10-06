@@ -3,7 +3,10 @@ name: Python package
 on:
   workflow_call:
     inputs:
-      django_image:
+      DJANGO_IMAGE:
+        required: true
+        type: string
+      DJANGO_PATH:
         required: true
         type: string
 
@@ -11,17 +14,19 @@ jobs:
   build:
 
     runs-on: test-pipeline
-    container: python:3.9.4-slim-buster
+    container: ${{ inputs.DJANGO_IMAGE }}
 
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          cd backend
+          cd ${{ inputs.DJANGO_PATH }}
           if [ -f lint-requirements.txt ]; then pip install -r lint-requirements.txt; fi
       - name: Lint with flake8
         run: |
+         cd ${{ inputs.DJANGO_PATH }}
          python -m flake8 .
       - name: Lint with black
         run: |
+         cd ${{ inputs.DJANGO_PATH }}
          python -m black --check .
