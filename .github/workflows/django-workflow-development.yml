@@ -18,15 +18,11 @@ on:
       DJANGO_CI_LABELS:
         required: true
         type: string
-      PIPELINE_VERSION:
-        required: false
-        type: string
-        default: 'main'
 
 jobs:
   django-linter:
     uses:
-      ZupitSRL/pipeline-templates/.github/workflows/django-step-linter.yml@${{inputs.PIPELINE_VERSION}}
+      .github/workflows/django-step-linter.yml
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
@@ -34,7 +30,7 @@ jobs:
 
   django-check:
     uses:
-      ZupitSRL/pipeline-templates/.github/workflows/django-step-check.yml@${{inputs.PIPELINE_VERSION}}
+      .github/workflows/django-step-check.yml
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
