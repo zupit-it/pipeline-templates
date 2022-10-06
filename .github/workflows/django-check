@@ -1,0 +1,40 @@
+name: Django Check Workflow
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      DJANGO_IMAGE:
+        required: true
+        type: string
+      DJANGO_PATH:
+        required: true
+        type: string
+      DJANGO_MIGRATIONS_CHECK_APPS:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  build:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    container: ${{ inputs.DJANGO_IMAGE }}
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          cd ${{ inputs.DJANGO_PATH }}
+          if [ -f lint-requirements.txt ]; then pip install -r lint-requirements.txt; fi
+      - name: Django check and validate templates
+        run: |
+         cd ${{ inputs.DJANGO_PATH }}
+         python manage.py check
+         python manage.py validate_templates
+      - name: Django validate migrations
+        run: |
+         cd ${{ inputs.DJANGO_PATH }}
+         python manage.py makemigrations ${DJANGO_MIGRATIONS_CHECK_APPS} --check --dry-run
+         python manage.py migrate --fake --no-input
