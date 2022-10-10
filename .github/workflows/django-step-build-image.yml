@@ -1,0 +1,49 @@
+name: Django Tests Workflow
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      DJANGO_PATH:
+        required: true
+        type: string
+      BUILT_DJANGO_IMAGE:
+        required: true
+        type: string
+      DJANGO_DOCKER_PATH:
+        required: true
+        type: string
+
+env: "${{secrets}}"
+
+jobs:
+  django-build-image:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ inputs.BUILT_DJANGO_IMAGE }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ${{ inputs.DJANGO_DOCKER_PATH }}
+          push: true
+          tags: ${{ inputs.BUILT_DJANGO_IMAGE }}
+
