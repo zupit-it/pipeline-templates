@@ -38,7 +38,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ github.repository }}/${{ inputs.BUILT_DJANGO_IMAGE }}
+          images: ghcr.io
+          tags: ${{ github.repository }}/${{ inputs.BUILT_DJANGO_IMAGE }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
