@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        run: |
+          echo "Done"
 
       - name: Log in to the Container registry
         uses: docker/login-action@v2
@@ -42,8 +44,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: .
-          file: ${{ inputs.DJANGO_DOCKER_PATH }}
+          context: ./${{ inputs.DJANGO_PATH }}
+          file: ${{ inputs.DJANGO_PATH }}/${{ inputs.DJANGO_DOCKER_PATH }}
           push: true
           tags: ${{ inputs.BUILT_DJANGO_IMAGE }}
 
