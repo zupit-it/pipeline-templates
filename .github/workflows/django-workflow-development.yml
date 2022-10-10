@@ -26,9 +26,6 @@ on:
         required: true
         type: string
 
-env:
-  REGISTRY_URL: ghcr.io
-
 jobs:
 #  django-linter:
 #    uses:

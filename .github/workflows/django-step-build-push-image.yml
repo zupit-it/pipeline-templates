@@ -1,4 +1,4 @@
-name: Django Build & Push Workflow
+name: Django Build and Push Workflow
 
 on:
   workflow_call:
@@ -18,6 +18,12 @@ on:
       DJANGO_DOCKER_PATH:
         required: true
         type: string
+      REGISTRY_URL:
+        required: true
+        type: string
+
+env:
+  REGISTRY_URL: ghcr.io
 
 jobs:
   django-build-image:
