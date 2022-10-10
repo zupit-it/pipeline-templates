@@ -14,6 +14,13 @@ on:
         required: false
         type: string
         default: ""
+      BUILT_DJANGO_IMAGE: #da spostare negli altri workflow (testing, staging, ..)
+        required: false
+        type: string
+        default: 'django:latest'
+      DJANGO_DOCKER_PATH: #da spostare negli altri workflow (testing, staging, ..)
+        required: true
+        type: string
       # Workflow inputs
       DJANGO_CI_LABELS:
         required: true
@@ -46,3 +53,14 @@ jobs:
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
       LABELS: ${{inputs.DJANGO_CI_LABELS}}
     secrets: inherit
+
+  django-build-testing: #da spostare negli altri workflow (testing, staging, ..)
+    uses:
+      ./.github/workflows/django-step-build-image.yml
+    with:
+      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+      BUILT_DJANGO_IMAGE: ${{inputs.BUILT_DJANGO_IMAGE}}
+      DJANGO_DOCKER_PATH: ${{inputs.DJANGO_DOCKER_PATH}}
+    secrets: inherit
+    needs: [django-linter, django-check, django-tests]
