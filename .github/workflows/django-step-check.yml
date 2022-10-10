@@ -20,14 +20,12 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  build:
+  django-check:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.DJANGO_IMAGE }}
 
     services:
-      # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgres
 
     steps:
