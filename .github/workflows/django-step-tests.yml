@@ -1,4 +1,4 @@
-name: Django Check Workflow
+name: Django Tests Workflow
 
 on:
   workflow_call:
@@ -20,7 +20,7 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  django-check:
+  django-tests:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.DJANGO_IMAGE }}
 
@@ -38,17 +38,19 @@ jobs:
         run: |
           cd ${{ inputs.DJANGO_PATH }}
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install coverage
       - name: Copy env file
         run: |
           cd ${{ inputs.DJANGO_PATH }}
           cp .env.gitlab .env
-      - name: Django check and validate templates
+      - name: Migrate django DB
         run: |
          cd ${{ inputs.DJANGO_PATH }}
-         python manage.py check
-         python manage.py validate_templates
-      - name: Django validate migrations
+         python manage.py migrate
+      - name: Run django tests
         run: |
          cd ${{ inputs.DJANGO_PATH }}
-         python manage.py makemigrations ${DJANGO_MIGRATIONS_CHECK_APPS} --check --dry-run
-         python manage.py migrate --fake --no-input
+         coverage erase
+         coverage run --source='.' manage.py test --noinput
+         coverage xml -i -o coverage-reports/coverage-django.xml
+         coverage report --fail-under 50 

@@ -37,3 +37,12 @@ jobs:
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
       LABELS: ${{inputs.DJANGO_CI_LABELS}}
     secrets: inherit
+
+  django-tests:
+    uses:
+      ./.github/workflows/django-tests-check.yml
+    with:
+      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
+      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+    secrets: inherit
