@@ -63,4 +63,4 @@ jobs:
       BUILT_DJANGO_IMAGE: ${{inputs.BUILT_DJANGO_IMAGE}}
       DJANGO_DOCKER_PATH: ${{inputs.DJANGO_DOCKER_PATH}}
     secrets: inherit
-    needs: [django-linter, django-check, django-tests]
+#    needs: [django-linter, django-check, django-tests]
