@@ -40,7 +40,7 @@ jobs:
 
   django-tests:
     uses:
-      ./.github/workflows/django-tests.yml
+      ./.github/workflows/django-step-tests.yml
     with:
       DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
