@@ -22,7 +22,8 @@ env: "${{secrets}}"
 jobs:
   build:
     runs-on: ${{ fromJson(inputs.LABELS) }}
-    container: ${{ inputs.DJANGO_IMAGE }}
+    container:
+      image: ${{ inputs.DJANGO_IMAGE }}
 
     services:
       postgres:
