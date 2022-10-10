@@ -30,6 +30,11 @@ jobs:
     secrets: inherit
 
   django-check:
+    services:
+      postgres:
+        image: postgres:12.5-alpine
+      redis:
+        image: redis
     uses:
       ./.github/workflows/django-step-check.yml
     with:
