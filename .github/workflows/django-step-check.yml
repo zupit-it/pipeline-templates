@@ -20,10 +20,9 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  build:
+  django-check:
     runs-on: ${{ fromJson(inputs.LABELS) }}
-    container:
-      image: ${{ inputs.DJANGO_IMAGE }}
+    container: ${{ inputs.DJANGO_IMAGE }}
 
     services:
       postgres:

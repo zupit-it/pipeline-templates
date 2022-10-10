@@ -14,7 +14,7 @@ on:
         type: string
 
 jobs:
-  build:
+  django-linter:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.DJANGO_IMAGE }}
 
