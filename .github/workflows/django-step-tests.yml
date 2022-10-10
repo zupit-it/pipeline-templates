@@ -31,6 +31,8 @@ jobs:
           POSTGRES_USER: django-runner
           POSTGRES_PASSWORD: django-runner
           POSTGRES_DB: django
+      redis:
+        image: redis
 
     steps:
       - uses: actions/checkout@v3
