@@ -17,7 +17,6 @@ on:
         type: string
 
 env:
-  <<: "${{secrets}}"
   REGISTRY: ghcr.io
 
 jobs:
