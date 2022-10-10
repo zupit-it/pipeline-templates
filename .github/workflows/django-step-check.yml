@@ -20,7 +20,7 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  django-check:
+  build:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.DJANGO_IMAGE }}
 
