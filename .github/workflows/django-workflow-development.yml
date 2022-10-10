@@ -61,7 +61,7 @@ jobs:
       LABELS: ${{inputs.DJANGO_CI_LABELS}}
       DJANGO_PATH: ${{inputs.DJANGO_PATH}}
       BUILT_DJANGO_IMAGE: ${{inputs.BUILT_DJANGO_IMAGE}}
-      BUILT_DJANGO_IMAGE_VERSION: 'latest'
+      BUILT_DJANGO_IMAGE_VERSION: latest
       DJANGO_DOCKER_PATH: ${{inputs.DJANGO_DOCKER_PATH}}
     secrets: inherit
 #    needs: [django-linter, django-check, django-tests]
