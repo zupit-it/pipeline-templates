@@ -46,5 +46,6 @@ jobs:
           context: ./${{ inputs.DJANGO_PATH }}
           file: ${{ inputs.DJANGO_PATH }}/${{ inputs.DJANGO_DOCKER_PATH }}
           push: true
-          tags: ${{ github.repository }}/${{ inputs.BUILT_DJANGO_IMAGE }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
