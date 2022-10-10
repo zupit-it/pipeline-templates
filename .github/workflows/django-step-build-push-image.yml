@@ -18,9 +18,6 @@ on:
       DJANGO_DOCKER_PATH:
         required: true
         type: string
-      REGISTRY_URL:
-        required: true
-        type: string
 
 jobs:
   django-build-image:
@@ -33,7 +30,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v2
         with:
-          registry: ${{ inputs.REGISTRY_URL }}
+          registry: ${{ env.REGISTRY_URL }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -41,7 +38,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images:  ${{ inputs.REGISTRY_URL }}/${{ github.repository }}/${{ inputs.BUILT_DJANGO_IMAGE }}
+          images:  ${{ env.REGISTRY_URL }}/${{ github.repository }}/${{ inputs.BUILT_DJANGO_IMAGE }}
           tags: ${{ inputs.BUILT_DJANGO_IMAGE_VERSION }}
 
       - name: Build and push Docker image

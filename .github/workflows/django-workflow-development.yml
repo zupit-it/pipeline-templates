@@ -66,6 +66,5 @@ jobs:
       BUILT_DJANGO_IMAGE: ${{inputs.BUILT_DJANGO_IMAGE}}
       BUILT_DJANGO_IMAGE_VERSION: latest
       DJANGO_DOCKER_PATH: ${{inputs.DJANGO_DOCKER_PATH}}
-      REGISTRY_URL: ${{ REGISTRY_URL }}
     secrets: inherit
 #    needs: [django-linter, django-check, django-tests]
