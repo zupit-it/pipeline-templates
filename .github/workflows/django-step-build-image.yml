@@ -16,7 +16,9 @@ on:
         required: true
         type: string
 
-env: "${{secrets}}"
+env:
+  <<: "${{secrets}}"
+  REGISTRY: ghcr.io
 
 jobs:
   django-build-image:
