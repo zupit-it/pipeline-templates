@@ -12,6 +12,9 @@ on:
       BUILT_DJANGO_IMAGE:
         required: true
         type: string
+      BUILT_DJANGO_IMAGE_VERSION:
+        required: true
+        type: string
       DJANGO_DOCKER_PATH:
         required: true
         type: string
@@ -38,8 +41,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io
-          tags: ${{ github.repository }}/${{ inputs.BUILT_DJANGO_IMAGE }}
+          images:  ${{ github.repository }}/${{ inputs.BUILT_DJANGO_IMAGE }}
+          tags: ${{ inputs.BUILT_DJANGO_IMAGE_VERSION }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
