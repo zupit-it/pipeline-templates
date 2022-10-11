@@ -1,5 +1,7 @@
 name: Django Full Workflow
 
+# DO NOT WATCH THIS FILE !!!
+
 on:
   workflow_call:
     inputs:
@@ -58,7 +60,7 @@ jobs:
       - name: Clean cache
         uses: AutoModality/action-clean@v1
       - name: Check out master
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - run: |
           ls -la
           echo $PWD
