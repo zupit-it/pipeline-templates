@@ -38,6 +38,7 @@ jobs:
       - uses: AutoModality/action-clean@v1
       - name: Checkout action
         uses: actions/checkout@v2
+      - run: ls -la
       - name: Django Coverage action
         uses: dc740/django-coveragepy-github-action@0.9
         with:
@@ -52,6 +53,7 @@ jobs:
         uses: AutoModality/action-clean@v1
       - name: Check out master
         uses: actions/checkout@v2
+      - run: ls -la
       - name: Scan Django settings for security issues
         id: check
         uses: victoriadrake/django-security-check@master
