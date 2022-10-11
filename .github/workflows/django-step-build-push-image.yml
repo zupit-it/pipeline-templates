@@ -25,11 +25,9 @@ env:
 jobs:
   django-build-image:
     runs-on: ${{ fromJson(inputs.LABELS) }}
+    container: docker
 
     steps:
-      - name: Clean Workspace
-        uses: AutoModality/action-clean@v1.1.0
-
       - name: Checkout repository
         uses: actions/checkout@v3
 

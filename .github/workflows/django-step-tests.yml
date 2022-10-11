@@ -60,6 +60,6 @@ jobs:
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django-sonar.xml
-          path: output/test/code-coverage.html
+          name: code-coverage-report
+          path: ${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django-sonar.xml
           retention-days: 1
