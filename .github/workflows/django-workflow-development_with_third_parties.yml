@@ -29,6 +29,7 @@ on:
 env:
   SECRET_KEY: "asddasdasd"
   APP_PATH: ${{inputs.DJANGO_PATH}}
+  DEP_PATH: ${{inputs.DJANGO_PATH}}/requirements.txt
 
 jobs:
   django-tests:
