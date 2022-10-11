@@ -35,7 +35,7 @@ jobs:
 #      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
 #      LABELS: ${{inputs.DJANGO_CI_LABELS}}
 #    secrets: inherit
-
+#
 #  django-check:
 #    uses:
 #      ./.github/workflows/django-step-check.yml
@@ -64,5 +64,4 @@ jobs:
       BUILT_DJANGO_IMAGE_VERSION: latest
       DJANGO_DOCKER_PATH: ${{inputs.DJANGO_DOCKER_PATH}}
     secrets: inherit
-#    needs: [django-linter]
 #    needs: [django-linter, django-check, django-tests]

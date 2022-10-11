@@ -25,6 +25,7 @@ env:
 jobs:
   django-build-image:
     runs-on: ${{ fromJson(inputs.LABELS) }}
+    container: ubuntu:latest
 
     steps:
       - name: Checkout repository
