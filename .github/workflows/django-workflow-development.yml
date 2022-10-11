@@ -64,4 +64,5 @@ jobs:
       BUILT_DJANGO_IMAGE_VERSION: latest
       DJANGO_DOCKER_PATH: ${{inputs.DJANGO_DOCKER_PATH}}
     secrets: inherit
-    needs: [django-linter, django-check, django-tests]
+    needs: [django-linter]
+#    needs: [django-linter, django-check, django-tests]
