@@ -31,10 +31,11 @@ jobs:
     runs-on: ${{ fromJson(inputs.DJANGO_CI_LABELS) }}
 
     steps:
+      - uses: AutoModality/action-clean@v1
       - name: Checkout action
         uses: actions/checkout@v2
       - name: Django Coverage action
-        uses: actions/python-django-coverage-gitHub-action@0.9
+        uses: dc740/django-coveragepy-github-action@0.9
         with:
           django-app: ${{inputs.DJANGO_PATH}}
           minimum-coverage: '86'
@@ -43,6 +44,7 @@ jobs:
     runs-on: ${{ fromJson(inputs.DJANGO_CI_LABELS) }}
 
     steps:
+      - uses: AutoModality/action-clean@v1
       - name: Check out master
         uses: actions/checkout@v2
       - name: Scan Django settings for security issues
