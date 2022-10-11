@@ -30,13 +30,16 @@ jobs:
   django-tests:
     runs-on: ${{ fromJson(inputs.DJANGO_CI_LABELS) }}
 
+    defaults:
+      run:
+        working-directory: ./${{inputs.DJANGO_PATH}}
+
     steps:
       - uses: AutoModality/action-clean@v1
       - name: Checkout action
         uses: actions/checkout@v2
       - name: Django Coverage action
         uses: dc740/django-coveragepy-github-action@0.9
-        working-directory: ./${{inputs.DJANGO_PATH}}
         with:
           django-app: ${{inputs.DJANGO_PATH}}
           minimum-coverage: '86'
@@ -52,10 +55,8 @@ jobs:
       - name: Scan Django settings for security issues
         id: check
         uses: victoriadrake/django-security-check@master
-        working-directory: ./${{inputs.DJANGO_PATH}}
       - name: Upload output
         uses: actions/upload-artifact@v2
-        working-directory: ./${{inputs.DJANGO_PATH}}
         with:
           name: security-check-output
           path: output.txt
