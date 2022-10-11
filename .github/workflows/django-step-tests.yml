@@ -56,3 +56,10 @@ jobs:
          coverage run --source='.' manage.py test --noinput
          coverage xml -i -o coverage-reports/coverage-django.xml
          coverage report --fail-under 50 
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django-sonar.xml
+          path: output/test/code-coverage.html
+          retention-days: 1

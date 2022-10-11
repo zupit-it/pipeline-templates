@@ -54,6 +54,15 @@ jobs:
       LABELS: ${{inputs.DJANGO_CI_LABELS}}
     secrets: inherit
 
+  django-sonar-analyze:
+    uses:
+      ./.github/workflows/django-step-sonar-analyze.yml
+    with:
+      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+    secrets: inherit
+    needs: [django-tests]
+
   django-build-testing: #da spostare negli altri workflow (testing, staging, ..)
     uses:
       ./.github/workflows/django-step-build-push-image.yml

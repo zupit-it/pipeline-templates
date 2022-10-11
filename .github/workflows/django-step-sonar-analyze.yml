@@ -1,0 +1,23 @@
+name: Django Tests Workflow
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      DJANGO_PATH:
+        required: true
+        type: string
+
+jobs:
+  django-sonar-analyze:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
+    steps:
+      - name: Download a single artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: code-coverage-report
+      - name: Check artifact
+        run: cat ${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django-sonar.xml
