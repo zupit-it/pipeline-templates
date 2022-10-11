@@ -1,4 +1,4 @@
-name: Development CI
+name: Django Angular Development starter workflow template
 
 on: [push, workflow_dispatch]
 
