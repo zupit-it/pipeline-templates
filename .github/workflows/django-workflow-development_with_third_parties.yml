@@ -46,6 +46,8 @@ jobs:
     secrets: inherit
 
   django-tests:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
     steps:
       - name: Checkout action
         uses: actions/checkout@v2
@@ -56,6 +58,8 @@ jobs:
           minimum-coverage: '86'
 
   django-vulnerability:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
     steps:
       - name: Check out master
         uses: actions/checkout@v2
