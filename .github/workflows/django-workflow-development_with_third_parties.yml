@@ -26,6 +26,10 @@ on:
         required: true
         type: string
 
+env:
+  SECRET_KEY: "asddasdasd"
+  APP_PATH: ${{inputs.DJANGO_PATH}}
+
 jobs:
   django-tests:
     runs-on: ${{ fromJson(inputs.DJANGO_CI_LABELS) }}
