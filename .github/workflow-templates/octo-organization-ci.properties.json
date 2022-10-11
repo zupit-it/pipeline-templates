@@ -1,0 +1,12 @@
+{
+    "name": "Zupit Workflow",
+    "description": "Zupit starter workflow.",
+    "categories": [
+        "Go"
+    ],
+    "filePatterns": [
+        "package.json$",
+        "^Dockerfile",
+        ".*\\.md$"
+    ]
+}
