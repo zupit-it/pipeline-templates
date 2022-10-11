@@ -58,7 +58,9 @@ jobs:
         uses: AutoModality/action-clean@v1
       - name: Check out master
         uses: actions/checkout@v2
-      - run: ls -la
+      - run: |
+          ls -la
+          echo $PWD
       - name: Scan Django settings for security issues
         id: check
         uses: victoriadrake/django-security-check@master
