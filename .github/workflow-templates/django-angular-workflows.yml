@@ -1,0 +1,14 @@
+name: Development CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  django-full-workflow:
+    uses:
+      ZupitSRL/pipeline-templates/.github/workflows/django-workflow-development.yml@main
+    with:
+      DJANGO_IMAGE: 'python:3.9.4-slim-buster'
+      DJANGO_PATH: 'backend'
+      DJANGO_CI_LABELS: "['self-hosted', 'test-pipeline']"
+      DJANGO_DOCKER_PATH: 'docker/Dockerfile'
+    secrets: inherit
