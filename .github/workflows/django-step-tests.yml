@@ -35,6 +35,7 @@ jobs:
         image: redis
 
     steps:
+      - uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           cd ${{ inputs.DJANGO_PATH }}
