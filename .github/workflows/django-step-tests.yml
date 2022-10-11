@@ -61,5 +61,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: code-coverage-report
-          path: ${{ github.workspace }}/${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django-sonar.xml
+          path: ${{ GITHUB_WORKSPACE }}/${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django-sonar.xml
           retention-days: 1
