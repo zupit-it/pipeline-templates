@@ -52,7 +52,7 @@ jobs:
       - name: Django Coverage action
         uses: actions/python-django-coverage-gitHub-action@0.9
         with:
-          django-app: ${{ DJANGO_PATH }}
+          django-app: ${{inputs.DJANGO_PATH}}
           minimum-coverage: '86'
 
   django-vulnerability:
