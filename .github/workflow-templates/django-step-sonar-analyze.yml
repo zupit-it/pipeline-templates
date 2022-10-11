@@ -20,4 +20,4 @@ jobs:
         with:
           name: code-coverage-report
       - name: Check artifact
-        run: cat ${{ env.GITHUB_WORKSPACE }}/${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django.xml
+        run: cat ${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django.xml

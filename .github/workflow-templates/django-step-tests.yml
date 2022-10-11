@@ -56,10 +56,11 @@ jobs:
          coverage run --source='.' manage.py test --noinput
          coverage xml -i -o coverage-reports/coverage-django.xml
          coverage report --fail-under 50 
+         cat coverage-reports/coverage-django.xml
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:
           name: code-coverage-report
-          path: ${{ env.GITHUB_WORKSPACE }}/${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django.xml
+          path: ${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django.xml
           retention-days: 1
