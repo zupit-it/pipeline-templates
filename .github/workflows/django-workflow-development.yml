@@ -1,30 +1,30 @@
 name: Django Full Workflow
 
 on:
-  workflow_call:
-    inputs:
-      # Projects inputs
-      DJANGO_IMAGE:
-        required: true
-        type: string
-      DJANGO_PATH:
-        required: true
-        type: string
-      DJANGO_MIGRATIONS_CHECK_APPS:
-        required: false
-        type: string
-        default: ""
-      BUILT_DJANGO_IMAGE: #da spostare negli altri workflow (testing, staging, ..)
-        required: false
-        type: string
-        default: django
-      DJANGO_DOCKER_PATH: #da spostare negli altri workflow (testing, staging, ..)
-        required: true
-        type: string
-      # Workflow inputs
-      DJANGO_CI_LABELS:
-        required: true
-        type: string
+#  workflow_call:
+#    inputs:
+#      # Projects inputs
+#      DJANGO_IMAGE:
+#        required: true
+#        type: string
+#      DJANGO_PATH:
+#        required: true
+#        type: string
+#      DJANGO_MIGRATIONS_CHECK_APPS:
+#        required: false
+#        type: string
+#        default: ""
+#      BUILT_DJANGO_IMAGE: #da spostare negli altri workflow (testing, staging, ..)
+#        required: false
+#        type: string
+#        default: django
+#      DJANGO_DOCKER_PATH: #da spostare negli altri workflow (testing, staging, ..)
+#        required: true
+#        type: string
+#      # Workflow inputs
+#      DJANGO_CI_LABELS:
+#        required: true
+#        type: string
   workflow_run:
     workflows: [ Django Full Workflow Test ]
     types: [ completed ]
