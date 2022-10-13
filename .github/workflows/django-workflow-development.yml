@@ -27,32 +27,32 @@ on:
         type: string
 
 jobs:
-  django-linter:
-    uses:
-      ./.github/workflows/django-step-linter.yml
-    with:
-      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
-      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
-      LABELS: ${{inputs.DJANGO_CI_LABELS}}
-    secrets: inherit
+#  django-linter:
+#    uses:
+#      ./.github/workflows/django-step-linter.yml
+#    with:
+#      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
+#      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+#      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+#    secrets: inherit
 
-  django-check:
-    uses:
-      ./.github/workflows/django-step-check.yml
-    with:
-      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
-      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
-      LABELS: ${{inputs.DJANGO_CI_LABELS}}
-    secrets: inherit
+#  django-check:
+#    uses:
+#      ./.github/workflows/django-step-check.yml
+#    with:
+#      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
+#      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+#      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+#    secrets: inherit
 
-  django-tests:
-    uses:
-      ./.github/workflows/django-step-tests.yml
-    with:
-      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
-      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
-      LABELS: ${{inputs.DJANGO_CI_LABELS}}
-    secrets: inherit
+#  django-tests:
+#    uses:
+#      ./.github/workflows/django-step-tests.yml
+#    with:
+#      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
+#      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+#      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+#    secrets: inherit
 
   django-sonar-analyze: # not yet completed
     uses:
@@ -63,14 +63,14 @@ jobs:
     secrets: inherit
     needs: [django-tests]
 
-  django-build-testing: # to move in another workflow (testing, staging, ..)
-    uses:
-      ./.github/workflows/django-step-build-push-image.yml
-    with:
-      LABELS: ${{inputs.DJANGO_CI_LABELS}}
-      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
-      BUILT_DJANGO_IMAGE: ${{inputs.BUILT_DJANGO_IMAGE}}
-      BUILT_DJANGO_IMAGE_VERSION: latest
-      DJANGO_DOCKER_PATH: ${{inputs.DJANGO_DOCKER_PATH}}
-    secrets: inherit
-    needs: [django-linter, django-check, django-tests]
+#  django-build-testing: # to move in another workflow (testing, staging, ..)
+#    uses:
+#      ./.github/workflows/django-step-build-push-image.yml
+#    with:
+#      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+#      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+#      BUILT_DJANGO_IMAGE: ${{inputs.BUILT_DJANGO_IMAGE}}
+#      BUILT_DJANGO_IMAGE_VERSION: latest
+#      DJANGO_DOCKER_PATH: ${{inputs.DJANGO_DOCKER_PATH}}
+#    secrets: inherit
+#    needs: [django-linter, django-check, django-tests]

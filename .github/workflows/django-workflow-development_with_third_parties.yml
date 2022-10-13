@@ -1,7 +1,5 @@
 name: Django Full Workflow
 
-# DO NOT WATCH THIS FILE !!!
-
 on:
   workflow_call:
     inputs:
@@ -28,49 +26,12 @@ on:
         required: true
         type: string
 
-env:
-  SECRET_KEY: "asddasdasd"
-  APP_PATH: ${{inputs.DJANGO_PATH}}
-  DEP_PATH: ${{inputs.DJANGO_PATH}}/requirements.txt
-  ENV_TYPE: venv
-
 jobs:
-#  django-tests:
-#    runs-on: ${{ fromJson(inputs.DJANGO_CI_LABELS) }}
-#
-#    defaults:
-#      run:
-#        working-directory: ./${{inputs.DJANGO_PATH}}
-#
-#    steps:
-#      - uses: AutoModality/action-clean@v1
-#      - name: Checkout action
-#        uses: actions/checkout@v2
-#      - run: ls -la
-#      - name: Django Coverage action
-#        uses: dc740/django-coveragepy-github-action@0.9
-#        with:
-#          django-app: ${{inputs.DJANGO_PATH}}
-#          minimum-coverage: '86'
-
-  django-vulnerability:
-    runs-on: ${{ fromJson(inputs.DJANGO_CI_LABELS) }}
-
-    steps:
-      - name: Clean cache
-        uses: AutoModality/action-clean@v1
-      - name: Check out master
-        uses: actions/checkout@v3
-      - run: |
-          ls -la
-          echo $PWD
-      - name: Scan Django settings for security issues
-        id: check
-        uses: victoriadrake/django-security-check@master
-      - name: Upload output
-        uses: actions/upload-artifact@v2
-        with:
-          name: security-check-output
-          path: output.txt
-
-
+  django-tests:
+    uses:
+      ./.github/workflows/django-step-tests.yml
+    with:
+      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
+      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+    secrets: inherit
