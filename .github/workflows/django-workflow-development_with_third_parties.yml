@@ -1,4 +1,4 @@
-name: Django Full Workflow
+name: Django Full Workflow Test
 
 on:
   workflow_call:

@@ -25,6 +25,9 @@ on:
       DJANGO_CI_LABELS:
         required: true
         type: string
+  workflow_run:
+    workflows: [ Django Full Workflow Test ]
+    types: [ completed ]
 
 jobs:
 #  django-linter:
