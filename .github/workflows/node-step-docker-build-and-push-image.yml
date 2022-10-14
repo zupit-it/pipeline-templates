@@ -40,7 +40,7 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     outputs:
-      DOCKER_IMAGE_NAME: ${{ steps.meta.outputs.labels
+      DOCKER_IMAGE_NAME: ${{ steps.meta.outputs.labels }}
 
     steps:
       - name: Checkout repository
