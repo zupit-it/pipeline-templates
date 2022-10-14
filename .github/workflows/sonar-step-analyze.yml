@@ -1,0 +1,35 @@
+name: Sonar analyze workflow
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      SONAR_IMAGE:
+        required: false
+        type: string
+        default: "sonarsource/sonar-scanner-cli"
+      SONAR_HOST_URL:
+        required: false
+        type: string
+        default: "https://sonarqube.zupit.software"
+
+
+jobs:
+  sonar-analyze:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    container:
+      image: ${{ inputs.SONAR_IMAGE }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Sonar
+        run: sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }}  -Dsonar.login=${{ secrets.SONAR_TOKEN }}

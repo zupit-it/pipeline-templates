@@ -1,0 +1,59 @@
+name: Docker build and push image to registry workflow
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      REGISTRY_URL:
+        required: true
+        type: string
+      DOCKERFILE_PATH:
+        required: true
+        type: string
+      DOCKER_IMAGE_NAME:
+        required: true
+        type: string
+      DOCKER_IMAGE_TAG:
+        required: true
+        type: string
+      BUILD_ARGS:
+        required: true
+        type: string
+
+jobs:
+  docker-build-and-push:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ inputs.REGISTRY_URL }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ inputs.REGISTRY_URL }}/${{ github.repository }}/${{ inputs.DOCKER_IMAGE_NAME }}
+          tags: ${{ inputs.DOCKER_IMAGE_TAG }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./${{ inputs.WORKING_DIRECTORY }}
+          file: ${{ inputs.DOCKERFILE_PATH }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ inputs.BUILD_ARGS }}
