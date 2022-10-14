@@ -1,0 +1,57 @@
+name: Node.js commond workflow
+
+on:
+  workflow_call:
+    inputs:
+      # Projects inputs
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      NODE_VERSION:
+        required: true
+        type: string
+      CYPRESS_IMAGE:
+        required: true
+        type: string
+      # Workflow inputs
+      NATIVE_CI_LABELS:
+        required: true
+        type: string
+      CONTAINER_CI_LABELS:
+        required: true
+        type: string
+
+jobs:
+  sonar-analyze:
+    uses:
+      ZupitSRL/pipeline-templates/.github/workflows/sonar-step-analyze.yml@main
+    with:
+      WORKING_DIRECTORY: 'app'
+      LABELS: "['pinga', 'pipeline', 'container']"
+    secrets: inherit
+
+  build-and-push-image:
+    uses: ZupitSRL/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@main
+    with:
+      LABELS: "['pinga', 'pipeline', 'native']"
+      NODE_VERSION: "16"
+      RELEASE_ENVIRONMENT: "testing"
+      WORKING_DIRECTORY: "app"
+      REGISTRY_URL: "ghcr.io"
+      DOCKERFILE_PATH: "app/docker/Dockerfile"
+      DOCKER_IMAGE_NAME: "ionic"
+      DOCKER_IMAGE_TAG: "latest"
+      BUILD_ARGS: |
+        DIST_PATH=dist/apps/enci
+    secrets: inherit
+
+  deploy:
+    needs: [ build-and-push-image ]
+
+    uses: ZupitSRL/pipeline-templates/.github/workflows/docker-step-deploy.yml@main
+    with:
+      LABELS: "['pinga', 'pipeline', 'native']"
+      REGISTRY_URL: "ghcr.io"
+      PROJECT_NAME: "scp-enci-testing"
+      DOCKER_COMPOSE_PATH: "docker/testing/docker-compose.yml"
+    secrets: inherit

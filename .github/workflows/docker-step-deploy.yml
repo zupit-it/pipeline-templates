@@ -12,7 +12,7 @@ on:
       PROJECT_NAME:
         required: true
         type: string
-      DOCKER_PATH:
+      DOCKER_COMPOSE_PATH:
         required: true
         type: string
 
@@ -29,6 +29,6 @@ jobs:
           registry: ${{ inputs.REGISTRY_URL }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_PATH }} pull
-      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_PATH }} down
-      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_PATH }} up -d
+      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} pull
+      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} down
+      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} up -d
