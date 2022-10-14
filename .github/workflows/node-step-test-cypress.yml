@@ -1,0 +1,38 @@
+name: Test using Cypress
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      CYPRESS_IMAGE:
+        required: true
+        type: string
+      BROWSER:
+        required: true
+        type: string
+        default: "chrome"
+
+jobs:
+  cypress-run:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    container:
+      image: ${{ fromJson(inputs.CYPRESS_IMAGE) }}
+    defaults:
+      run:
+        working-directory: ${{ fromJson(inputs.WORKING_DIRECTORY) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - run: npm ci
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          install: false
+          command: npm run ci:e2e
+          working-directory: ${{ fromJson(inputs.WORKING_DIRECTORY) }}
+          browser: ${{ fromJson(inputs.BROWSER) }}
