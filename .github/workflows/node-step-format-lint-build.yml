@@ -27,6 +27,7 @@ jobs:
       with:
         node-version: ${{ inputs.NODE_VERSION }}
         cache: 'npm'
+        cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
     - run: npm ci
     - run: npm run ci:format:check
