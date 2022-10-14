@@ -1,4 +1,4 @@
-name: Test using Cypress
+name: Test Javascript apps using Cypress
 
 on:
   workflow_call:
