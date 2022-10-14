@@ -1,4 +1,4 @@
-name: Angular Linter, Check and Build Workflow
+name: Node.js Linter, Check and Build Workflow
 
 on:
   workflow_call:
