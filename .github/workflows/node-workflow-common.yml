@@ -33,7 +33,7 @@ jobs:
 
   cypress-run:
     uses:
-      ./.github/workflows/node-step-test-cypress.ym
+      ./.github/workflows/node-step-test-cypress.yml
     with:
       LABELS: ${{ inputs.CONTAINER_CI_LABELS }}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
