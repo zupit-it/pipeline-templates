@@ -39,6 +39,9 @@ jobs:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
+    outputs:
+      DOCKER_IMAGE_NAME: ${{ steps.meta.outputs.labels
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
