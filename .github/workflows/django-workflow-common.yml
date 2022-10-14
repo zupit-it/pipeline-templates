@@ -1,4 +1,4 @@
-name: Django Full Workflow Test
+name: Django Full Workflow
 
 on:
   workflow_call:
@@ -26,7 +26,26 @@ on:
         required: true
         type: string
 
+
 jobs:
+  django-linter:
+    uses:
+      ./.github/workflows/django-step-linter.yml
+    with:
+      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
+      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+    secrets: inherit
+
+  django-check:
+    uses:
+      ./.github/workflows/django-step-check.yml
+    with:
+      DJANGO_IMAGE: ${{inputs.DJANGO_IMAGE}}
+      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+    secrets: inherit
+
   django-tests:
     uses:
       ./.github/workflows/django-step-tests.yml

@@ -1,0 +1,39 @@
+name: Django Full Workflow Test
+
+on:
+  workflow_call:
+    inputs:
+      # Projects inputs
+      DJANGO_IMAGE:
+        required: true
+        type: string
+      DJANGO_PATH:
+        required: true
+        type: string
+      DJANGO_MIGRATIONS_CHECK_APPS:
+        required: false
+        type: string
+        default: ""
+      BUILT_DJANGO_IMAGE: #da spostare negli altri workflow (testing, staging, ..)
+        required: false
+        type: string
+        default: django
+      DJANGO_DOCKER_PATH: #da spostare negli altri workflow (testing, staging, ..)
+        required: true
+        type: string
+      # Workflow inputs
+      DJANGO_CI_LABELS:
+        required: true
+        type: string
+
+jobs:
+  django-build-testing:
+    uses:
+      ./.github/workflows/django-step-build-push-image.yml
+    with:
+      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+      DJANGO_PATH: ${{inputs.DJANGO_PATH}}
+      BUILT_DJANGO_IMAGE: ${{inputs.BUILT_DJANGO_IMAGE}}
+      BUILT_DJANGO_IMAGE_VERSION: latest
+      DJANGO_DOCKER_PATH: ${{inputs.DJANGO_DOCKER_PATH}}
+    secrets: inherit
