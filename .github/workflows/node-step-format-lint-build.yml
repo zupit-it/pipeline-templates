@@ -12,10 +12,6 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
-      PACKAGE_MANAGER:
-        required: true
-        type: string
-        default: "npm"
 
 jobs:
   build:
@@ -30,7 +26,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ fromJson(inputs.NODE_VERSION) }}
-        cache: '${{ fromJson(inputs.PACKAGE_MANAGER) }}'
+        cache: 'npm'
 
     - run: npm ci
     - run: npm run ci:format:check
