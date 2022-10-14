@@ -15,25 +15,16 @@ on:
       DOCKER_COMPOSE_PATH:
         required: true
         type: string
-      IS_PRODUCTION:
-        required: false
-        type: boolean
-        default: false
-      PRODUCTION_APPROVERS:
-        required: false
+      IMAGES:
+        required: true
         type: string
-        default: ""
 
 jobs:
   deploy:
     runs-on: ${{ fromJson(inputs.LABELS) }}
+    env: ${{ fromJson(inputs.IMAGES) }}
 
     steps:
-      - uses: trstringer/manual-approval@v1
-        if: ${{ inputs.IS_PRODUCTION }}
-        with:
-          approvers: ${{ inputs.PRODUCTION_APPROVERS }}
-          secret: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Log in to the Container registry
