@@ -1,4 +1,4 @@
-name: Node.js Linter, Check and Build Workflow
+name: Lint, Check and Build a Javascript app
 
 on:
   workflow_call:
@@ -14,7 +14,7 @@ on:
         type: string
 
 jobs:
-  build:
+  lint-check-build:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     defaults:
       run:
