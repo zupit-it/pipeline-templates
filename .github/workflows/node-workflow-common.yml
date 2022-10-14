@@ -4,37 +4,29 @@ on:
   workflow_call:
     inputs:
       # Projects inputs
-      DJANGO_IMAGE:
+      WORKING_DIRECTORY:
         required: true
         type: string
-      DJANGO_PATH:
+      NODE_VERSION:
         required: true
         type: string
-      DJANGO_MIGRATIONS_CHECK_APPS:
-        required: false
-        type: string
-        default: ""
-      BUILT_DJANGO_IMAGE: #da spostare negli altri workflow (testing, staging, ..)
-        required: false
-        type: string
-        default: django
-      DJANGO_DOCKER_PATH: #da spostare negli altri workflow (testing, staging, ..)
+      CYPRESS_IMAGE:
         required: true
         type: string
       # Workflow inputs
-      DJANGO_CI_LABELS:
+      NATIVE_CI_LABELS:
         required: true
         type: string
-
-
-
+      CONTAINER_CI_LABELS:
+        required: true
+        type: string
 
 jobs:
   lint-check-build:
     uses:
       ./.github/workflows/node-step-format-lint-build.yml
     with:
-      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+      LABELS: ${{inputs.NATIVE_CI_LABELS}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       NODE_VERSION: ${{inputs.NODE_VERSION}}
     secrets: inherit
@@ -43,7 +35,7 @@ jobs:
     uses:
       ./.github/workflows/node-step-test-cypress.ym
     with:
-      LABELS: ${{inputs.DJANGO_CI_LABELS}}
+      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}
     secrets: inherit
