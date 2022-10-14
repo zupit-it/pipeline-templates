@@ -26,7 +26,7 @@ jobs:
     uses:
       ./.github/workflows/node-step-format-lint-build.yml
     with:
-      LABELS: ${{ fromJson(inputs.NATIVE_CI_LABELS) }}
+      LABELS: ${{ inputs.NATIVE_CI_LABELS }}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       NODE_VERSION: ${{inputs.NODE_VERSION}}
     secrets: inherit
@@ -35,7 +35,7 @@ jobs:
     uses:
       ./.github/workflows/node-step-test-cypress.ym
     with:
-      LABELS: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
+      LABELS: ${{ inputs.CONTAINER_CI_LABELS }}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}
     secrets: inherit
