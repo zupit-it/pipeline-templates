@@ -30,6 +30,10 @@ on:
       BUILD_ARGS:
         required: true
         type: string
+    outputs:
+      DOCKER_IMAGE_NAME:
+        description: "The docker image name that has been built"
+        value: ${{ jobs.docker-build-and-push.outputs.DOCKER_IMAGE_NAME }}
 
 jobs:
   docker-build-and-push:
@@ -81,3 +85,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: ${{ inputs.BUILD_ARGS }}
+
