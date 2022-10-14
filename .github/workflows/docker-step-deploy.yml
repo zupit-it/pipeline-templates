@@ -22,7 +22,7 @@ on:
 jobs:
   deploy:
     runs-on: ${{ fromJson(inputs.LABELS) }}
-    env: "${{ fromJson(inputs.IMAGES) }}"
+    env: ${{ fromJson(inputs.IMAGES) }}
 
     steps:
       - name: Checkout repository
