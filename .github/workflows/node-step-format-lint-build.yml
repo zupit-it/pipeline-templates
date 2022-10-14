@@ -18,14 +18,14 @@ jobs:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     defaults:
       run:
-        working-directory: ${{ fromJson(inputs.WORKING_DIRECTORY) }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js ${{ fromJson(inputs.NODE_VERSION) }}
+    - name: Use Node.js ${{ inputs.NODE_VERSION }}
       uses: actions/setup-node@v3
       with:
-        node-version: ${{ fromJson(inputs.NODE_VERSION) }}
+        node-version: ${{ inputs.NODE_VERSION }}
         cache: 'npm'
 
     - run: npm ci
