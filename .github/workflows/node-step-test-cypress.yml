@@ -21,10 +21,10 @@ jobs:
   cypress-run:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container:
-      image: ${{ fromJson(inputs.CYPRESS_IMAGE) }}
+      image: ${{ inputs.CYPRESS_IMAGE }}
     defaults:
       run:
-        working-directory: ${{ fromJson(inputs.WORKING_DIRECTORY) }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -34,5 +34,5 @@ jobs:
         with:
           install: false
           command: npm run ci:e2e
-          working-directory: ${{ fromJson(inputs.WORKING_DIRECTORY) }}
-          browser: ${{ fromJson(inputs.BROWSER) }}
+          working-directory: ${{ inputs.WORKING_DIRECTORY }}
+          browser: ${{ inputs.BROWSER }}
