@@ -12,6 +12,9 @@ on:
       PYTHON_VERSION:
         required: true
         type: string
+      PYTHON_IMAGE:
+        required: true
+        type: string
       DJANGO_APPS:
         required: false
         type: string
@@ -22,12 +25,11 @@ env: "${{secrets}}"
 jobs:
   django-tests:
     runs-on: ${{ fromJson(inputs.LABELS) }}
+    container: ${{ inputs.PYTHON_IMAGE }}
 
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
-
-    concurrency: ci-${{ github.ref }}
 
     services:
       postgres:
@@ -36,19 +38,14 @@ jobs:
           POSTGRES_USER: django-runner
           POSTGRES_PASSWORD: django-runner
           POSTGRES_DB: django
-        ports:
-          - 5432:5432
       redis:
         image: redis
-        ports:
-          - 6379:6379
 
     steps:
       - uses: actions/checkout@v3
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ inputs.PYTHON_VERSION }}
           cache: 'pip'
           cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/lint-requirements.txt
       - name: Install dependencies

@@ -12,16 +12,28 @@ on:
       PYTHON_VERSION:
         required: true
         type: string
+      PYTHON_IMAGE:
+        required: true
+        type: string
 
 jobs:
   django-linter:
     runs-on: ${{ fromJson(inputs.LABELS) }}
+    container: ${{ inputs.PYTHON_IMAGE }}
 
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
-    concurrency: ci-${{ github.ref }}
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: django-runner
+          POSTGRES_PASSWORD: django-runner
+          POSTGRES_DB: django
+      redis:
+        image: redis
 
     steps:
       - name: Checkout code
@@ -29,7 +41,6 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ inputs.PYTHON_VERSION }}
           cache: 'pip'
           cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/requirements.txt
       - name: Install dependencies
