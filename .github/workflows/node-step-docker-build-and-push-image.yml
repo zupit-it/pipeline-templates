@@ -35,6 +35,8 @@ on:
         description: "The docker image name that has been built"
         value: ${{ jobs.docker-build-and-push.outputs.DOCKER_IMAGE_NAME }}
 
+env: "${{secrets}}"
+
 jobs:
   docker-build-and-push:
     runs-on: ${{ fromJson(inputs.LABELS) }}
