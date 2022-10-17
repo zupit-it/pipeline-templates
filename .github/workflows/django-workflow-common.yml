@@ -10,6 +10,9 @@ on:
       PYTHON_IMAGE:
         required: true
         type: string
+      PYTHON_VERSION:
+        required: true
+        type: string
       DJANGO_APPS:
         required: false
         type: string
@@ -28,17 +31,19 @@ jobs:
     uses:
       ./.github/workflows/django-step-lint-check.yml
     with:
-      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
+      LABELS: ${{inputs.CONTAINERz_CI_LABELS}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
+      PYTHON_VERSION: ${{inputs.PYTHON_VERSION}}
     secrets: inherit
 
   django-tests:
     uses:
       ./.github/workflows/django-step-tests.yml
     with:
-      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
+      LABELS: ${{inputs.CONTAINERz_CI_LABELS}}
       WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
+      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
       DJANGO_APPS: ${{ inputs.DJANGO_APPS }}
     secrets: inherit
