@@ -31,7 +31,7 @@ jobs:
     uses:
       ./.github/workflows/django-step-lint-check.yml
     with:
-      LABELS: ${{inputs.CONTAINERz_CI_LABELS}}
+      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
       PYTHON_VERSION: ${{inputs.PYTHON_VERSION}}
@@ -41,7 +41,7 @@ jobs:
     uses:
       ./.github/workflows/django-step-tests.yml
     with:
-      LABELS: ${{inputs.CONTAINERz_CI_LABELS}}
+      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
       PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
