@@ -22,8 +22,7 @@ on:
 jobs:
   sonar-analyze:
     runs-on: ${{ fromJson(inputs.LABELS) }}
-    container:
-      image: ${{ inputs.SONAR_IMAGE }}
+    container: ${{ inputs.SONAR_IMAGE }}
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}

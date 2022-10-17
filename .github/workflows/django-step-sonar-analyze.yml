@@ -9,12 +9,14 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
+      SONAR_IMAGE:
+        required: true
+        type: string
 
 jobs:
   django-sonar-analyze:
     runs-on: ${{ fromJson(inputs.LABELS) }}
-    container:
-      image: ${{ inputs.SONAR_IMAGE }}
+    container: ${{ inputs.SONAR_IMAGE }}
     steps:
       - name: Download a single artifact
         uses: actions/download-artifact@v3
