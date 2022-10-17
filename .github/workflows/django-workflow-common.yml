@@ -28,7 +28,7 @@ jobs:
     uses:
       ./.github/workflows/django-step-lint-check.yml
     with:
-      LABELS: ${{inputs.NATIVE_CI_LABELS}}
+      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
     secrets: inherit
@@ -37,7 +37,7 @@ jobs:
     uses:
       ./.github/workflows/django-step-tests.yml
     with:
-      LABELS: ${{inputs.NATIVE_CI_LABELS}}
+      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
       DJANGO_APPS: ${{ inputs.DJANGO_APPS }}
