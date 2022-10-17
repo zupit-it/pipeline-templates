@@ -12,7 +12,7 @@ on:
         type: string
       ENABLE_TESTS:
         required: false
-        type: bool
+        type: boolean
         default: true
       CYPRESS_IMAGE:
         required: false
