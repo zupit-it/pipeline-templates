@@ -16,6 +16,8 @@ on:
         required: true
         type: string
 
+env: "${{secrets}}"
+
 jobs:
   django-linter:
     runs-on: ${{ fromJson(inputs.LABELS) }}
