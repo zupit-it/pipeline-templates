@@ -24,23 +24,13 @@ on:
 
 
 jobs:
-  django-linter:
+  django-lint-check:
     uses:
-      ./.github/workflows/django-step-linter.yml
+      ./.github/workflows/django-step-lint-check.yml
     with:
       LABELS: ${{inputs.NATIVE_CI_LABELS}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_VERSION: ${{inputs.PYTHON_VERSION}}
-    secrets: inherit
-
-  django-check:
-    uses:
-      ./.github/workflows/django-step-check.yml
-    with:
-      LABELS: ${{inputs.NATIVE_CI_LABELS}}
-      WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
-      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
-      DJANGO_APPS: ${{ inputs.DJANGO_APPS }}
     secrets: inherit
 
   django-tests:

@@ -1,4 +1,4 @@
-name: Django Linter Workflow
+name: Lint, Check a Django app
 
 on:
   workflow_call:
@@ -29,8 +29,20 @@ jobs:
         with:
           python-version: ${{ inputs.PYTHON_VERSION }}
           cache: 'pip'
-          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/lint-requirements.txt
+          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Copy env file
+        run: cp .env.gitlab .env
       - name: Lint with flake8
         run: python -m flake8 .
       - name: Lint with black
         run: python -m black --check .
+      - name: Django check
+        run: python manage.py check
+      - name: Django validate templates
+        run: python manage.py validate_templates
+      - name: Django check migrations
+        run: python manage.py makemigrations ${DJANGO_MIGRATIONS_CHECK_APPS} --check --dry-run
+      - name: Django validate migration
+        run: python manage.py migrate --fake --no-input

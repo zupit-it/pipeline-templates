@@ -45,6 +45,8 @@ jobs:
           python-version: ${{ inputs.PYTHON_VERSION }}
           cache: 'pip'
           cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/lint-requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
       - name: Install coverage
         run: pip install coverage
       - name: Copy env file
