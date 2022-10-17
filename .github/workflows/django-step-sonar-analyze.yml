@@ -10,8 +10,13 @@ on:
         required: true
         type: string
       SONAR_IMAGE:
-        required: true
+        required: false
         type: string
+        default: "sonarsource/sonar-scanner-cli"
+      SONAR_HOST_URL:
+        required: false
+        type: string
+        default: "https://sonarqube.zupit.software"
 
 jobs:
   django-sonar-analyze:
