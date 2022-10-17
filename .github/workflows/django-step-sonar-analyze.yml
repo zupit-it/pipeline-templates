@@ -13,7 +13,8 @@ on:
 jobs:
   django-sonar-analyze:
     runs-on: ${{ fromJson(inputs.LABELS) }}
-
+    container:
+      image: ${{ inputs.SONAR_IMAGE }}
     steps:
       - name: Download a single artifact
         uses: actions/download-artifact@v3
