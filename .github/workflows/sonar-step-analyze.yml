@@ -1,4 +1,4 @@
-name: Sonar analyze workflow
+name: Sonar analyze
 
 on:
   workflow_call:

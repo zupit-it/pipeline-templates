@@ -1,4 +1,4 @@
-name: Deploy docker compose workflow
+name: Deploy docker compose
 
 on:
   workflow_call:

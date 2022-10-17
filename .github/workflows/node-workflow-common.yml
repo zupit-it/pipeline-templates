@@ -1,4 +1,4 @@
-name: Node.js commond workflow
+name: Node.js common
 
 on:
   workflow_call:

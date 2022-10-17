@@ -1,4 +1,4 @@
-name: Django Full Workflow
+name: Django common
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: Django Build and Push Workflow
+name: Docker build and push image
 
 on:
   workflow_call:

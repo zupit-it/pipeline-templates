@@ -1,4 +1,4 @@
-name: Django Tests Workflow
+name: Run Django tests
 
 on:
   workflow_call:
@@ -43,6 +43,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        # TODO: must be fixed or handled the cache manually
 #      - name: Setup python
 #        uses: actions/setup-python@v4
 #        with:

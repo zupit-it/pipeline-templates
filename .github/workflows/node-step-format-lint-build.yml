@@ -1,4 +1,4 @@
-name: Lint, Check and Build a Javascript app
+name: Lint, check and build a Javascript app
 
 on:
   workflow_call:

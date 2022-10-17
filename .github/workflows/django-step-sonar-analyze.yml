@@ -1,4 +1,4 @@
-name: Django Tests Workflow
+name: Sonar analyze with artifacts
 
 on:
   workflow_call:
