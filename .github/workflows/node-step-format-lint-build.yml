@@ -13,6 +13,8 @@ on:
         required: true
         type: string
 
+env: "${{secrets}}"
+
 jobs:
   lint-check-build:
     runs-on: ${{ fromJson(inputs.LABELS) }}
