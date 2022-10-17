@@ -43,12 +43,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ inputs.PYTHON_VERSION }}
-          cache: 'pip'
-          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/lint-requirements.txt
+#      - name: Setup python
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: ${{ inputs.PYTHON_VERSION }}
+#          cache: 'pip'
+#          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/lint-requirements.txt
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Install coverage
