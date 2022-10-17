@@ -9,6 +9,9 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
+      PYTHON_VERSION:
+        required: true
+        type: string
       PYTHON_IMAGE:
         required: true
         type: string
@@ -38,6 +41,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
+          python-version: ${{ inputs.PYTHON_VERSION }}
           cache: 'pip'
           cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/requirements.txt
       - name: Install dependencies
