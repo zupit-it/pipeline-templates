@@ -10,8 +10,12 @@ on:
       NODE_VERSION:
         required: true
         type: string
+      ENABLE_TESTS:
+        required: false
+        type: bool
+        default: true
       CYPRESS_IMAGE:
-        required: true
+        required: false
         type: string
       # Workflow inputs
       NATIVE_CI_LABELS:
@@ -32,6 +36,7 @@ jobs:
     secrets: inherit
 
   cypress-run:
+    if: ${{ inputs.ENABLE_TESTS }}
     uses:
       ./.github/workflows/node-step-test-cypress.yml
     with:
