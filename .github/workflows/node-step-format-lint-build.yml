@@ -31,7 +31,6 @@ jobs:
         cache: 'npm'
         cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
-    - run: printenv
     - run: npm ci
     - run: npm run ci:format:check
     - run: npm run ci:lint
