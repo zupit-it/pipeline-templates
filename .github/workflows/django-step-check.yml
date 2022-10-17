@@ -6,13 +6,13 @@ on:
       LABELS:
         required: true
         type: string
-      DJANGO_IMAGE:
+      WORKING_DIRECTORY:
         required: true
         type: string
-      DJANGO_PATH:
+      PYTHON_VERSION:
         required: true
         type: string
-      DJANGO_MIGRATIONS_CHECK_APPS:
+      DJANGO_APPS:
         required: false
         type: string
         default: ""
@@ -22,7 +22,6 @@ env: "${{secrets}}"
 jobs:
   django-check:
     runs-on: ${{ fromJson(inputs.LABELS) }}
-    container: ${{ inputs.DJANGO_IMAGE }}
 
     services:
       postgres:
@@ -32,23 +31,25 @@ jobs:
           POSTGRES_PASSWORD: django-runner
           POSTGRES_DB: django
 
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
     steps:
       - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: |
-          cd ${{ inputs.DJANGO_PATH }}
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/requirements.txt
       - name: Copy env file
-        run: |
-          cd ${{ inputs.DJANGO_PATH }}
-          cp .env.gitlab .env
+        run: cp .env.gitlab .env
       - name: Django check and validate templates
         run: |
-         cd ${{ inputs.DJANGO_PATH }}
          python manage.py check
          python manage.py validate_templates
       - name: Django validate migrations
         run: |
-         cd ${{ inputs.DJANGO_PATH }}
          python manage.py makemigrations ${DJANGO_MIGRATIONS_CHECK_APPS} --check --dry-run
          python manage.py migrate --fake --no-input

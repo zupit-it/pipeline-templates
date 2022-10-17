@@ -1,0 +1,36 @@
+name: Django Linter Workflow
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      PYTHON_VERSION:
+        required: true
+        type: string
+
+jobs:
+  django-linter:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.PYTHON_VERSION }}
+          cache: 'pip'
+          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/lint-requirements.txt
+      - name: Lint with flake8
+        run: python -m flake8 .
+      - name: Lint with black
+        run: python -m black --check .

@@ -6,7 +6,7 @@ on:
       LABELS:
         required: true
         type: string
-      DJANGO_PATH:
+      WORKING_DIRECTORY:
         required: true
         type: string
 
@@ -20,4 +20,4 @@ jobs:
         with:
           name: code-coverage-report
       - name: Check artifact
-        run: cat ${{ inputs.DJANGO_PATH }}/coverage-reports/coverage-django.xml
+        run: cat ${{ inputs.WORKING_DIRECTORY }}/coverage-reports/coverage-django.xml

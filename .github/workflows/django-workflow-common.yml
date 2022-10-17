@@ -1,0 +1,54 @@
+name: Django Full Workflow
+
+on:
+  workflow_call:
+    inputs:
+      # Projects inputs
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      PYTHON_VERSION:
+        required: true
+        type: string
+      DJANGO_APPS:
+        required: false
+        type: string
+        default: ""
+      # Workflow inputs
+      NATIVE_CI_LABELS:
+        required: true
+        type: string
+      CONTAINER_CI_LABELS:
+        required: true
+        type: string
+
+
+jobs:
+  django-linter:
+    uses:
+      ./.github/workflows/django-step-linter.yml
+    with:
+      LABELS: ${{inputs.NATIVE_CI_LABELS}}
+      WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
+      PYTHON_VERSION: ${{inputs.PYTHON_VERSION}}
+    secrets: inherit
+
+  django-check:
+    uses:
+      ./.github/workflows/django-step-check.yml
+    with:
+      LABELS: ${{inputs.NATIVE_CI_LABELS}}
+      WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+      DJANGO_APPS: ${{ inputs.DJANGO_APPS }}
+    secrets: inherit
+
+  django-tests:
+    uses:
+      ./.github/workflows/django-step-tests.yml
+    with:
+      LABELS: ${{inputs.NATIVE_CI_LABELS}}
+      WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
+      DJANGO_APPS: ${{ inputs.DJANGO_APPS }}
+    secrets: inherit
