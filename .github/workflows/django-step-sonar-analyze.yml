@@ -19,5 +19,9 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: code-coverage-report
+          path: ${{ inputs.WORKING_DIRECTORY }}/coverage-reports/coverage-django.xml
+      - run: ls -R
+      - run: ls -R backend
+      - run: ls -R backend/coverage-reports
       - name: Check artifact
         run: cat ${{ inputs.WORKING_DIRECTORY }}/coverage-reports/coverage-django.xml
