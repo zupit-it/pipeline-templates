@@ -17,6 +17,10 @@ on:
       CYPRESS_IMAGE:
         required: false
         type: string
+      COVERAGE_ARTIFACT_NAME:
+        required: false
+        type: string
+        default: "lcov.info"
       # Workflow inputs
       NATIVE_CI_LABELS:
         required: true
@@ -43,5 +47,6 @@ jobs:
       LABELS: ${{ inputs.CONTAINER_CI_LABELS }}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}
+      COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
     secrets: inherit
 

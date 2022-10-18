@@ -12,6 +12,9 @@ on:
       CYPRESS_IMAGE:
         required: true
         type: string
+      COVERAGE_ARTIFACT_NAME:
+        required: true
+        type: string
       BROWSER:
         required: false
         type: string
@@ -38,3 +41,9 @@ jobs:
           command: npm run ci:e2e
           working-directory: ${{ inputs.WORKING_DIRECTORY }}
           browser: ${{ inputs.BROWSER }}
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+          path: ${{ inputs.WORKING_DIRECTORY }}/coverage/lcov.info
+          retention-days: 1
