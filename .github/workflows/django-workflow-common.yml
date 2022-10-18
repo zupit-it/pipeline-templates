@@ -20,7 +20,7 @@ on:
       COVERAGE_ARTIFACT_NAME:
         required: false
         type: string
-        default: coverage-django.xml
+        default: "coverage-django.xml"
       # Workflow inputs
       NATIVE_CI_LABELS:
         required: true
