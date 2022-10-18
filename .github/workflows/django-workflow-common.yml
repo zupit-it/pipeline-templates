@@ -17,6 +17,10 @@ on:
         required: false
         type: string
         default: ""
+      COVERAGE_ARTIFACT_NAME:
+        required: true
+        type: string
+        default: coverage-django.xml
       # Workflow inputs
       NATIVE_CI_LABELS:
         required: true
@@ -46,4 +50,5 @@ jobs:
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
       PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
       DJANGO_APPS: ${{ inputs.DJANGO_APPS }}
+      COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
     secrets: inherit

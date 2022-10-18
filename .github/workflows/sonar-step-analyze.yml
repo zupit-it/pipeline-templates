@@ -38,7 +38,7 @@ jobs:
         if: ${{ inputs.DOWNLOAD_ARTIFACT }}
         uses: actions/download-artifact@v3
         with:
-          name: report-${{inputs.ARTIFACT_FILENAME}}
+          name: ${{inputs.ARTIFACT_FILENAME}}
           path: ${{ inputs.WORKING_DIRECTORY }}/.coverage-reports/${{inputs.ARTIFACT_FILENAME}}
 
       - name: Run Sonar

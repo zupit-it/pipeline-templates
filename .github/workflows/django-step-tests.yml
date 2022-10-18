@@ -15,6 +15,9 @@ on:
       PYTHON_IMAGE:
         required: true
         type: string
+      COVERAGE_ARTIFACT_NAME:
+        required: true
+        type: string
       DJANGO_APPS:
         required: false
         type: string
@@ -61,6 +64,6 @@ jobs:
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:
-          name: code-coverage-report
+          name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
           path: ${{ inputs.WORKING_DIRECTORY }}/coverage-reports/coverage-django.xml
           retention-days: 1
