@@ -30,7 +30,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: code-coverage-report
-          path: ${{ inputs.WORKING_DIRECTORY }}/coverage-reports/coverage-django.xml
+          path: ${{ inputs.WORKING_DIRECTORY }}/.coverage-reports/coverage-django.xml
 
       - name: Run Sonar
         run: sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }}  -Dsonar.login=${{ secrets.SONAR_TOKEN }}
