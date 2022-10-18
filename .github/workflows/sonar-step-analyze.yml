@@ -40,7 +40,5 @@ jobs:
         with:
           name: ${{inputs.ARTIFACT_FILENAME}}
           path: ${{ inputs.WORKING_DIRECTORY }}/.coverage-reports/${{inputs.ARTIFACT_FILENAME}}
-
-      - run: ls -l .coverage-reports/
       - name: Run Sonar
         run: sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
