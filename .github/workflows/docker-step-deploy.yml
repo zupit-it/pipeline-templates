@@ -6,6 +6,12 @@ on:
       LABELS:
         required: true
         type: string
+      ENVIRONMENT:
+        required: true
+        type: string
+      DEPLOY_URL:
+        required: true
+        type: string
       REGISTRY_URL:
         required: true
         type: string
@@ -23,6 +29,9 @@ jobs:
   deploy:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     env: ${{ fromJson(inputs.IMAGES) }}
+    environment:
+      name: ${{ inputs.ENVIRONMENT }}
+      url: ${{ inputs.DEPLOY_URL }}
 
     steps:
       - name: Checkout repository
