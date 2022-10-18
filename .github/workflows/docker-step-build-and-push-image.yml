@@ -30,8 +30,7 @@ on:
         description: "The docker image name that has been built"
         value: ${{ jobs.docker-build-and-push.outputs.DOCKER_IMAGE_NAME }}
 
-env:
-  REGISTRY_URL: ghcr.io
+env: "${{secrets}}"
 
 jobs:
   docker-build-push-image:
