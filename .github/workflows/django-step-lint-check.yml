@@ -40,13 +40,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        # TODO: must be fixed or handled the cache manually
-#      - name: Setup python
-#        uses: actions/setup-python@v4
-#        with:
-#          python-version: ${{ inputs.PYTHON_VERSION }}
-#          cache: 'pip'
-#          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/requirements.txt
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Copy env file
