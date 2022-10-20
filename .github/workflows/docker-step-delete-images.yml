@@ -12,7 +12,7 @@ on:
       KEEP_AT_LEAST:
         required: false
         type: number
-        default: 5
+        default: 2
       DRY_RUN:
         required: false
         type: boolean
