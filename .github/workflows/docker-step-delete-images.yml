@@ -1,0 +1,52 @@
+name: Delete tagged images
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      IMAGE_NAME:
+        required: true
+        type: string
+      KEEP_AT_LEAST:
+        required: false
+        type: number
+        default: 5
+      DRY_RUN:
+        required: false
+        type: boolean
+        default: false
+
+
+jobs:
+  clean-staging-tagged-images:
+    name: "Delete staging tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    steps:
+      - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
+        uses: vlaurin/action-ghcr-prune@v0.4.0
+        with:
+          container: "${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
+          organization: zupit-it
+          keep-last: ${{ inputs.KEEP_AT_LEAST }}
+          tag-regex: v[0-9]+.[0-9]+.[0-9]+-rc
+          untagged: true
+          token: ${{ secrets.RETENTION_POLICY_TOKEN }}
+          dry-run: ${{ inputs.DRY_RUN }}
+
+  clean-production-tagged-images:
+    name: "Delete production tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    steps:
+      - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
+        uses: vlaurin/action-ghcr-prune@v0.4.0
+        with:
+          container:  "${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
+          organization: zupit-it
+          keep-last: ${{ inputs.KEEP_AT_LEAST }}
+          tag-regex: v[0-9]+.[0-9]+.[0-9]+
+          keep-tags-regexes: v[0-9]+.[0-9]+.[0-9]+-rc
+          untagged: true
+          token: ${{ secrets.RETENTION_POLICY_TOKEN }}
+          dry-run: ${{ inputs.DRY_RUN }}
