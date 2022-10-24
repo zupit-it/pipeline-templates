@@ -20,14 +20,28 @@ on:
 
 
 jobs:
-  clean-untagged-images:
-    name: "Delete untagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+  to-lowercase-repository-name:
+    name: Build
+    runs-on: ubuntu-latest
+
+    outputs:
+      REPOSITORY_NAME: ${{ steps.string.outputs.lowercase }}
+
     steps:
-      - name: "Delete untagged images ${{ github.event.repository.name }}*"
+      - id: string
+        uses: ASzc/change-string-case-action@v2
+        with:
+          string: ${{ github.event.repository.name }}
+
+  clean-untagged-images:
+    name: "Delete untagged images ${{ needs.to-lowercase-repository-name.outputs.REPOSITORY_NAME }}/${{ inputs.IMAGE_NAME }}"
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    needs: [to-lowercase-repository-name]
+    steps:
+      - name: "Delete untagged images ${{ needs.to-lowercase-repository-name.outputs.REPOSITORY_NAME }}*"
         uses: snok/container-retention-policy@v1.5.1
         with:
-          image-names: "${{ github.event.repository.name }}/*"
+          image-names: "${{ needs.to-lowercase-repository-name.outputs.REPOSITORY_NAME }}/*"
           cut-off: now UTC
           timestamp-to-use: created_at
           account-type: org
