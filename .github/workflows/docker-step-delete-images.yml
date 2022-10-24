@@ -20,6 +20,21 @@ on:
 
 
 jobs:
+  clean-untagged-images:
+    name: "Delete untagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    steps:
+      - name: "Delete untagged images ${{ github.event.repository.name }}*"
+        uses: snok/container-retention-policy@v1.5.1
+        with:
+          image-names: "${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
+          cut-off: now UTC
+          timestamp-to-use: created_at
+          account-type: org
+          org-name: zupit-it
+          untagged-only: true
+          token: ${{ secrets.RETENTION_POLICY_TOKEN }}
+
   clean-staging-tagged-images:
     name: "Delete staging tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
     runs-on: ${{ fromJson(inputs.LABELS) }}
@@ -31,7 +46,7 @@ jobs:
           organization: zupit-it
           keep-last: ${{ inputs.KEEP_AT_LEAST }}
           tag-regex: v[0-9]+.[0-9]+.[0-9]+-rc
-          untagged: true
+          untagged: false
           token: ${{ secrets.RETENTION_POLICY_TOKEN }}
           dry-run: ${{ inputs.DRY_RUN }}
 
@@ -47,6 +62,6 @@ jobs:
           keep-last: ${{ inputs.KEEP_AT_LEAST }}
           tag-regex: v[0-9]+.[0-9]+.[0-9]+
           keep-tags-regexes: v[0-9]+.[0-9]+.[0-9]+-rc
-          untagged: true
+          untagged: false
           token: ${{ secrets.RETENTION_POLICY_TOKEN }}
           dry-run: ${{ inputs.DRY_RUN }}
