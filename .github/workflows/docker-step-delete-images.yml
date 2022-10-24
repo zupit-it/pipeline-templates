@@ -38,6 +38,7 @@ jobs:
   clean-staging-tagged-images:
     name: "Delete staging tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
     runs-on: ${{ fromJson(inputs.LABELS) }}
+    needs: [clean-untagged-images]
     steps:
       - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
         uses: vlaurin/action-ghcr-prune@v0.4.0
@@ -52,6 +53,7 @@ jobs:
 
   clean-production-tagged-images:
     name: "Delete production tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
+    needs: [clean-untagged-images]
     runs-on: ${{ fromJson(inputs.LABELS) }}
     steps:
       - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
