@@ -21,8 +21,8 @@ on:
 
 jobs:
   to-lowercase-repository-name:
-    name: Build
-    runs-on: ubuntu-latest
+    name: "Get repository name to lowercase"
+    runs-on: ${{ fromJson(inputs.LABELS) }}
 
     outputs:
       REPOSITORY_NAME: ${{ steps.string.outputs.lowercase }}
