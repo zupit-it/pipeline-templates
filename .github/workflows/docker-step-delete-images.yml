@@ -27,12 +27,13 @@ jobs:
       - name: "Delete untagged images ${{ github.event.repository.name }}*"
         uses: snok/container-retention-policy@v1.5.1
         with:
-          image-names: "${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
+          image-names: "${{ github.event.repository.name }}/*"
           cut-off: now UTC
           timestamp-to-use: created_at
           account-type: org
           org-name: zupit-it
           untagged-only: true
+          keep-at-least: 0
           token: ${{ secrets.RETENTION_POLICY_TOKEN }}
 
   clean-staging-tagged-images:
