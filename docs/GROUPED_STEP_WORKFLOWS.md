@@ -22,9 +22,9 @@ run the check command and verify that the migrations are not broken.
 *This workflow uses a python docker image, hence remember to use labels to match runners specific for Docker.*
 
 It requires these inputs:
-- LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
-- WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- PYTHON_IMAGE: The Python Docker image where the runner execute all the commands
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -48,10 +48,10 @@ If all tests pass, it then generates the coverage and save it as artifact so tha
 *This workflow uses a python Docker image, hence remember to use labels to match runners specific for docker.*
 
 It requires these inputs:
-- LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
-- WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- PYTHON_IMAGE: The Python Docker image where the runner execute all the commands
-- COVERAGE_ARTIFACT_NAME: The artifact's name for the *coverage-django.xml* file.
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -82,9 +82,9 @@ The NodeJS workflows require these commands in order to succeed:
 builds correctly.
 
 It requires these inputs:
-- LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
-- WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- NODE_VERSION: The NodeJS version required to execute all the commands
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **NODE_VERSION**: The NodeJS version required to execute all the commands
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -108,10 +108,10 @@ If all tests pass, it then generates the coverage and save it as artifact so tha
 *This workflow uses a cypress docker image, hence remember to use labels to match runners specific for docker.*
 
 It requires these inputs:
-- LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
-- WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- CYPRESS_IMAGE: The Cypress Docker image to run all tests.
-- COVERAGE_ARTIFACT_NAME: The artifact's name for the *lcov.info* file.
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **CYPRESS_IMAGE**: The Cypress Docker image to run all tests.
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *lcov.info* file.
 
 In addition, it is possible to specify this optional input:
 - BROWSER: Which browser the cypress should use to run the tests. By default, it is **Chrome**.

@@ -55,13 +55,13 @@ It groups together these reusable workflows:
 
 
 It requires these inputs:
-- NATIVE_CI_LABELS: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
-- CONTAINER_CI_LABELS: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
-- WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- PYTHON_IMAGE: The Python Docker image where the runner execute all the commands.
+- **NATIVE_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
+- **CONTAINER_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify this optional input:
-- COVERAGE_ARTIFACT_NAME: The artifact's name for the *coverage-django.xml* file. By default is **coverage-django.xml**.
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file. By default is **coverage-django.xml**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -97,15 +97,15 @@ It groups together these reusable workflows:
 - *node-step-test-cypress.yml*
 
 It requires these inputs:
-- NATIVE_CI_LABELS: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
-- CONTAINER_CI_LABELS: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
-- WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- NODE_VERSION: The NodeJS Docker image where the runner execute all the commands.
-- CYPRESS_IMAGE: The Cypress Docker image where the runner execute all the commands.
+- **NATIVE_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
+- **CONTAINER_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **NODE_VERSION**: The NodeJS Docker image where the runner execute all the commands.
+- **CYPRESS_IMAGE**: The Cypress Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify these optional inputs:
-- COVERAGE_ARTIFACT_NAME: The artifact's name for the *lcov.info* file. By default, it is **lcov.info**.
-- ENABLE_TESTS: Whether it should skip or not the cypress tests workflow. By default, it is **true**.
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *lcov.info* file. By default, it is **lcov.info**.
+- **ENABLE_TESTS**: Whether it should skip or not the cypress tests workflow. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -131,18 +131,18 @@ This is a specific version of the *docker-step-build-and-push-image.yml* as this
 *This workflow uses a NodeJS Docker image, hence remember to use labels to match runners specific for Docker.*
 
 It requires these inputs:
-- LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
-- NODE_VERSION: The NodeJS version required to build the project.
-- WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- RELEASE_ENVIRONMENT: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
-- REGISTRY_URL: The registry url where to push the Docker image.
-- DOCKERFILE_PATH: The path to the Dockerfile to build.
-- DOCKER_IMAGE_NAME: The name to assign to the built Docker image.
-- DOCKER_IMAGE_TAG: The tag to assign to the built Docker image.
-- BUILD_ARGS: Additional data to pass when building the Dockerfile.
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **NODE_VERSION**: The NodeJS version required to build the project.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
+- **REGISTRY_URL**: The registry url where to push the Docker image.
+- **DOCKERFILE_PATH**: The path to the Dockerfile to build.
+- **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
+- **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
+- **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
 
 It then outputs this variable:
-- DOCKER_IMAGE_NAME: The final Docker image name with the registry path included.
+- **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -172,17 +172,17 @@ jobs:
 **docker-step-build-and-push-image.yml** is the workflow that builds the Docker image and then push it to the registry.
 
 It requires these inputs:
-- LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
-- WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- RELEASE_ENVIRONMENT: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
-- REGISTRY_URL: The registry url where to push the Docker image.
-- DOCKERFILE_PATH: The path to the Dockerfile to build.
-- DOCKER_IMAGE_NAME: The name to assign to the built Docker image.
-- DOCKER_IMAGE_TAG: The tag to assign to the built Docker image.
-- BUILD_ARGS: Additional data to pass when building the Dockerfile.
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
+- **REGISTRY_URL**: The registry url where to push the Docker image.
+- **DOCKERFILE_PATH**: The path to the Dockerfile to build.
+- **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
+- **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
+- **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
 
 It then outputs these variables:
-- DOCKER_IMAGE_NAME: The final Docker image name with the registry path included.
+- **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -207,13 +207,13 @@ jobs:
 **docker-step-deploy.yml** is the workflow that starts a Docker compose file on the targeted host.
 
 It requires these inputs:
-- LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
-- ENVIRONMENT: The target environment that will show GitHub on the GitHub action page.
-- DEPLOY_URL: The target environment url that will show GitHub on the GitHub action page. 
-- REGISTRY_URL: The registry url where to pull the Docker images.
-- PROJECT_NAME: The name that will be associated to the Docker Compose stack.
-- DOCKER_COMPOSE_PATH: The path to the Docker compose to start.
-- IMAGES: A stringified json object containing as key the environment variables images used in the 
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **ENVIRONMENT**: The target environment that will show GitHub on the GitHub action page.
+- **DEPLOY_URL**: The target environment url that will show GitHub on the GitHub action page. 
+- **REGISTRY_URL**: The registry url where to pull the Docker images.
+- **PROJECT_NAME**: The name that will be associated to the Docker Compose stack.
+- **DOCKER_COMPOSE_PATH**: The path to the Docker compose to start.
+- **IMAGES**: A stringified json object containing as key the environment variables images used in the 
   Docker compose file and as value the name of the images that will be downloaded from the registry.
   You can retrieve dynamically the image name from the *docker build and push step* by adding the step's name to the **needs** array of the workflow 
   and using `${{ needs.{STEP_NAME}.outputs.DOCKER_IMAGE_NAME }}` where STEP_NAME is the step's name. 
@@ -251,15 +251,15 @@ The images' tags must follow this naming convention:
 - `v[0-9]+.[0-9]+.[0-9]+`: for production environment.
 
 It requires these inputs:
-- LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
-- IMAGE_NAME: The image name to apply the retention policy.
-- KEEP_AT_LEAST: The number of tagged version to maintain for both staging and production environments.
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **IMAGE_NAME**: The image name to apply the retention policy.
+- **KEEP_AT_LEAST**: The number of tagged version to maintain for both staging and production environments.
 
 It also requires these secrets:
-- RETENTION_POLICY_TOKEN: A PAT with permissions to **read:packages** and **delete:packages** 
+- **RETENTION_POLICY_TOKEN**: A PAT with permissions to **read:packages** and **delete:packages** 
 
 In addition, it is possible to specify these optional inputs:
-- DRY_RUN: Only for tagged images, it shows which ones will be deleted. 
+- **DRY_RUN**: Only for tagged images, it shows which ones will be deleted. 
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -281,17 +281,17 @@ jobs:
 **sonar-step-analyze.yml** is the workflow that analyze the coverage and sends the results to Sonarqube.
 
 It requires these inputs:
-- LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
-- WORKING_DIRECTORY: The directory where the runner can execute all the commands.
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 
 It also requires these secrets:
-- SONAR_TOKEN: The Sonarqube token.
+- **SONAR_TOKEN**: The Sonarqube token.
 
 In addition, it is possible to specify these optional inputs:
-- SONAR_IMAGE: The Sonarqube docker image where the runner execute all commands. By default, it is **sonarsource/sonar-scanner-cli**.
-- SONAR_HOST_URL: The Sonarqube host to where submit analyzed data. By default, it is **https://sonarqube.zupit.software**
-- DOWNLOAD_ARTIFACT: Whether it should download an artifact or not to analyze. By default, it is **true**.
-- ARTIFACT_FILENAME: The name of the artifact. By default, it is an empty string.
+- **SONAR_IMAGE**: The Sonarqube docker image where the runner execute all commands. By default, it is **sonarsource/sonar-scanner-cli**.
+- **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is **https://sonarqube.zupit.software**
+- **DOWNLOAD_ARTIFACT**: Whether it should download an artifact or not to analyze. By default, it is **true**.
+- **ARTIFACT_FILENAME**: The name of the artifact. By default, it is an empty string.
 
 This is an example to show how data should be formatted. 
 ```yaml
