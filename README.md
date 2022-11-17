@@ -1,6 +1,10 @@
 # Zupit Reusable Workflows
 This repository contains the reusable workflows to check, build, and deploy the web / mobile applications.
 
+Here we list the main workflows to use with the examples of how to use them. Since some workflows are grouped together 
+(e.g. the common workflows as you will see), here we skip the details of the *step* workflows already grouped to focus 
+only on the most important ones. If you would like to get more details of these tasks, just look at this [doc](docs/GROUPED_STEP_WORKFLOWS.md).
+
 1. [Naming Convention](#naming-convention)
 2. [Reusable Workflows](#reusable-workflows)
    1. [Django](#django)
@@ -31,10 +35,6 @@ Our reusable workflows are named to follow this standard:
 Thus, it is easy to understand that the workflows uses a specific technology or application to execute the wanted action.
 
 ## Reusable Workflows
-Here we list the main workflows to use with the examples of how to use them. Since some workflows are grouped together 
-(e.g. the common workflows as you will see), here we skip the details of the *step* workflows already grouped to focus 
-only on the most important ones. If you would like to get more details of these tasks, just look at this [doc](docs/GROUPED_STEP_WORKFLOWS.md).
-
 In all the examples, we set *secrets: inherit* to pass all secrets to the reusable workflows, but it is also possible to pass a subset of secrets.
 
 In addition, we added for all *step* workflows the input *LABELS* as GitHub does not allow to set the *runs-on* from the caller side, but only inside
