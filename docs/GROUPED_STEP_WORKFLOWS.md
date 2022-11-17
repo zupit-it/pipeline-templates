@@ -4,11 +4,19 @@ specific cases, as the other ones are the *standard* workflows to use.
 
 If you want to read the main document the click [here](../README.md).
 
-## Workflows
+1. [Reusable Workflows](#reusable-workflows)
+   1. [Django](#django)
+      1. [Lint & Check](#django-lint--check)
+      2. [Run Tests](#django-run-tests)
+   2. [NodeJS](#nodejs)
+      1. [Lint & Build](#nodejs-lint--build)
+      2. [Run Cypress Tests](#nodejs-run-cypress-tests)
+
+## Reusable Workflows
 
 ### Django
 
-#### Lint & Check
+#### Django Lint & Check
 **django-step-lint-check.yml** is the reusable workflow to check if the code is linted correctly,
 run the check command and verify that the migrations are not broken.
 
@@ -34,7 +42,7 @@ jobs:
 
 ---
 
-#### Run Tests
+#### Django Run Tests
 **django-step-tests.yml** is the reusable workflow to run and check that all tests pass. 
 If all tests pass, it then generates the coverage and save it as artifact so that it is available for tools like Sonarqube.
 
@@ -70,7 +78,7 @@ The NodeJS workflows require these commands in order to succeed:
 4. **ci:e2e**: Check that all tests pass
 5. **build:{environment}**: Build the code based on the target **environment** (e.g. *testing*, *staging* and *production*)
 
-#### Lint & Build
+#### NodeJS Lint & Build
 **node-step-format-lint-build.yml** is the reusable workflow to check if the code is linted correctly and that it
 builds correctly.
 
@@ -94,7 +102,7 @@ jobs:
 
 ---
 
-#### Run Cypress Tests
+#### NodeJS Run Cypress Tests
 **node-step-test-cypress.yml** is the reusable workflow to run and check that all cypress tests pass. 
 If all tests pass, it then generates the coverage and save it as artifact so that it is available for tools like Sonarqube.
 

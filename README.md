@@ -1,7 +1,19 @@
 # Zupit Reusable Workflows
 This repository contains the reusable workflows to check, build, and deploy the web / mobile applications.
 
-//TODO: add anchors
+1. [Naming Convention](#naming-convention)
+2. [Reusable Workflows](#reusable-workflows)
+   1. [Django](#django)
+      1. [Common Workflow](#django-common)
+   2. [NodeJS](#nodejs)
+      1. [Common NodeJS](#nodejs-common)
+      2. [Build Docker Image and Push to Registry](#nodejs-build-docker-image-and-push-to-registry)
+   3. [Docker](#docker)
+      1. [Build Docker Image and Push to Registry](#docker-build-docker-image-and-push-to-registry)
+      2. [Deploy Docker Compose](#deploy-docker-compose)
+      3. [Delete Docker Images](#delete-docker-images)
+   4. [Others](#others)
+      1. [Sonar Analyze](#sonar-analyze)
 
 ## Naming convention
 
@@ -18,7 +30,7 @@ Our reusable workflows are named to follow this standard:
 
 Thus, it is easy to understand that the workflows uses a specific technology or application to execute the wanted action.
 
-## Workflows
+## Reusable Workflows
 Here we list the main workflows to use with the examples of how to use them. Since some workflows are grouped together 
 (e.g. the common workflows as you will see), here we skip the details of the *step* workflows already grouped to focus 
 only on the most important ones. If you would like to get more details of these tasks, just look at this [doc](docs/GROUPED_STEP_WORKFLOWS.md).
@@ -34,7 +46,7 @@ To fix this problem, the workflows using docker images must use different runner
 
 ### Django
 
-#### Common
+#### Django Common
 **django-workflow-common.yml** is the reusable workflow to check that the code is correctly linted, that all migrations
 are not broken and that all tests pass.
 
@@ -77,7 +89,7 @@ The NodeJS workflows require these commands in order to succeed:
 4. **ci:e2e**: Check that all tests pass
 5. **build:{environment}**: Build the code based on the target **environment** (e.g. *testing*, *staging* and *production*)
 
-#### Common
+#### NodeJS Common
 **node-workflow-common.yml** is the reusable workflow to check that the code is correctly formatted and linted, that it
 builds correctly and that all tests pass.
 
@@ -113,7 +125,7 @@ jobs:
 
 ---
 
-#### Build docker image and push to registry
+#### NodeJS build docker image and push to registry
 **node-step-docker-build-and-push-image.yml** is the workflow that builds the docker image and then push it to the registry.
 This is a specific version of the *docker-step-build-and-push-image.yml* as this adds the build of the nodejs project.
 
@@ -157,7 +169,7 @@ jobs:
 
 ### Docker
 
-#### Build docker image and push to registry
+#### Docker build docker image and push to registry
 **docker-step-build-and-push-image.yml** is the workflow that builds the docker image and then push it to the registry.
 
 It requires these inputs:
