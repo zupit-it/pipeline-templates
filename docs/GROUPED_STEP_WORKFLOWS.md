@@ -1,6 +1,5 @@
 # Zupit Reusable Workflows - Grouped Step Workflows
-Here we detail only those workflows that are already grouped inside other workflows, as these should be used only in
-specific cases, as the other ones are the *standard* workflows to use.
+Here we detail only those workflows that are already grouped inside other workflows, as these workflows should not be used.
 
 If you want to read the main document the click [here](../README.md).
 
@@ -20,7 +19,7 @@ If you want to read the main document the click [here](../README.md).
 **django-step-lint-check.yml** is the reusable workflow to check if the code is linted correctly,
 run the check command and verify that the migrations are not broken.
 
-*This workflow uses a python docker image, hence remember to use labels to match runners specific for docker.*
+*This workflow uses a python docker image, hence remember to use labels to match runners specific for Docker.*
 
 It requires these inputs:
 - LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
@@ -46,7 +45,7 @@ jobs:
 **django-step-tests.yml** is the reusable workflow to run and check that all tests pass. 
 If all tests pass, it then generates the coverage and save it as artifact so that it is available for tools like Sonarqube.
 
-*This workflow uses a python docker image, hence remember to use labels to match runners specific for docker.*
+*This workflow uses a python Docker image, hence remember to use labels to match runners specific for docker.*
 
 It requires these inputs:
 - LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
@@ -114,7 +113,7 @@ It requires these inputs:
 - CYPRESS_IMAGE: The Cypress Docker image to run all tests.
 - COVERAGE_ARTIFACT_NAME: The artifact's name for the *lcov.info* file.
 
-In addition, it is possible to specify these optional inputs:
+In addition, it is possible to specify this optional input:
 - BROWSER: Which browser the cypress should use to run the tests. By default, it is **Chrome**.
 
 This is an example to show how data should be formatted. 

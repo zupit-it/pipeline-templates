@@ -1,9 +1,10 @@
 # Zupit Reusable Workflows
-This repository contains the reusable workflows to check, build, and deploy the web / mobile applications.
+This repository contains reusable workflows to check, build, and deploy our projects.
 
-Here we list the main workflows to use with the examples of how to use them. Since some workflows are grouped together 
-(e.g. the common workflows as you will see), here we skip the details of the *step* workflows already grouped to focus 
-only on the most important ones. If you would like to get more details of these tasks, just look at this [doc](docs/GROUPED_STEP_WORKFLOWS.md).
+Here we list only the workflows to be referenced externally with some examples of how to implement them.
+The reason why we skip some workflows is due to the fact that these are already included inside other workflows 
+in order to reduce boilerplate when writing the final workflows.
+If you would like to get more details of these tasks, just look at this [doc](docs/GROUPED_STEP_WORKFLOWS.md).
 
 1. [Naming Convention](#naming-convention)
 2. [Reusable Workflows](#reusable-workflows)
@@ -21,31 +22,29 @@ only on the most important ones. If you would like to get more details of these 
 
 ## Naming convention
 
-We define 2 different types of workflows:
+We've defined 2 different types of workflows:
 - **step**: a *reusable workflow* that *runs a set of specific tasks* that can be grouped together
   (e.g. checking if the project is linted and builds, run the tests, build and push a docker image, ...).
 - **workflow**: a *reusable workflow* that *contains a set of our "steps" workflows* to reduce the boilerplate when writing the final workflows.
-  One use case is the check if the code is linted and that it builds together with tests, as this is used in almost all our projects.
-  The reason why these workflows are not grouped together by default is that for some reasons, tests might not be available.
+  One of the use case is to check if the code is linted, it builds correctly and the tests pass, as this is used in almost all of our projects.
 
 Our reusable workflows are named to follow this standard:
 
-`<technology-or-application>-<workflow-type>-<action-to-executte>.yml`
+`<technology-or-application>-<workflow-type>-<action-to-execute>.yml`
 
-Thus, it is easy to understand that the workflows uses a specific technology or application to execute the wanted action.
+Thus, it is easy to understand that the workflows uses a specific technology or application to execute the desired action.
 
 ## Reusable Workflows
-In all the examples, we set *secrets: inherit* to pass all secrets to the reusable workflows, but it is also possible to pass a subset of secrets.
+In all the examples, we set *secrets: inherit* to pass all secrets to the reusable workflows, but it is also possible to pass only a subset of secrets.
 
 In addition, we added for all *step* workflows the input *LABELS* as GitHub does not allow to set the *runs-on* from the caller side, but only inside
 the reusable workflows. As we want to define the runners as late as possible, we decided to add this input variable.
 
 In the *workflow* type, you will note that we defined 2 inputs for the labels: NATIVE_LABELS and CONTAINER_LABELS. 
 We had to differentiate as GitHub runners might start to raise permissions errors due to Docker being run as root. 
-To fix this problem, the workflows using docker images must use different runners from workflows running commands directly on the host.
+To fix this problem, workflows using docker images must use different runners from workflows running commands directly on the host.
 
 ### Django
-
 #### Django Common
 **django-workflow-common.yml** is the reusable workflow to check that the code is correctly linted, that all migrations
 are not broken and that all tests pass.
@@ -59,9 +58,9 @@ It requires these inputs:
 - NATIVE_CI_LABELS: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
 - CONTAINER_CI_LABELS: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
 - WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- PYTHON_IMAGE: The Python Docker image where the runner execute all the commands
+- PYTHON_IMAGE: The Python Docker image where the runner execute all the commands.
 
-In addition, this workflow makes COVERAGE_ARTIFACT_NAME optional:
+In addition, it is possible to specify this optional input:
 - COVERAGE_ARTIFACT_NAME: The artifact's name for the *coverage-django.xml* file. By default is **coverage-django.xml**.
 
 This is an example to show how data should be formatted. 
@@ -85,9 +84,9 @@ jobs:
 The NodeJS workflows require these commands in order to succeed:
 1. **ci:format:check**: Check that the code is formatted correctly.
 2. **ci:lint**: Check that the code is linted correctly.
-3. **ci:build**: Check that the code builds correctly
+3. **ci:build**: Check that the project builds correctly
 4. **ci:e2e**: Check that all tests pass
-5. **build:{environment}**: Build the code based on the target **environment** (e.g. *testing*, *staging* and *production*)
+5. **build:{environment}**: Build the project based on the target **environment** (e.g. *testing*, *staging* and *production*)
 
 #### NodeJS Common
 **node-workflow-common.yml** is the reusable workflow to check that the code is correctly formatted and linted, that it
@@ -101,8 +100,8 @@ It requires these inputs:
 - NATIVE_CI_LABELS: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
 - CONTAINER_CI_LABELS: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
 - WORKING_DIRECTORY: The directory where the runner can execute all the commands.
-- NODE_VERSION: The NodeJS Docker image where the runner execute all the commands
-- CYPRESS_IMAGE: The Cypress Docker image where the runner execute all the commands
+- NODE_VERSION: The NodeJS Docker image where the runner execute all the commands.
+- CYPRESS_IMAGE: The Cypress Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify these optional inputs:
 - COVERAGE_ARTIFACT_NAME: The artifact's name for the *lcov.info* file. By default, it is **lcov.info**.
@@ -127,23 +126,23 @@ jobs:
 
 #### NodeJS build docker image and push to registry
 **node-step-docker-build-and-push-image.yml** is the workflow that builds the docker image and then push it to the registry.
-This is a specific version of the *docker-step-build-and-push-image.yml* as this adds the build of the nodejs project.
+This is a specific version of the *docker-step-build-and-push-image.yml* as this adds the NodeJS build of the project.
 
-*This workflow uses a nodejs docker image, hence remember to use labels to match runners specific for docker.*
+*This workflow uses a NodeJS Docker image, hence remember to use labels to match runners specific for Docker.*
 
 It requires these inputs:
 - LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
 - NODE_VERSION: The NodeJS version required to build the project.
 - WORKING_DIRECTORY: The directory where the runner can execute all the commands.
 - RELEASE_ENVIRONMENT: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
-- REGISTRY_URL: The registry url where to push the docker image.
-- DOCKERFILE_PATH: The path to the dockerfile to build.
-- DOCKER_IMAGE_NAME: The name to assign to the built docker image.
-- DOCKER_IMAGE_TAG: The tag to assign to the built docker image.
-- BUILD_ARGS: Additional data to pass when building the dockerfile.
+- REGISTRY_URL: The registry url where to push the Docker image.
+- DOCKERFILE_PATH: The path to the Dockerfile to build.
+- DOCKER_IMAGE_NAME: The name to assign to the built Docker image.
+- DOCKER_IMAGE_TAG: The tag to assign to the built Docker image.
+- BUILD_ARGS: Additional data to pass when building the Dockerfile.
 
-It then outputs these variables:
-- DOCKER_IMAGE_NAME: The final docker image name with the registry path included.
+It then outputs this variable:
+- DOCKER_IMAGE_NAME: The final Docker image name with the registry path included.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -153,7 +152,7 @@ jobs:
       zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@main
     with:
       LABELS: "['pinga', 'pipeline', 'container']"
-      NODE_VERSION: '16.17.0'
+      NODE_VERSION: 16.17.0
       RELEASE_ENVIRONMENT: testing
       WORKING_DIRECTORY: frontend
       REGISTRY_URL: ghcr.io
@@ -170,20 +169,20 @@ jobs:
 ### Docker
 
 #### Docker build docker image and push to registry
-**docker-step-build-and-push-image.yml** is the workflow that builds the docker image and then push it to the registry.
+**docker-step-build-and-push-image.yml** is the workflow that builds the Docker image and then push it to the registry.
 
 It requires these inputs:
 - LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
 - WORKING_DIRECTORY: The directory where the runner can execute all the commands.
 - RELEASE_ENVIRONMENT: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
-- REGISTRY_URL: The registry url where to push the docker image.
-- DOCKERFILE_PATH: The path to the dockerfile to build.
-- DOCKER_IMAGE_NAME: The name to assign to the built docker image.
-- DOCKER_IMAGE_TAG: The tag to assign to the built docker image.
-- BUILD_ARGS: Additional data to pass when building the dockerfile.
+- REGISTRY_URL: The registry url where to push the Docker image.
+- DOCKERFILE_PATH: The path to the Dockerfile to build.
+- DOCKER_IMAGE_NAME: The name to assign to the built Docker image.
+- DOCKER_IMAGE_TAG: The tag to assign to the built Docker image.
+- BUILD_ARGS: Additional data to pass when building the Dockerfile.
 
 It then outputs these variables:
-- DOCKER_IMAGE_NAME: The final docker image name with the registry path included.
+- DOCKER_IMAGE_NAME: The final Docker image name with the registry path included.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -205,17 +204,17 @@ jobs:
 ---
 
 #### Deploy Docker Compose
-**docker-step-deploy.yml** is the workflow that starts a docker compose file on the targeted host.
+**docker-step-deploy.yml** is the workflow that starts a Docker compose file on the targeted host.
 
 It requires these inputs:
 - LABELS: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
 - ENVIRONMENT: The target environment that will show GitHub on the GitHub action page.
 - DEPLOY_URL: The target environment url that will show GitHub on the GitHub action page. 
-- REGISTRY_URL: The registry url where to pull the images.
+- REGISTRY_URL: The registry url where to pull the Docker images.
 - PROJECT_NAME: The name that will be associated to the Docker Compose stack.
-- DOCKER_COMPOSE_PATH: The path to the docker compose to start.
+- DOCKER_COMPOSE_PATH: The path to the Docker compose to start.
 - IMAGES: A stringified json object containing as key the environment variables images used in the 
-  docker compose file and as value the name of the images that will be downloaded from the registry.
+  Docker compose file and as value the name of the images that will be downloaded from the registry.
   You can retrieve dynamically the image name from the *docker build and push step* by adding the step's name to the **needs** array of the workflow 
   and using `${{ needs.{STEP_NAME}.outputs.DOCKER_IMAGE_NAME }}` where STEP_NAME is the step's name. 
 
@@ -246,7 +245,7 @@ jobs:
 It deletes all untagged images and it allows to have a maximum of N tagged images for staging and other N tagged images for production.
 This workflow should be scheduled using cron to achieve the retention policy.
 
-The images' tags must follow this standard:
+The images' tags must follow this naming convention:
 - `latest`: for testing environment. This won't be deleted.
 - `v[0-9]+.[0-9]+.[0-9]+-rc`: for staging environment.
 - `v[0-9]+.[0-9]+.[0-9]+`: for production environment.
