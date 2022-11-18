@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ fromJson(inputs.LABELS) }}
 
     steps:
-    - name: Login
+    - name: Login to Jira
       uses: atlassian/gajira-login@master
       env:
         JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
