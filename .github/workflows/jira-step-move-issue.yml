@@ -25,7 +25,7 @@ jobs:
         JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
         JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
-    - name: Find issue key from branch
+    - name: Find issue key
       id: find
       uses: atlassian/gajira-find-issue-key@master
       with:
