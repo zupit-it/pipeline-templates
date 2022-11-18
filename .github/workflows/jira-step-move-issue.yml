@@ -1,0 +1,39 @@
+name: Jira Issue Transition
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      STATUS:
+        required: true
+        type: string
+      KEY_FROM_COMMIT:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  move-jira-issue:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
+    steps:
+    - name: Login
+      uses: atlassian/gajira-login@master
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+    - name: Find issue key from branch
+      id: find
+      uses: atlassian/gajira-find-issue-key@master
+      with:
+        string: ${{ inputs.KEY_FROM_COMMIT && github.event.workflow_run.head_commit.message || github.head_ref }}
+
+    - name: Transition issue
+      uses: atlassian/gajira-transition@master
+      with:
+        issue: ${{ steps.find.outputs.issue }}
+        transition: ${{ inputs.STATUS }}
