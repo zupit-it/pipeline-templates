@@ -9,10 +9,9 @@ on:
       STATUS:
         required: true
         type: string
-      KEY_FROM_COMMIT:
-        required: false
-        type: boolean
-        default: false
+      BRANCH_OR_COMMIT_TITLE:
+        required: true
+        type: string
 
 jobs:
   move-jira-issue:
@@ -30,7 +29,7 @@ jobs:
       id: find
       uses: atlassian/gajira-find-issue-key@master
       with:
-        string: ${{ inputs.KEY_FROM_COMMIT && github.event.workflow_run.head_commit.message || github.head_ref }}
+        string: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}
 
     - name: Transition issue
       uses: atlassian/gajira-transition@master
