@@ -1,0 +1,41 @@
+name: Lint and check a Java app
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      JAVA_IMAGE:
+        required: true
+        type: string
+      MAVEN_USER_HOME:
+        required: false
+        type: string
+        default: "./m2"
+      EXTRA_MAVEN_ARGS:
+        required: false
+        type: string
+        default: ""
+
+env: "${{secrets}}"
+
+jobs:
+  java-lint-check:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    container: ${{ inputs.JAVA_IMAGE }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Check code is linted correctly
+        run: ./mvnw -ntp spotless:check -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
+      - name: Check code is styled correctly
+        run: ./mvnw -ntp checkstyle:check -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}

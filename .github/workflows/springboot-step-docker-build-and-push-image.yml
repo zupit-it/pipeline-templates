@@ -1,0 +1,67 @@
+name: Docker build and push springboot image to registry
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      JAVA_IMAGE:
+        required: true
+        type: string
+      RELEASE_ENVIRONMENT:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      REGISTRY_URL:
+        required: true
+        type: string
+      DOCKER_IMAGE_NAME:
+        required: true
+        type: string
+      DOCKER_IMAGE_TAG:
+        required: true
+        type: string
+      MAVEN_USER_HOME:
+        required: false
+        type: string
+        default: "./m2"
+      EXTRA_MAVEN_ARGS:
+        required: false
+        type: string
+        default: ""
+    outputs:
+      DOCKER_IMAGE_NAME:
+        description: "The docker image name that has been built"
+        value: ${{ jobs.docker-build-and-push.outputs.DOCKER_IMAGE_NAME }}
+
+env: "${{secrets}}"
+
+jobs:
+  docker-build-and-push:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    container: ${{ inputs.JAVA_IMAGE }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    outputs:
+      DOCKER_IMAGE_NAME: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ inputs.REGISTRY_URL }}/${{ github.repository }}/${{ inputs.DOCKER_IMAGE_NAME }}
+          tags: ${{ inputs.DOCKER_IMAGE_TAG }}
+
+      - name: Build JIB Image and publish
+        run: ./mvnw -ntp compile jib:build -P${{ inputs.RELEASE_ENVIRONMENT }} -Djib.to.image=${{ steps.meta.outputs.tags }} -Djib.to.auth.username=${{ github.actor }} -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }} -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
+

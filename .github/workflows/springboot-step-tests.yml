@@ -1,0 +1,71 @@
+name: Run Java tests
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      JAVA_IMAGE:
+        required: true
+        type: string
+      COVERAGE_ARTIFACT_NAME:
+        required: true
+        type: string
+      MAVEN_USER_HOME:
+        required: false
+        type: string
+        default: "./m2"
+      EXTRA_MAVEN_ARGS:
+        required: false
+        type: string
+        default: ""
+      USE_CI_POSTGRES:
+        required: false
+        type: boolean
+        default: true
+      SPRING_APPLICATION_JSON:
+        required: false
+        type: string
+        default:
+
+
+env: "${{secrets}}"
+
+jobs:
+  java-run-tests:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    container: ${{ inputs.JAVA_IMAGE }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: java-runner
+          POSTGRES_PASSWORD: java-runner
+          POSTGRES_DB: java
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Run tests
+        run: |
+          ./mvnw -ntp verify -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
+          ./mvnw -ntp jacoco:report -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
+        env:
+          SPRING_APPLICATION_JSON: ${{ inputs.USE_CI_POSTGRES && inputs.SPRING_APPLICATION_JSON || '{}' }}
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+          path: |
+            ${{ inputs.WORKING_DIRECTORY }}/target/**/*.xml
+            ${{ inputs.WORKING_DIRECTORY }}/target/**/*.class
+          retention-days: 1
