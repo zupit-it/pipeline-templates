@@ -1,4 +1,4 @@
-name: Springboot comon
+name: Springboot common
 
 on:
   workflow_call:
