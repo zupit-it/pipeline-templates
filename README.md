@@ -26,7 +26,7 @@ We've defined 2 different types of workflows:
 - **step**: a *reusable workflow* that *runs a set of specific tasks* that can be grouped together
   (e.g. checking if the project is linted and builds, run the tests, build and push a docker image, ...).
 - **workflow**: a *reusable workflow* that *contains a set of our "steps" workflows* to reduce the boilerplate when writing the final workflows.
-  One of the use case is to check if the code is linted, it builds correctly and the tests pass, as this is used in almost all of our projects.
+  One of the use cases is to check if the code is linted, it builds correctly and the tests pass, as this is used in almost all of our projects.
 
 Our reusable workflows are named to follow this standard:
 
@@ -44,51 +44,22 @@ In the *workflow* type, you will note that we defined 2 inputs for the labels: N
 We had to differentiate as GitHub runners might start to raise permissions errors due to Docker being run as root. 
 To fix this problem, workflows using docker images must use different runners from workflows running commands directly on the host.
 
-### Django
-#### Django Common
-**django-workflow-common.yml** is the reusable workflow to check that the code is correctly linted, that all migrations
-are not broken and that all tests pass.
-
-It groups together these reusable workflows:
-- *django-step-lint-check.yml*
-- *django-step-tests.yml*
-
-
-It requires these inputs:
-- **NATIVE_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
-- **CONTAINER_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
-- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
-- **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands.
-
-In addition, it is possible to specify this optional input:
-- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file. By default is **coverage-django.xml**.
-
-This is an example to show how data should be formatted. 
-```yaml
-jobs:
-  django-common:
-    uses:
-      zupit-it/pipeline-templates/.github/workflows/django-workflow-common.yml@main
-    with:
-      WORKING_DIRECTORY: backend
-      PYTHON_IMAGE: python:3.8.2-slim-buster
-      NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
-      CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
-      COVERAGE_ARTIFACT_NAME: coverage-django.xml
-    secrets: inherit
-```
-
----
-
 ### NodeJS
-The NodeJS workflows require these commands in order to succeed:
+
+#### NodeJS Common
+
+###### Requirements
+This workflow requires these commands in order to succeed:
 1. **ci:format:check**: Check that the code is formatted correctly.
 2. **ci:lint**: Check that the code is linted correctly.
 3. **ci:build**: Check that the project builds correctly
-4. **ci:e2e**: Check that all tests pass
-5. **build:{environment}**: Build the project based on the target **environment** (e.g. *testing*, *staging* and *production*)
+4. **ci:e2e**: Check that all cypress tests pass *(only if tests are enabled)*. 
+   This command must generate the coverage report **lcov.info** inside the **coverage** folder in the NodeJS directory.
+   (e.g. `frontend/coverage/lcov.info`)
 
-#### NodeJS Common
+This workflow uses **npm** as package manager.
+
+###### Workflow
 **node-workflow-common.yml** is the reusable workflow to check that the code is correctly formatted and linted, that it
 builds correctly and that all tests pass.
 
@@ -99,7 +70,7 @@ It groups together these reusable workflows:
 It requires these inputs:
 - **NATIVE_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
 - **CONTAINER_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
-- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the NodeJS application.
 - **NODE_VERSION**: The NodeJS Docker image where the runner execute all the commands.
 - **CYPRESS_IMAGE**: The Cypress Docker image where the runner execute all the commands.
 
@@ -125,6 +96,16 @@ jobs:
 ---
 
 #### NodeJS build docker image and push to registry
+
+###### Requirements
+This workflow requires these commands in order to succeed:
+1. **build:{environment}**: Build the project based on the target **environment** (e.g. *testing*, *staging* and *production*)
+
+It also requires a **Dockerfile** inside the *working directory* to create the docker image to publish on a docker registry.
+
+This workflow uses **npm** as package manager.
+
+###### Workflow
 **node-step-docker-build-and-push-image.yml** is the workflow that builds the docker image and then push it to the registry.
 This is a specific version of the *docker-step-build-and-push-image.yml* as this adds the NodeJS build of the project.
 
@@ -166,9 +147,60 @@ jobs:
 
 ---
 
+### Django
+
+#### Django Common
+###### Requirements
+This workflow requires these files inside the Django directory:
+1. **requirements.txt** with **Coverage**, **Black** and **Flake8** to check the coverage and the code style.
+2. **env.github** with the required environment variables in order to run the checks and tests in the workflows.
+
+This workflow uses **pip** as package manager.
+
+###### Workflow
+**django-workflow-common.yml** is the reusable workflow to check that the code is correctly linted, that all migrations
+are not broken and that all tests pass.
+
+It groups together these reusable workflows:
+- *django-step-lint-check.yml*
+- *django-step-tests.yml*
+
+
+It requires these inputs:
+- **NATIVE_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
+- **CONTAINER_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
+- **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands.
+
+In addition, it is possible to specify this optional input:
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file. By default is **coverage-django.xml**.
+
+This is an example to show how data should be formatted. 
+```yaml
+jobs:
+  django-common:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/django-workflow-common.yml@main
+    with:
+      WORKING_DIRECTORY: backend
+      PYTHON_IMAGE: python:3.8.2-slim-buster
+      NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
+      CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
+      COVERAGE_ARTIFACT_NAME: coverage-django.xml
+    secrets: inherit
+```
+
+---
+
 ### Docker
 
 #### Docker build docker image and push to registry
+###### Requirements
+This workflow requires a **Dockerfile** inside the *working directory* to create the docker image to publish on a docker registry.
+
+The github runner which will execute this workflow should be capable of running docker commands.
+
+###### Workflow
 **docker-step-build-and-push-image.yml** is the workflow that builds the Docker image and then push it to the registry.
 
 It requires these inputs:
@@ -204,6 +236,10 @@ jobs:
 ---
 
 #### Deploy Docker Compose
+###### Requirements
+This workflow requires a **docker-compose** file to start all services required from the application to deploy.
+
+###### Workflow
 **docker-step-deploy.yml** is the workflow that starts a Docker compose file on the targeted host.
 
 It requires these inputs:
@@ -212,7 +248,7 @@ It requires these inputs:
 - **DEPLOY_URL**: The target environment url that will show GitHub on the GitHub action page. 
 - **REGISTRY_URL**: The registry url where to pull the Docker images.
 - **PROJECT_NAME**: The name that will be associated to the Docker Compose stack.
-- **DOCKER_COMPOSE_PATH**: The path to the Docker compose to start.
+- **DOCKER_COMPOSE_PATH**: The path to the docker-compose file to start.
 - **IMAGES**: A stringified json object containing as key the environment variables images used in the 
   Docker compose file and as value the name of the images that will be downloaded from the registry.
   You can retrieve dynamically the image name from the *docker build and push step* by adding the step's name to the **needs** array of the workflow 
@@ -278,6 +314,10 @@ jobs:
 ### Others
 
 #### Sonar Analyze
+###### Requirements
+This workflow requires a **sonar-project.properties** file inside the *working directory* with the configuration for Sonarqube.
+
+###### Workflow
 **sonar-step-analyze.yml** is the workflow that analyze the coverage and sends the results to Sonarqube.
 
 It requires these inputs:
