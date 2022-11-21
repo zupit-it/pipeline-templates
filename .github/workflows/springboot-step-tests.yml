@@ -1,4 +1,4 @@
-name: Run Java tests
+name: Run SpringBoot tests
 
 on:
   workflow_call:
@@ -36,7 +36,7 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  java-run-tests:
+  springboot-run-tests:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.JAVA_IMAGE }}
 

@@ -1,4 +1,4 @@
-name: Lint and check a Java app
+name: Lint and check a SpringBoot app
 
 on:
   workflow_call:
@@ -24,7 +24,7 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  java-lint-check:
+  springboot-lint-check:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.JAVA_IMAGE }}
 

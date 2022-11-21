@@ -1,4 +1,4 @@
-name: Run Java tests
+name: Springboot comon
 
 on:
   workflow_call:
@@ -27,14 +27,6 @@ on:
         required: false
         type: string
         default: ""
-      ARTIFACT_FILENAME:
-        required: false
-        type: string
-        default: "target"
-      SONAR_HOST_URL:
-        required: false
-        type: string
-        default: "https://sonarqube.zupit.software"
       USE_CI_POSTGRES:
         required: false
         type: boolean

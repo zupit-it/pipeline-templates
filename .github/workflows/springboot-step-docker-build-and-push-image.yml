@@ -1,4 +1,4 @@
-name: Docker build and push springboot image to registry
+name: Docker build and push SpringBoot image to registry
 
 on:
   workflow_call:
