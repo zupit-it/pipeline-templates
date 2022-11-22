@@ -17,16 +17,16 @@ on:
         required: false
         type: string
         default: "Created automatically via GitHub Actions"
+      LINK:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   create-todo-jira-issue:
     runs-on: ${{ fromJson(inputs.LABELS) }}
 
     steps:
-    - name: Retrieve PR url
-      uses: kceb/pull-request-url-action@v1
-      id: pr-url
-
     - name: Login to Jira
       uses: atlassian/gajira-login@master
       env:
@@ -39,6 +39,6 @@ jobs:
       with:
         project: ${{ inputs.PROJECT_KEY }}
         issuetype: ${{ inputs.ISSUE_TYPE }}
-        description: ${{ inputs.ISSUE_DESCRIPTION }} - ${{ steps.pr-url.outputs.url }}
+        description: ${{ inputs.ISSUE_DESCRIPTION }} ${{ inputs.LINK }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
