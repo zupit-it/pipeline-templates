@@ -98,7 +98,7 @@ jobs:
 #### NodeJS build docker image and push to registry
 
 ###### Requirements
-This workflow requires these commands in order to succeed:
+This workflow requires this command in order to succeed:
 1. **build:{environment}**: Build the project based on the target **environment** (e.g. *testing*, *staging* and *production*)
 
 It also requires a **Dockerfile** inside the *working directory* to create the docker image to publish on a docker registry.
