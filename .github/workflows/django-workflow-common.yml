@@ -10,13 +10,6 @@ on:
       PYTHON_IMAGE:
         required: true
         type: string
-      PYTHON_VERSION:
-        required: true
-        type: string
-      DJANGO_APPS:
-        required: false
-        type: string
-        default: ""
       COVERAGE_ARTIFACT_NAME:
         required: false
         type: string
@@ -38,7 +31,6 @@ jobs:
       LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
-      PYTHON_VERSION: ${{inputs.PYTHON_VERSION}}
     secrets: inherit
 
   django-tests:
@@ -48,7 +40,5 @@ jobs:
       LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
-      PYTHON_VERSION: ${{ inputs.PYTHON_VERSION }}
-      DJANGO_APPS: ${{ inputs.DJANGO_APPS }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
     secrets: inherit

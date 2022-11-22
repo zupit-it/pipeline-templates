@@ -9,9 +9,6 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
-      PYTHON_VERSION:
-        required: true
-        type: string
       PYTHON_IMAGE:
         required: true
         type: string
@@ -43,7 +40,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Copy env file
-        run: cp .env.gitlab .env
+        run: cp .env.github .env
       - name: Lint with flake8
         run: python -m flake8 .
       - name: Lint with black
