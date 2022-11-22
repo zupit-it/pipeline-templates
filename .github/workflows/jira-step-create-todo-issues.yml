@@ -1,0 +1,40 @@
+name: Jira Create TODO Issues
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      PROJECT_KEY:
+        required: true
+        type: string
+      ISSUE_TYPE:
+        required: false
+        type: string
+        default: Task
+      ISSUE_DESCRIPTION:
+        required: false
+        type: string
+        default: "Created automatically via GitHub Actions"
+
+jobs:
+  create-todo-jira-issue:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
+    steps:
+    - name: Login to Jira
+      uses: atlassian/gajira-login@master
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+    - name: Create TODO
+      uses: atlassian/gajira-todo@v3
+      with:
+        project: ${{ inputs.PROJECT_KEY }}
+        issuetype: ${{ inputs.ISSUE_TYPE }}
+        description: ${{ inputs.ISSUE_DESCRIPTION }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
