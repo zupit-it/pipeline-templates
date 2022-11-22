@@ -44,7 +44,7 @@ In the *workflow* type, you will note that we defined 2 inputs for the labels: N
 We had to differentiate as GitHub runners might start to raise permissions errors due to Docker being run as root. 
 To fix this problem, workflows using docker images must use different runners from workflows running commands directly on the host.
 
-### NodeJS
+### NodeJS - Backend & Frontend
 
 #### NodeJS Common
 
