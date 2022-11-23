@@ -1,0 +1,91 @@
+name: Node build and deploy to Azure Storage
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      NODE_VERSION:
+        required: true
+        type: string
+      BUILD_ARGS:
+        required: false
+        type: string
+        default: ""
+      RELEASE_ENVIRONMENT:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      OUTPUT_DIRECTORY:
+        required: true
+        type: string
+      STORAGE_ACCOUNT_NAME:
+        required: true
+        type: string
+      PURGE_CDN:
+        required: false
+        type: boolean
+        default: true
+      CDN_PROFILE_NAME:
+        required: false
+        type: string
+        default: ""
+      CDN_ENDPOINT_NAME:
+        required: false
+        type: string
+        default: ""
+      CDN_RG_NAME:
+        required: false
+        type: string
+        default: ""
+
+env: "${{secrets}}"
+
+jobs:
+  angular-build-and-deploy-azure-storage:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    environment: ${{ inputs.RELEASE_ENVIRONMENT }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ${{ inputs.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Node.js ${{ inputs.NODE_VERSION }}
+        run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }} ${{ inputs.BUILD_ARGS }}
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CI_AZURE_CREDENTIALS }}
+
+      - name: Upload to blob storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: az storage blob upload-batch --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} --auth-mode key -d '$web' -s ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.OUTPUT_DIRECTORY }}
+
+      - name: Purge CDN endpoint
+        uses: azure/CLI@v1
+        if: ${{ inputs.PURGE_CDN }}
+        with:
+          inlineScript: az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
+
+      - name: Azure logout
+        run: az logout
+        if: always()
