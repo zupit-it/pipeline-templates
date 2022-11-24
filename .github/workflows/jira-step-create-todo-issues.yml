@@ -35,6 +35,7 @@ jobs:
         JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
     - name: Create TODO
+      id: create
       uses: atlassian/gajira-todo@v3
       with:
         project: ${{ inputs.PROJECT_KEY }}
@@ -42,3 +43,11 @@ jobs:
         description: ${{ inputs.ISSUE_DESCRIPTION }} ${{ inputs.LINK }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Add annotation if there are NO new todo comments
+      if: steps.create.issues == []
+      run: echo "::notice ::0 new todo comments found."
+
+    - name: Add annotation if there are new todo comments
+      if: steps.create.issues != []
+      run: echo "::notice ::Created new TODO issues."
