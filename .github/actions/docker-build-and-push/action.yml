@@ -48,7 +48,6 @@ runs:
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
         with:
           context: ./${{ inputs.WORKING_DIRECTORY }}
           file: ${{ inputs.DOCKERFILE_PATH }}
