@@ -1,9 +1,6 @@
 name: Docker build and push image
 
 inputs:
-  WORKING_DIRECTORY:
-    required: true
-    type: string
   REGISTRY_URL:
     required: true
     type: string
@@ -26,17 +23,10 @@ inputs:
 outputs:
   DOCKER_IMAGE_NAME:
     description: "The docker image name that has been built"
-    value: ${{ jobs.docker-build-push-image.outputs.DOCKER_IMAGE_NAME }}
+    value: ${{ steps.meta.outputs.tags }}
 
 runs:
     using: composite
-
-    defaults:
-      run:
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-
-    outputs:
-      DOCKER_IMAGE_NAME: ${{ steps.meta.outputs.tags }}
 
     steps:
       - name: Log in to the Container registry
