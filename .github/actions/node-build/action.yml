@@ -1,0 +1,28 @@
+name: NodeJS build
+
+inputs:
+  NODE_VERSION:
+    required: true
+    type: string
+  RELEASE_ENVIRONMENT:
+    required: true
+    type: string
+
+runs:
+    using: composite
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ${{ inputs.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Node.js ${{ inputs.NODE_VERSION }}
+        run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }}
+

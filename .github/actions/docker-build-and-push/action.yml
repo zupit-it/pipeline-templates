@@ -4,6 +4,12 @@ inputs:
   REGISTRY_URL:
     required: true
     type: string
+  REGISTRY_DOCKER_USER:
+    required: true
+    type: string
+  REGISTRY_DOCKER_PASSWORD:
+    required: true
+    type: string
   DOCKERFILE_PATH:
     required: true
     type: string
@@ -30,8 +36,8 @@ runs:
         uses: docker/login-action@v2
         with:
           registry: ${{ inputs.REGISTRY_URL }}
-          username: ${{ github.actor }}
-          password: ${{ env.GITHUB_TOKEN }}
+          username: ${{ inputs.REGISTRY_DOCKER_USER }}
+          password: ${{ inputs.REGISTRY_DOCKER_PASSWORD }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
