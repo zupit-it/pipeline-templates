@@ -42,3 +42,6 @@ jobs:
     - name: Add annotation if no issue key found
       if: steps.find.outcome != 'success'
       run: echo "::notice ::No JIRA issue key found in '${{ inputs.BRANCH_OR_COMMIT_TITLE }}'"
+
+    - name: Test
+      run: echo "### Hello world! :rocket:" >> $GITHUB_STEP_SUMMARY
