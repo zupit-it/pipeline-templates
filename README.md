@@ -509,6 +509,7 @@ jobs:
   jira-move-issue-to-developed:
     uses:
       zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@main
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     with:
       LABELS: "['pinga', 'pipeline', 'native']"
       STATUS: "Developed"
