@@ -1,0 +1,65 @@
+name: Docker build and push image
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  REGISTRY_URL:
+    required: true
+    type: string
+  DOCKERFILE_PATH:
+    required: true
+    type: string
+  DOCKER_IMAGE_NAME:
+    required: true
+    type: string
+  DOCKER_IMAGE_TAG:
+    required: true
+    type: string
+  GITHUB_TOKEN:
+    required: true
+    type: string
+  BUILD_ARGS:
+    required: false
+    type: string
+    default: ""
+outputs:
+  DOCKER_IMAGE_NAME:
+    description: "The docker image name that has been built"
+    value: ${{ jobs.docker-build-push-image.outputs.DOCKER_IMAGE_NAME }}
+
+runs:
+    using: composite
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    outputs:
+      DOCKER_IMAGE_NAME: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ inputs.REGISTRY_URL }}
+          username: ${{ github.actor }}
+          password: ${{ inputs.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ inputs.REGISTRY_URL }}/${{ github.repository }}/${{ inputs.DOCKER_IMAGE_NAME }}
+          tags: ${{ inputs.DOCKER_IMAGE_TAG }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./${{ inputs.WORKING_DIRECTORY }}
+          file: ${{ inputs.DOCKERFILE_PATH }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ inputs.BUILD_ARGS }}
+
