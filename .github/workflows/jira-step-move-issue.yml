@@ -41,4 +41,4 @@ jobs:
 
     - name: Add annotation if no issue key found
       if: steps.find.outcome != 'success'
-      run: echo "::error ::No JIRA issue key found in '${{ inputs.BRANCH_OR_COMMIT_TITLE }}'"
+      run: echo "::notice ::No JIRA issue key found in '${{ inputs.BRANCH_OR_COMMIT_TITLE }}'"
