@@ -15,7 +15,7 @@ If you would like to get more details of these tasks, just look at this [doc](do
       1. [Common Workflow](#django-common)
    3. [SpringBoot](#springboot)
       1. [Common SpringBoot](#springboot-common)
-      2. [Build DOcker Image and Push to Registry](#springboot-build-docker-image-and-push-to-registry)
+      2. [Build Docker Image and Push to Registry](#springboot-build-docker-image-and-push-to-registry)
    4. [Docker](#docker)
       1. [Build Docker Image and Push to Registry](#docker-build-docker-image-and-push-to-registry)
       2. [Deploy Docker Compose](#deploy-docker-compose)
@@ -523,6 +523,10 @@ jobs:
 **jira-step-create-todo-issues.yml** is the workflow that creates new Jira issues if it detects any **TODO** comment
 in the code. The generated issue can have the desired issue type with a given description together with an input link 
 (which should contain the commit diff).
+
+Beware that created tasks are independent, they aren't affected by the changes to the code. Thus, If you modify an existing TODO, 
+it will basically create a new task, it won't touch or delete the previous generated task. Same if you delete a TODO, nothing
+will happen to the existing task.
 
 It requires these inputs:
 - **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
