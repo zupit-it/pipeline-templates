@@ -35,10 +35,6 @@ on:
         required: false
         type: string
         default: ${{ github.actor }}
-      REGISTRY_PASSWORD:
-        required: false
-        type: string
-        default: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
@@ -68,7 +64,7 @@ jobs:
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
-          REGISTRY_PASSWORD: ${{ inputs.REGISTRY_PASSWORD }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOCKERFILE_PATH: ${{ inputs.DOCKERFILE_PATH }}
           DOCKER_IMAGE_NAME: ${{ inputs.DOCKER_IMAGE_NAME }}
