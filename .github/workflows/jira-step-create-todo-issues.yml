@@ -44,5 +44,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Show result message
-      run: echo "### Result '${{ steps.create.issue }}'" >> $GITHUB_STEP_SUMMARY
+    - name: Show no todo found message
+      if: steps.create.outcome == ''
+      run: echo "### No new TODO found." >> $GITHUB_STEP_SUMMARY
+
+    - name: Show todo found message
+      if: steps.create.outcome != ''
+      run: echo "### Found at least 1 issue." >> $GITHUB_STEP_SUMMARY
