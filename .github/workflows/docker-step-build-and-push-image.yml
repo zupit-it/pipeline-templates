@@ -9,9 +9,6 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
-      REGISTRY_URL:
-        required: true
-        type: string
       DOCKERFILE_PATH:
         required: true
         type: string
@@ -25,6 +22,10 @@ on:
         required: false
         type: string
         default: ""
+      REGISTRY_URL:
+        required: false
+        type: string
+        default: ghcr.io
       REGISTRY_USER:
         required: false
         type: string
