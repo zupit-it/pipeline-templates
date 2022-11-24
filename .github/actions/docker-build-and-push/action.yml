@@ -13,9 +13,6 @@ inputs:
   DOCKER_IMAGE_TAG:
     required: true
     type: string
-  GITHUB_TOKEN:
-    required: true
-    type: string
   BUILD_ARGS:
     required: false
     type: string
@@ -34,7 +31,7 @@ runs:
         with:
           registry: ${{ inputs.REGISTRY_URL }}
           username: ${{ github.actor }}
-          password: ${{ inputs.GITHUB_TOKEN }}
+          password: ${{ env.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
