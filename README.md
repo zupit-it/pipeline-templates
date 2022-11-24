@@ -8,16 +8,22 @@ If you would like to get more details of these tasks, just look at this [doc](do
 
 1. [Naming Convention](#naming-convention)
 2. [Reusable Workflows](#reusable-workflows)
-   1. [Django](#django)
-      1. [Common Workflow](#django-common)
-   2. [NodeJS](#nodejs)
+   1. [NodeJS](#nodejs)
       1. [Common NodeJS](#nodejs-common)
       2. [Build Docker Image and Push to Registry](#nodejs-build-docker-image-and-push-to-registry)
-   3. [Docker](#docker)
+   2. [Django](#django)
+      1. [Common Workflow](#django-common)
+   3. [SpringBoot](#springboot)
+      1. [Common SpringBoot](#springboot-common)
+      2. [Build DOcker Image and Push to Registry](#springboot-build-docker-image-and-push-to-registry)
+   4. [Docker](#docker)
       1. [Build Docker Image and Push to Registry](#docker-build-docker-image-and-push-to-registry)
       2. [Deploy Docker Compose](#deploy-docker-compose)
       3. [Delete Docker Images](#delete-docker-images)
-   4. [Others](#others)
+   5. [Jira](#jira)
+      1. [Jira Move Issue](#jira-move-issue)
+      2. [Jira Create TODO Issue](#jira-create-todo-issue)
+   6. [Others](#others)
       1. [Sonar Analyze](#sonar-analyze)
 
 ## Naming convention
@@ -173,7 +179,7 @@ It requires these inputs:
 - **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify this optional input:
-- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file. By default is **coverage-django.xml**.
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file. By default, it is **coverage-django.xml**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -187,6 +193,104 @@ jobs:
       NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
       CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
       COVERAGE_ARTIFACT_NAME: coverage-django.xml
+    secrets: inherit
+```
+
+---
+
+### SpringBoot
+
+#### SpringBoot Common
+###### Requirements
+This workflow requires these plugins:
+1. **Spotless** & **Checkstyle** to check that formatting and coding style are correct.
+2. **Jacoco** to create report from tests.
+
+In addition, the maven command *Verify* should generate coverage reports.
+
+This workflow uses **maven** as package manager.
+
+###### Workflow
+**springboot-workflow-common.yml** is the reusable workflow to check that the code is correctly linted and that all tests pass.
+
+It groups together these reusable workflows:
+- *springboot-step-lint-check.yml*
+- *springboot-step-tests.yml*
+
+It requires these inputs:
+- **NATIVE_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
+- **CONTAINER_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
+- **JAVA_IMAGE**: The Java Docker image where the runner execute all the commands.
+
+In addition, it is possible to specify this optional input:
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *jacoco reports* file. By default, it is **target**.
+- **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
+- **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
+- **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
+
+This is an example to show how data should be formatted. 
+```yaml
+jobs:
+  java-common:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/springboot-workflow-common.yml@main
+    with:
+      NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
+      CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
+      WORKING_DIRECTORY: backend
+      JAVA_IMAGE: openjdk:12
+      USE_CI_POSTGRES: false
+    secrets: inherit
+```
+
+---
+
+#### SpringBoot build docker image and push to registry
+
+###### Requirements
+This workflow requires this plugin:
+1. **jib**: Build and publish docker image to the given registry.
+
+This workflow uses **Maven** as package manager.
+
+###### Workflow
+**springboot-step-docker-build-and-push-image.yml** is the workflow that builds the docker image and then push it to the registry.
+
+*This workflow uses a Java Docker image, hence remember to use labels to match runners specific for Docker.*
+
+It requires these inputs:
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **JAVA_IMAGE**: The Java image required to build the project.
+- **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **REGISTRY_URL**: The registry url where to push the Docker image.
+- **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
+- **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
+
+In addition, it is possible to specify this optional input:
+- **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
+- **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
+
+It then outputs this variable:
+- **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
+
+This is an example to show how data should be formatted. 
+```yaml
+jobs:
+  springboot-build-and-push-image:
+    needs: [ common ]
+
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/springboot-step-docker-build-and-push-image.yml@main
+    with:
+      LABELS: "['pinga', 'pipeline', 'container']"
+      JAVA_IMAGE: openjdk:12
+      RELEASE_ENVIRONMENT: testing
+      WORKING_DIRECTORY: backend
+      REGISTRY_URL: ghcr.io
+      DOCKER_IMAGE_NAME: springboot
+      DOCKER_IMAGE_TAG: latest
     secrets: inherit
 ```
 
@@ -295,7 +399,7 @@ It also requires these secrets:
 - **RETENTION_POLICY_TOKEN**: A PAT with permissions to **read:packages** and **delete:packages** 
 
 In addition, it is possible to specify these optional inputs:
-- **DRY_RUN**: Only for tagged images, it shows which ones will be deleted. 
+- **DRY_RUN**: Only for tagged images, it shows which ones will be deleted without deleting them. By default, it is **false**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -306,6 +410,144 @@ jobs:
     with:
       LABELS: "['pinga', 'pipeline', 'native']"
       IMAGE_NAME: 'ionic'
+    secrets: inherit
+```
+
+---
+
+### Jira
+
+#### Jira Move Issue
+
+###### Workflow
+**jira-step-move-issue.yml** is the workflow that moves Jira issues to the desired state.
+
+It requires these inputs:
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **STATUS**: the final status of the Jira issue.
+- **BRANCH_OR_COMMIT_TITLE**: the branch or commit title from where extract the Jira issue key.
+
+It also requires these secrets:
+- **JIRA_BASE_URL**: the JIRA url.
+- **JIRA_USER_EMAIL**: the JIRA user account email.
+- **JIRA_API_TOKEN**: the token to login the Jira user account email.
+
+This is an example to show how data should be formatted. 
+```yaml
+jobs:
+  jira-move-issue-to-developed:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@main
+    with:
+      LABELS: "['pinga', 'pipeline', 'native']"
+      STATUS: Developed
+      BRANCH_OR_COMMIT_TITLE: ${{ github.event.workflow_run.head_commit.message }}
+    secrets: inherit
+```
+
+###### Use Cases Workflows
+Here we show 3 use cases that you can copy paste in your project to have the default configuration for transitioning 
+Jira issues to these 3 states: *In Progress*, *Merge Request* and *Developed*, without worrying about how to retrieve
+the branch or commit title based on the workflow type.
+
+Basically, these workflows starts with these events:
+- **Pull Request opened**: Move the Jira issue to *In Progress*.
+- **Pull Request review**: Move the Jira issue to *Merge Request* if the PR is not in draft.
+- **Pull Request ready for review**: Move the Jira issue to *Merge Request*.
+- **On main workflow completion**: Move the Jira issue to *Developed*.
+
+**Move to In Progress** - *jira-move-in-progress.yml*
+```yaml
+name: Jira Move to In Progress
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  jira-move-issue-to-in-progress:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@main
+    with:
+      LABELS: "['pinga', 'pipeline', 'native']"
+      STATUS: "In progress"
+      BRANCH_OR_COMMIT_TITLE: ${{ github.head_ref }}
+    secrets: inherit
+```
+---
+**Move to Merge Request** - *jira-move-merge-request.yml*
+```yaml
+name: Jira Move to Merge Request
+
+on:
+  pull_request:
+    types: [review_requested, ready_for_review]
+
+jobs:
+  jira-move-issue-to-merge-request:
+    if: ${{ !github.event.pull_request.draft }}
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@main
+    with:
+      LABELS: "['pinga', 'pipeline', 'native']"
+      STATUS: "Merge request"
+      BRANCH_OR_COMMIT_TITLE: ${{ github.head_ref }}
+    secrets: inherit
+```
+---
+**Move to Developed** - *jira-move-developed.yml*
+```yaml
+name: Jira Move to Developed
+
+on:
+  workflow_run:
+    workflows: [Main Workflow]
+    types:
+      - completed
+
+jobs:
+  jira-move-issue-to-developed:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@main
+    with:
+      LABELS: "['pinga', 'pipeline', 'native']"
+      STATUS: "Developed"
+      BRANCH_OR_COMMIT_TITLE: ${{ github.event.workflow_run.head_commit.message }}
+    secrets: inherit
+```
+
+---
+
+#### Jira Create TODO Issue
+###### Workflow
+**jira-step-create-todo-issues.yml** is the workflow that creates new Jira issues if it detects any **TODO** comment
+in the code. The generated issue can have the desired issue type with a given description together with an input link 
+(which should contain the commit diff).
+
+It requires these inputs:
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **PROJECT_KEY**: the key to determine the Jira project.
+
+It also requires these secrets:
+- **JIRA_BASE_URL**: the JIRA url.
+- **JIRA_USER_EMAIL**: the JIRA user account email.
+- **JIRA_API_TOKEN**: the token to login the Jira user account email.
+
+In addition, it is possible to specify these optional inputs:
+- **ISSUE_TYPE**: The type of issue to create. By default, it is **Task**.
+- **ISSUE_DESCRIPTION**: The description of the issue. By default, it is **Created automatically via GitHub Actions**
+- **LINK**: Link to the GitHub page with the commit diff, useful to check when the TODO was added. By default, it is **""**.
+
+This is an example to show how data should be formatted. 
+```yaml
+jobs:
+  jira-create-todo-issue:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/jira-step-create-todo-issues.yml@main
+    with:
+      LABELS: "['pinga', 'pipeline', 'native']"
+      PROJECT_KEY: DDSO
+      LINK: ${{ github.event.compare }}
     secrets: inherit
 ```
 
