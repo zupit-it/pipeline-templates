@@ -1,6 +1,9 @@
 name: Docker build and push image
 
 inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
   REGISTRY_URL:
     required: true
     type: string
