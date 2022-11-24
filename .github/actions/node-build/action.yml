@@ -21,8 +21,10 @@ runs:
           cache: 'npm'
 
       - name: Install dependencies
+        shell: bash
         run: npm ci
 
       - name: Build Node.js ${{ inputs.NODE_VERSION }}
+        shell: bash
         run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }}
 
