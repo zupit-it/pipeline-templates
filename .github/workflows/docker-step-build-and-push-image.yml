@@ -42,7 +42,7 @@ jobs:
     runs-on: ${{ fromJson(inputs.LABELS) }}
 
     outputs:
-      DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.tags }}
+      DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
 
     steps:
       - name: Checkout repository
