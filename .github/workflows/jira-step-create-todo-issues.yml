@@ -44,10 +44,5 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Add annotation if there are NO new todo comments
-      if: steps.create.issues == ${{ fromJson('[]') }}
-      run: echo "::notice ::0 new todo comments found."
-
-    - name: Add annotation if there are new todo comments
-      if: steps.create.issues != ${{ fromJson('[]') }}
-      run: echo "::notice ::Created new TODO issues."
+    - name: Show result message
+      run: echo "### Result '${{ steps.create.issue }}'" >> $GITHUB_STEP_SUMMARY
