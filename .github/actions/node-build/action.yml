@@ -7,6 +7,9 @@ inputs:
   RELEASE_ENVIRONMENT:
     required: true
     type: string
+  WORKING_DIRECTORY:
+    required: true
+    type: string
 
 runs:
     using: composite
@@ -23,8 +26,10 @@ runs:
       - name: Install dependencies
         shell: bash
         run: npm ci
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
       - name: Build Node.js ${{ inputs.NODE_VERSION }}
         shell: bash
         run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
