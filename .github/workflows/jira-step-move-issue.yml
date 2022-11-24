@@ -30,9 +30,11 @@ jobs:
       uses: atlassian/gajira-find-issue-key@master
       with:
         string: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}
+      continue-on-error: true
 
     - name: Transition issue
       uses: atlassian/gajira-transition@master
+      if: steps.find.outcome == 'success'
       with:
         issue: ${{ steps.find.outputs.issue }}
         transition: ${{ inputs.STATUS }}
