@@ -32,7 +32,7 @@ on:
       REGISTRY_PASSWORD:
         required: false
         type: string
-        default: ${{ github.token }}
+        default: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"

@@ -15,9 +15,6 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
-      REGISTRY_URL:
-        required: true
-        type: string
       DOCKERFILE_PATH:
         required: true
         type: string
@@ -30,6 +27,10 @@ on:
       BUILD_ARGS:
         required: true
         type: string
+      REGISTRY_URL:
+        required: false
+        type: string
+        default: ghcr.io
       REGISTRY_USER:
         required: false
         type: string
@@ -37,7 +38,7 @@ on:
       REGISTRY_PASSWORD:
         required: false
         type: string
-        default: ${{ github.token }}
+        default: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
