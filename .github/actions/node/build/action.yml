@@ -10,6 +10,10 @@ inputs:
   WORKING_DIRECTORY:
     required: true
     type: string
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
 
 runs:
     using: composite
@@ -22,14 +26,15 @@ runs:
         with:
           node-version: ${{ inputs.NODE_VERSION }}
           cache: 'npm'
+          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
       - name: Install dependencies
-        shell: bash
+        shell: ${{ inputs.SHELL }}
         run: npm ci
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
       - name: Build Node.js ${{ inputs.NODE_VERSION }}
-        shell: bash
+        shell: ${{ inputs.SHELL }}
         run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 

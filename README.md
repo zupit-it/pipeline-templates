@@ -6,27 +6,163 @@ The reason why we skip some workflows is due to the fact that these are already 
 in order to reduce boilerplate when writing the final workflows.
 If you would like to get more details of these tasks, just look at this [doc](docs/GROUPED_STEP_WORKFLOWS.md).
 
-1. [Naming Convention](#naming-convention)
+1. [Composite Actions](#composite-actions)
+   1. [Naming Convention](#actions---naming-convention)
+   2. [NodeJS](#nodejs-action)
+      1. [Build](#nodejs-action---build)
+   3. [Docker](#docker-action)
+      1. [Build and Push](#docker-action---build-and-push-docker-image)
 2. [Reusable Workflows](#reusable-workflows)
-   1. [NodeJS](#nodejs)
+   1. [Naming Convention](#naming-convention)
+   2. [NodeJS](#nodejs)
       1. [Common NodeJS](#nodejs-common)
       2. [Build Docker Image and Push to Registry](#nodejs-build-docker-image-and-push-to-registry)
-   2. [Django](#django)
+   3. [Django](#django)
       1. [Common Workflow](#django-common)
-   3. [SpringBoot](#springboot)
+   4. [SpringBoot](#springboot)
       1. [Common SpringBoot](#springboot-common)
       2. [Build Docker Image and Push to Registry](#springboot-build-docker-image-and-push-to-registry)
-   4. [Docker](#docker)
+   5. [Docker](#docker)
       1. [Build Docker Image and Push to Registry](#docker-build-docker-image-and-push-to-registry)
       2. [Deploy Docker Compose](#deploy-docker-compose)
       3. [Delete Docker Images](#delete-docker-images)
-   5. [Jira](#jira)
+   6. [Jira](#jira)
       1. [Jira Move Issue](#jira-move-issue)
       2. [Jira Create TODO Issue](#jira-create-todo-issue)
-   6. [Others](#others)
+   7. [Others](#others)
       1. [Sonar Analyze](#sonar-analyze)
 
-## Naming convention
+## Composite Actions
+
+Composite actions allow to group together a set of steps and use them inside other jobs' steps, reducing the duplicated code in the workflows. 
+Each composite action must be located in its own folder and the path to this folder will be the way to reference the action externally.
+
+For example, the action of building a NodeJs project is located in the folder **.github/actions/node/build**. 
+If you need to use this action, you need to append to the repository name the path **.github/actions/node/build**: 
+
+`zupit-it/pipeline-templates/.github/actions/node/build`
+
+### Actions - Naming convention
+
+Each composite should be located inside the path
+
+`zupit-it/pipeline-templates/.github/actions/<technology>/<action-to-execute>`
+
+Where:
+- **technology** is the technology used to execute the action. For example, the build of a NodeJS project, **NodeJS** is the technology.
+- **action-to-execute** is the action that you want to execute. In the previous example, **build** is the action.
+
+In this way, all actions for the same technology are grouped together.
+
+### NodeJS Action
+
+#### NodeJS Action - Build
+
+###### Requirements
+This workflow requires this command in order to succeed:
+1. **build:{environment}**: Build the project based on the target **environment** (e.g. *testing*, *staging* and *production*)
+
+*This workflow call automatically the action **checkout** to download the codebase.*
+
+This workflow uses **npm** as package manager.
+
+###### Action
+**node/build** is the action that builds a NodeJS project.
+
+It requires these inputs:
+- **NODE_VERSION**: The NodeJS version required to build the project.
+- **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+
+In addition, it is possible to specify this optional input:
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted. 
+```yaml
+jobs:
+  build-and-push-image:
+    uses: 
+      zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@main
+    with:
+      LABELS: "['pinga', 'pipeline', 'container']"
+      NODE_VERSION: 16.17.0
+      RELEASE_ENVIRONMENT: testing
+      WORKING_DIRECTORY: frontend
+      REGISTRY_URL: ghcr.io
+      DOCKERFILE_PATH: frontend/docker/Dockerfile
+      DOCKER_IMAGE_NAME: ionic
+      DOCKER_IMAGE_TAG: latest
+      BUILD_ARGS: |
+        DIST_PATH=dist/apps/enci
+    secrets: inherit
+```
+
+---
+
+### Docker Action
+
+#### Docker Action - Build and Push Docker Image
+
+###### Requirements
+This workflow requires a **Dockerfile** inside the *working directory* to create the docker image to publish on a docker registry.
+
+*Before calling this workflow, remember to call the action **checkout** to download the codebase.*
+
+This workflow uses **npm** as package manager.
+
+###### Action
+**docker/build-and-push** is the composite action that builds the docker image and then push it to the registry.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
+- **REGISTRY_USER**: The registry url where to push the Docker image.
+  By default, it is the GitHub variable **github.actor**, the user who started the workflow. 
+- **REGISTRY_PASSWORD**: The user's password to access the registry.
+- **DOCKERFILE_PATH**: The path to the Dockerfile to build.
+- **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
+- **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
+- **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
+
+It then outputs this variable:
+- **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
+
+This is an example to show how data should be formatted. 
+```yaml
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build & Push Docker
+        id: docker
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@MIGI-42/test-composite-actions
+        with:
+          REGISTRY_URL: ghcr.io
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
+          WORKING_DIRECTORY: frontend
+          DOCKERFILE_PATH: frontend/docker/Dockerfile
+          DOCKER_IMAGE_NAME: angular
+          DOCKER_IMAGE_TAG: latest
+          BUILD_ARGS: |
+            DIST_PATH=dist/testing
+        env: "${{secrets}}"
+
+```
+
+---
+
+## Reusable Workflows
+In all the examples, we set *secrets: inherit* to pass all secrets to the reusable workflows, but it is also possible to pass only a subset of secrets.
+
+In addition, we added for all *step* workflows the input *LABELS* as GitHub does not allow to set the *runs-on* from the caller side, but only inside
+the reusable workflows. As we want to define the runners as late as possible, we decided to add this input variable.
+
+In the *workflow* type, you will note that we defined 2 inputs for the labels: NATIVE_LABELS and CONTAINER_LABELS. 
+We had to differentiate as GitHub runners might start to raise permissions errors due to Docker being run as root. 
+To fix this problem, workflows using docker images must use different runners from workflows running commands directly on the host.
+
+### Naming convention
 
 We've defined 2 different types of workflows:
 - **step**: a *reusable workflow* that *runs a set of specific tasks* that can be grouped together
@@ -39,16 +175,6 @@ Our reusable workflows are named to follow this standard:
 `<technology-or-application>-<workflow-type>-<action-to-execute>.yml`
 
 Thus, it is easy to understand that the workflows uses a specific technology or application to execute the desired action.
-
-## Reusable Workflows
-In all the examples, we set *secrets: inherit* to pass all secrets to the reusable workflows, but it is also possible to pass only a subset of secrets.
-
-In addition, we added for all *step* workflows the input *LABELS* as GitHub does not allow to set the *runs-on* from the caller side, but only inside
-the reusable workflows. As we want to define the runners as late as possible, we decided to add this input variable.
-
-In the *workflow* type, you will note that we defined 2 inputs for the labels: NATIVE_LABELS and CONTAINER_LABELS. 
-We had to differentiate as GitHub runners might start to raise permissions errors due to Docker being run as root. 
-To fix this problem, workflows using docker images must use different runners from workflows running commands directly on the host.
 
 ### NodeJS - Backend & Frontend
 
@@ -113,7 +239,12 @@ This workflow uses **npm** as package manager.
 
 ###### Workflow
 **node-step-docker-build-and-push-image.yml** is the workflow that builds the docker image and then push it to the registry.
-This is a specific version of the *docker-step-build-and-push-image.yml* as this adds the NodeJS build of the project.
+This is a similar version of the *docker-step-build-and-push-image.yml* as this adds the NodeJS build of the project.
+
+This workflow uses these composite actions:
+- **actions/node/build**: builds NodeJS project
+- **actions/docker/build-and-push**: creates the Docker image and pushes it to the desired registry.
+
 
 *This workflow uses a NodeJS Docker image, hence remember to use labels to match runners specific for Docker.*
 
@@ -122,11 +253,15 @@ It requires these inputs:
 - **NODE_VERSION**: The NodeJS version required to build the project.
 - **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 - **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
-- **REGISTRY_URL**: The registry url where to push the Docker image.
 - **DOCKERFILE_PATH**: The path to the Dockerfile to build.
 - **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
 - **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
 - **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
+
+In addition, it is possible to specify these optional inputs:
+- **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
+- **REGISTRY_USER**: The registry url where to push the Docker image.
+  By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
 
 It then outputs this variable:
 - **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
@@ -307,15 +442,22 @@ The github runner which will execute this workflow should be capable of running 
 ###### Workflow
 **docker-step-build-and-push-image.yml** is the workflow that builds the Docker image and then push it to the registry.
 
+This workflow uses this composite action:
+- **actions/docker/build-and-push**: creates the Docker image and pushes it to the desired registry.
+
 It requires these inputs:
 - **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
 - **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 - **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. *testing*, *staging*, *production*).
-- **REGISTRY_URL**: The registry url where to push the Docker image.
 - **DOCKERFILE_PATH**: The path to the Dockerfile to build.
 - **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
 - **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
 - **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
+
+In addition, it is possible to specify these optional inputs:
+- **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
+- **REGISTRY_USER**: The registry url where to push the Docker image.
+  By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
 
 It then outputs these variables:
 - **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
