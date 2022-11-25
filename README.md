@@ -67,7 +67,7 @@ This workflow requires this command in order to succeed:
 This workflow uses **npm** as package manager.
 
 ###### Action
-**node/build** is the action that builds a NodeJS project.
+**.github/actions/node/build** is the action that builds a NodeJS project.
 
 It requires these inputs:
 - **NODE_VERSION**: The NodeJS version required to build the project.
@@ -111,7 +111,7 @@ This workflow requires a **Dockerfile** inside the *working directory* to create
 This workflow uses **npm** as package manager.
 
 ###### Action
-**docker/build-and-push** is the composite action that builds the docker image and then push it to the registry.
+**.github/actions/docker/build-and-push** is the composite action that builds the docker image and then push it to the registry.
 
 It requires these inputs:
 - **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
