@@ -4,12 +4,15 @@ Here we detail only those workflows that are already grouped inside other workfl
 If you want to read the main document the click [here](../README.md).
 
 1. [Reusable Workflows](#reusable-workflows)
-   1. [Django](#django)
-      1. [Lint & Check](#django-lint--check)
-      2. [Run Tests](#django-run-tests)
-   2. [NodeJS](#nodejs)
+   1. [NodeJS](#nodejs)
       1. [Lint & Build](#nodejs-lint--build)
       2. [Run Cypress Tests](#nodejs-run-cypress-tests)
+   2. [Django](#django)
+      1. [Lint & Check](#django-lint--check)
+      2. [Run Tests](#django-run-tests)
+   3. [SpringBoot](#springboot)
+      1. [Lint & Check](#springboot-lint--check)
+      2. [Run Tests](#springboot-run-tests)
 
 ## Reusable Workflows
 
@@ -88,7 +91,6 @@ jobs:
 
 ---
 
-
 ### Django
 
 #### Django Lint & Check
@@ -156,5 +158,81 @@ jobs:
       WORKING_DIRECTORY: backend
       PYTHON_IMAGE: python:3.8.2-slim-buster
       COVERAGE_ARTIFACT_NAME: coverage-django.xml
+    secrets: inherit
+```
+
+---
+
+### SpringBoot
+
+#### SpringBoot Lint & Check
+###### Requirements
+This workflow requires **Spotless** & **Checkstyle** plugins to check that formatting and coding style are correct.
+
+This workflow uses **maven** as package manager.
+
+###### Workflow
+**springboot-step-lint-check.yml** is the reusable workflow to check if the code is linted and formatted correctly.
+
+*This workflow uses a Java docker image, hence remember to use labels to match runners specific for Docker.*
+
+It requires these inputs:
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
+- **JAVA_IMAGE**: The Java Docker image where the runner execute all the commands.
+
+In addition, it is possible to specify this optional input:
+- **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
+- **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
+
+This is an example to show how data should be formatted. 
+```yaml
+jobs:
+  springboot-lint-check:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/springboot-step-lint-check.yml
+    with:
+      LABELS: "['pinga', 'pipeline', 'container']"
+      JAVA_IMAGE: openjdk:12
+      WORKING_DIRECTORY: backend
+    secrets: inherit
+```
+
+---
+
+#### SpringBoot Run Tests
+###### Requirements
+This workflow requires **Jacoco** plugin to create report from tests. 
+In addition, the maven command *Verify* should generate coverage reports.
+
+This workflow uses **maven** as package manager.
+
+###### Workflow
+**springboot-step-tests.yml** is the reusable workflow to run and check that all tests pass. 
+If all tests pass, it then generates the coverage reports and save them as artifact so that they are available for tools like Sonarqube.
+
+*This workflow uses a Java Docker image, hence remember to use labels to match runners specific for docker.*
+
+It requires these inputs:
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
+- **JAVA_IMAGE**: The Java Docker image where the runner execute all the commands.
+
+In addition, it is possible to specify this optional input:
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *jacoco reports* file. By default, it is **target**.
+- **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
+- **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
+- **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
+
+This is an example to show how data should be formatted. 
+```yaml
+jobs:
+  springboot-tests:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/springboot-step-tests.yml
+    with:
+      LABELS: "['pinga', 'pipeline', 'container']"
+      JAVA_IMAGE: openjdk:12
+      WORKING_DIRECTORY: backend
     secrets: inherit
 ```
