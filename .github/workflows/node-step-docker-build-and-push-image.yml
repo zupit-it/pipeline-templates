@@ -15,9 +15,6 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
-      REGISTRY_URL:
-        required: true
-        type: string
       DOCKERFILE_PATH:
         required: true
         type: string
@@ -30,6 +27,14 @@ on:
       BUILD_ARGS:
         required: true
         type: string
+      REGISTRY_URL:
+        required: false
+        type: string
+        default: ghcr.io
+      REGISTRY_USER:
+        required: false
+        type: string
+        default: ${{ github.actor }}
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
@@ -41,50 +46,28 @@ jobs:
   docker-build-and-push:
     runs-on: ${{ fromJson(inputs.LABELS) }}
 
-    defaults:
-      run:
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
-
     outputs:
-      DOCKER_IMAGE_NAME: ${{ steps.meta.outputs.tags }}
+      DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js ${{ inputs.NODE_VERSION }}
-        uses: actions/setup-node@v3
+      - name: NodeJS Build
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@MIGI-42/test-composite-actions
         with:
-          node-version: ${{ inputs.NODE_VERSION }}
-          cache: 'npm'
+          NODE_VERSION: ${{ inputs.NODE_VERSION }}
+          RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+        env: "${{secrets}}"
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Node.js ${{ inputs.NODE_VERSION }}
-        run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }}
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
+      - name: Docker Build & Push
+        id: docker
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@MIGI-42/test-composite-actions
         with:
-          registry: ${{ inputs.REGISTRY_URL }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ inputs.REGISTRY_URL }}/${{ github.repository }}/${{ inputs.DOCKER_IMAGE_NAME }}
-          tags: ${{ inputs.DOCKER_IMAGE_TAG }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: ./${{ inputs.WORKING_DIRECTORY }}
-          file: ${{ inputs.DOCKERFILE_PATH }}
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: ${{ inputs.BUILD_ARGS }}
-
+          REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
+          REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          DOCKERFILE_PATH: ${{ inputs.DOCKERFILE_PATH }}
+          DOCKER_IMAGE_NAME: ${{ inputs.DOCKER_IMAGE_NAME }}
+          DOCKER_IMAGE_TAG: ${{ inputs.DOCKER_IMAGE_TAG }}
+          BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
+        env: "${{secrets}}"

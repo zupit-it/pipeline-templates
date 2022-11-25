@@ -1,0 +1,40 @@
+name: NodeJS build
+
+inputs:
+  NODE_VERSION:
+    required: true
+    type: string
+  RELEASE_ENVIRONMENT:
+    required: true
+    type: string
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+    using: composite
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ${{ inputs.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
+
+      - name: Install dependencies
+        shell: ${{ inputs.SHELL }}
+        run: npm ci
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+      - name: Build Node.js ${{ inputs.NODE_VERSION }}
+        shell: ${{ inputs.SHELL }}
+        run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
