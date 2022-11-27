@@ -1,0 +1,34 @@
+name: .NET test
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  COVERAGE_ARTIFACT_NAME:
+    required: true
+    type: string
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+  using: composite
+  steps:
+    - name: Install .NET coverage tool
+      shell: ${{ inputs.SHELL }}
+      run: dotnet tool update --global dotnet-coverage
+
+    - name: Run tests
+      shell: ${{ inputs.SHELL }}
+      run: |
+        export PATH="$PATH:$HOME/.dotnet/tools"
+        dotnet-coverage collect dotnet test --no-build -f xml -o coverage.xml
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+        path: ${{ inputs.WORKING_DIRECTORY }}/coverage.xml
+        retention-days: 1

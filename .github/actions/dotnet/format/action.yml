@@ -1,0 +1,23 @@
+name: .NET format
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+  using: composite
+  steps:
+    - name: Install dotnet format
+      shell: ${{ inputs.SHELL }}
+      run: dotnet tool update --global dotnet-format
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    - name: Run dotnet format
+      shell: ${{ inputs.SHELL }}
+      run: dotnet format --verify-no-changes
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
