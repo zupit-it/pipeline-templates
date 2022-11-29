@@ -58,7 +58,6 @@ jobs:
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
-          ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
         env: "${{secrets}}"
 
