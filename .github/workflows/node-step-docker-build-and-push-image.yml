@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: NodeJS Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@main
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@MIGI-45/add-environment-variables-for-node-build
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
