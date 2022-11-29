@@ -38,6 +38,7 @@ on:
       ENVIRONMENT:
         required: false
         type: string
+        default: ""
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
@@ -51,6 +52,9 @@ jobs:
 
     outputs:
       DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
+
+    environment:
+      name: ${{ inputs.ENVIRONMENT }}
 
     steps:
       - name: NodeJS Build

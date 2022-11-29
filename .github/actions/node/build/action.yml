@@ -14,9 +14,6 @@ inputs:
     required: false
     type: string
     default: 'bash'
-  ENVIRONMENT:
-    required: false
-    type: string
 
 runs:
     using: composite
@@ -40,6 +37,3 @@ runs:
         shell: ${{ inputs.SHELL }}
         run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
-        environment:
-          name: ${{ inputs.ENVIRONMENT }}
-
