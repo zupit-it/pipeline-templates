@@ -54,7 +54,7 @@ jobs:
 
     steps:
       - name: NodeJS Build
-        uses: ./.github/actions/node/build/action.yml
+        uses: ./.github/actions/node/build
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
@@ -64,7 +64,7 @@ jobs:
 
       - name: Docker Build & Push
         id: docker
-        uses: ./.github/actions/docker/build-and-push/action.yml
+        uses: ./.github/actions/docker/build-and-push
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}

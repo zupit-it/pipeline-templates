@@ -50,7 +50,7 @@ jobs:
 
       - name: Docker Build & Push
         id: docker
-        uses: ./.github/actions/docker/build-and-push/action.yml
+        uses: ./.github/actions/docker/build-and-push
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
