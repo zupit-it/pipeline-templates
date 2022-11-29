@@ -37,3 +37,4 @@ runs:
         shell: ${{ inputs.SHELL }}
         run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
