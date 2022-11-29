@@ -35,6 +35,9 @@ on:
         required: false
         type: string
         default: ${{ github.actor }}
+      ENVIRONMENT:
+        required: false
+        type: string
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
@@ -51,16 +54,17 @@ jobs:
 
     steps:
       - name: NodeJS Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@main
+        uses: ./.github/actions/node/build/action.yml
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
+          ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
         env: "${{secrets}}"
 
       - name: Docker Build & Push
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@main
+        uses: ./.github/actions/docker/build-and-push/action.yml
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
