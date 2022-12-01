@@ -21,6 +21,10 @@ on:
         required: false
         type: string
         default: "lcov.info"
+      TIMEOUT:
+        required: false
+        type: number
+        default: 360
       # Workflow inputs
       NATIVE_CI_LABELS:
         required: true
@@ -48,5 +52,6 @@ jobs:
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+      TIMEOUT: ${{ inputs.TIMEOUT }}
     secrets: inherit
 

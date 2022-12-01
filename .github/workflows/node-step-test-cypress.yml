@@ -19,11 +19,16 @@ on:
         required: false
         type: string
         default: "chrome"
+      TIMEOUT:
+        required: false
+        type: number
+        default: 360
 
 env: "${{secrets}}"
 
 jobs:
   cypress-run:
+    timeout-minutes: ${{ inputs.TIMEOUT }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container:
       image: ${{ inputs.CYPRESS_IMAGE }}
