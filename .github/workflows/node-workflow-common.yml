@@ -24,7 +24,7 @@ on:
       TIMEOUT:
         required: false
         type: number
-        default: 360
+        default: 30
       # Workflow inputs
       NATIVE_CI_LABELS:
         required: true

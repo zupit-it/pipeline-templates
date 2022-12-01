@@ -22,7 +22,7 @@ on:
       TIMEOUT:
         required: false
         type: number
-        default: 360
+        default: 30
 
 env: "${{secrets}}"
 
