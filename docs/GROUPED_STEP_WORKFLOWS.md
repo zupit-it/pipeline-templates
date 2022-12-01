@@ -74,6 +74,8 @@ It requires these inputs:
 
 In addition, it is possible to specify this optional input:
 - BROWSER: Which browser the cypress should use to run the tests. By default, it is **Chrome**.
+- TIMEOUT: If the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **360**.
+
 
 This is an example to show how data should be formatted. 
 ```yaml
