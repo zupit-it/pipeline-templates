@@ -41,6 +41,7 @@ env: "${{secrets}}"
 
 jobs:
   springboot-run-tests:
+    if: ${{ inputs.RUN }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.JAVA_IMAGE }}
 
@@ -59,9 +60,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        if: ${{ inputs.RUN }}
       - name: Run tests
-        if: ${{ inputs.RUN }}
         run: |
           ./mvnw -ntp verify -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
           ./mvnw -ntp jacoco:report -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
@@ -69,7 +68,6 @@ jobs:
           SPRING_APPLICATION_JSON: ${{ inputs.USE_CI_POSTGRES && inputs.SPRING_APPLICATION_JSON || '{}' }}
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
-        if: ${{ inputs.RUN }}
         with:
           name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
           path: |

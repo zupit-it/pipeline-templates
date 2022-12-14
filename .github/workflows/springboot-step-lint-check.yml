@@ -29,6 +29,7 @@ env: "${{secrets}}"
 
 jobs:
   springboot-lint-check:
+    if: ${{ inputs.RUN }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.JAVA_IMAGE }}
 
@@ -39,11 +40,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        if: ${{ inputs.RUN }}
       - name: Check code is linted correctly
-        if: ${{ inputs.RUN }}
         run: ./mvnw -ntp spotless:check -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
       - name: Check code is styled correctly
-        if: ${{ inputs.RUN }}
         run: ./mvnw -ntp checkstyle:check -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
       - run: echo "Done!"

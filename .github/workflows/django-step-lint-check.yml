@@ -21,6 +21,7 @@ env: "${{secrets}}"
 
 jobs:
   django-linter:
+    if: ${{ inputs.RUN }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.PYTHON_IMAGE }}
 
@@ -41,29 +42,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        if: ${{ inputs.RUN }}
       - name: Install dependencies
-        if: ${{ inputs.RUN }}
         run: pip install -r requirements.txt
       - name: Copy env file
-        if: ${{ inputs.RUN }}
         run: cp .env.github .env
       - name: Lint with flake8
-        if: ${{ inputs.RUN }}
         run: python -m flake8 .
       - name: Lint with black
-        if: ${{ inputs.RUN }}
         run: python -m black --check .
       - name: Django check
-        if: ${{ inputs.RUN }}
         run: python manage.py check
       - name: Django validate templates
-        if: ${{ inputs.RUN }}
         run: python manage.py validate_templates
       - name: Django check migrations
-        if: ${{ inputs.RUN }}
         run: python manage.py makemigrations ${DJANGO_MIGRATIONS_CHECK_APPS} --check --dry-run
       - name: Django validate migration
-        if: ${{ inputs.RUN }}
         run: python manage.py migrate --fake --no-input
       - run: echo 'Done!'
