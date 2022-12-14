@@ -21,7 +21,10 @@ on:
       CONTAINER_CI_LABELS:
         required: true
         type: string
-
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   django-lint-check:
@@ -31,6 +34,7 @@ jobs:
       LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
+      RUN: ${{inputs.RUN}}
     secrets: inherit
 
   django-tests:
@@ -41,4 +45,5 @@ jobs:
       WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+      RUN: ${{inputs.RUN}}
     secrets: inherit

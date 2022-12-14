@@ -31,6 +31,10 @@ on:
         required: false
         type: string
         default:
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 
 env: "${{secrets}}"
@@ -55,7 +59,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        if: ${{ inputs.RUN }}
       - name: Run tests
+        if: ${{ inputs.RUN }}
         run: |
           ./mvnw -ntp verify -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
           ./mvnw -ntp jacoco:report -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
@@ -63,9 +69,11 @@ jobs:
           SPRING_APPLICATION_JSON: ${{ inputs.USE_CI_POSTGRES && inputs.SPRING_APPLICATION_JSON || '{}' }}
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
+        if: ${{ inputs.RUN }}
         with:
           name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
           path: |
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.xml
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.class
           retention-days: 1
+      - run: echo "Done!"

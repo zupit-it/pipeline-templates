@@ -23,6 +23,10 @@ on:
         required: false
         type: number
         default: 30
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 env: "${{secrets}}"
 
@@ -38,9 +42,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        if: ${{ inputs.RUN }}
       - run: npm ci
+        if: ${{ inputs.RUN }}
       - name: Cypress run
         uses: cypress-io/github-action@v4
+        if: ${{ inputs.RUN }}
         with:
           install: false
           command: npm run ci:e2e
@@ -48,7 +55,9 @@ jobs:
           browser: ${{ inputs.BROWSER }}
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
+        if: ${{ inputs.RUN }}
         with:
           name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
           path: ${{ inputs.WORKING_DIRECTORY }}/coverage/lcov.info
           retention-days: 1
+      - run: echo "Done!"
