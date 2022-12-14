@@ -210,6 +210,7 @@ In addition, it is possible to specify these optional inputs:
 - **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *lcov.info* file. By default, it is **lcov.info**.
 - **ENABLE_TESTS**: Whether it should skip or not the cypress tests workflow. By default, it is **true**.
 - **TIMEOUT**: Used for tests, if the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
+- **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -316,6 +317,7 @@ It requires these inputs:
 
 In addition, it is possible to specify this optional input:
 - **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file. By default, it is **coverage-django.xml**.
+- **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -364,6 +366,7 @@ In addition, it is possible to specify this optional input:
 - **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
 - **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
 - **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
+- **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
 ```yaml
