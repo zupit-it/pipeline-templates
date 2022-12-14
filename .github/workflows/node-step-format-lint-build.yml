@@ -21,6 +21,7 @@ env: "${{secrets}}"
 
 jobs:
   lint-check-build:
+    if: ${{ inputs.RUN }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     defaults:
       run:
@@ -28,20 +29,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      if: ${{ inputs.RUN }}
     - name: Use Node.js ${{ inputs.NODE_VERSION }}
       uses: actions/setup-node@v3
-      if: ${{ inputs.RUN }}
       with:
         node-version: ${{ inputs.NODE_VERSION }}
         cache: 'npm'
         cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
     - run: npm ci
-      if: ${{ inputs.RUN }}
     - run: npm run ci:format:check
-      if: ${{ inputs.RUN }}
     - run: npm run ci:lint
-      if: ${{ inputs.RUN }}
     - run: npm run ci:build
     - run: echo "Done!"
