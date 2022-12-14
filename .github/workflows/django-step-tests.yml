@@ -63,5 +63,3 @@ jobs:
           name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
           path: ${{ inputs.WORKING_DIRECTORY }}/coverage-reports/coverage-django.xml
           retention-days: 1
-
-      - run: echo "Done!"

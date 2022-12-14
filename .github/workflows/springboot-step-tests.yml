@@ -74,4 +74,3 @@ jobs:
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.xml
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.class
           retention-days: 1
-      - run: echo "Done!"

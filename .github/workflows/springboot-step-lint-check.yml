@@ -44,4 +44,3 @@ jobs:
         run: ./mvnw -ntp spotless:check -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
       - name: Check code is styled correctly
         run: ./mvnw -ntp checkstyle:check -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
-      - run: echo "Done!"
