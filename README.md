@@ -209,6 +209,7 @@ It requires these inputs:
 In addition, it is possible to specify these optional inputs:
 - **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *lcov.info* file. By default, it is **lcov.info**.
 - **ENABLE_TESTS**: Whether it should skip or not the cypress tests workflow. By default, it is **true**.
+- **TIMEOUT**: Used for tests, if the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
 
 This is an example to show how data should be formatted. 
 ```yaml
