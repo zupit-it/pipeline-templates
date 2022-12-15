@@ -49,6 +49,9 @@ jobs:
     outputs:
       DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
 
+    environment:
+      name: ${{ inputs.RELEASE_ENVIRONMENT }}
+
     steps:
       - name: NodeJS Build
         uses: zupit-it/pipeline-templates/.github/actions/node/build@main
