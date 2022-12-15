@@ -38,11 +38,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup NodeJS
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.NODE_VERSION }}
-      - run: npm ci
+      - run: npm ci -f
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
