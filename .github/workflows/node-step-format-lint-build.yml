@@ -12,11 +12,16 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 env: "${{secrets}}"
 
 jobs:
   lint-check-build:
+    if: ${{ inputs.RUN }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     defaults:
       run:

@@ -32,6 +32,10 @@ on:
       CONTAINER_CI_LABELS:
         required: true
         type: string
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   lint-check-build:
@@ -41,6 +45,7 @@ jobs:
       LABELS: ${{ inputs.NATIVE_CI_LABELS }}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       NODE_VERSION: ${{inputs.NODE_VERSION}}
+      RUN: ${{inputs.RUN}}
     secrets: inherit
 
   cypress-run:
@@ -53,5 +58,6 @@ jobs:
       CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       TIMEOUT: ${{ inputs.TIMEOUT }}
+      RUN: ${{ inputs.RUN }}
     secrets: inherit
 

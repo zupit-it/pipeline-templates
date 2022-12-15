@@ -31,6 +31,10 @@ on:
         required: false
         type: boolean
         default: true
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 env: "${{secrets}}"
 
@@ -44,6 +48,7 @@ jobs:
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
+      RUN: ${{inputs.RUN}}
     secrets: inherit
 
   springboot-tests:
@@ -57,4 +62,5 @@ jobs:
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
+      RUN: ${{ inputs.RUN }}
     secrets: inherit

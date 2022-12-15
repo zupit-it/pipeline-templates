@@ -36,6 +36,9 @@ It requires these inputs:
 - **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the NodeJS application.
 - **NODE_VERSION**: The NodeJS version required to execute all the commands
 
+In addition, it is possible to specify this optional input:
+- RUN: Whether to run all the workflow or not. This is useful when you want to skip the workflow since the code didn't change. By default, it is **true**.
+
 This is an example to show how data should be formatted. 
 ```yaml
 jobs:
@@ -75,6 +78,7 @@ It requires these inputs:
 In addition, it is possible to specify this optional input:
 - BROWSER: Which browser the cypress should use to run the tests. By default, it is **Chrome**.
 - TIMEOUT: If the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
+- RUN: Whether to run all the workflow or not. This is useful when you want to skip the workflow since the code didn't change. By default, it is **true**.
 
 
 This is an example to show how data should be formatted. 
@@ -114,6 +118,9 @@ It requires these inputs:
 - **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
 - **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands
 
+In addition, it is possible to specify this optional input:
+- RUN: Whether to run all the workflow or not. This is useful when you want to skip the workflow since the code didn't change. By default, it is **true**.
+
 This is an example to show how data should be formatted. 
 ```yaml
 jobs:
@@ -148,6 +155,9 @@ It requires these inputs:
 - **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
 - **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands
 - **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file.
+
+In addition, it is possible to specify this optional input:
+- RUN: Whether to run all the workflow or not. This is useful when you want to skip the workflow since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -184,8 +194,9 @@ It requires these inputs:
 - **JAVA_IMAGE**: The Java Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify this optional input:
-- **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
-- **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
+- MAVEN_USER_HOME: The path to Maven directory. By default, it is **./m2**.
+- EXTRA_MAVEN_ARGS: Additional arguments for Maven. By default, it is **""**.
+- RUN: Whether to run all the workflow or not. This is useful when you want to skip the workflow since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -221,10 +232,12 @@ It requires these inputs:
 - **JAVA_IMAGE**: The Java Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify this optional input:
-- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *jacoco reports* file. By default, it is **target**.
-- **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
-- **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
-- **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
+- COVERAGE_ARTIFACT_NAME: The artifact's name for the *jacoco reports* file. By default, it is **target**.
+- MAVEN_USER_HOME: The path to Maven directory. By default, it is **./m2**.
+- EXTRA_MAVEN_ARGS: Additional arguments for Maven. By default, it is **""**.
+- USE_CI_POSTGRES: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
+- RUN: Whether to run all the workflow or not. This is useful when you want to skip the workflow since the code didn't change. By default, it is **true**.
+
 
 This is an example to show how data should be formatted. 
 ```yaml

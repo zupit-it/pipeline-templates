@@ -12,11 +12,16 @@ on:
       PYTHON_IMAGE:
         required: true
         type: string
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 env: "${{secrets}}"
 
 jobs:
   django-linter:
+    if: ${{ inputs.RUN }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.PYTHON_IMAGE }}
 
