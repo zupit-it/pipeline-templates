@@ -123,6 +123,7 @@ It requires these inputs:
 - **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
 - **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
 - **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
+- **ENV_VARIABLES**: A stringified json to pass multiple values at once, since Github does not propagate env variables.
 
 It then outputs this variable:
 - **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
