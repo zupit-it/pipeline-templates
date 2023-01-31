@@ -38,6 +38,7 @@ If you would like to get more details of these tasks, just look at this [doc](do
       2. [Jira Create TODO Issue](#jira-create-todo-issue)
    7. [Others](#others)
       1. [Sonar Analyze](#sonar-analyze)
+      2. [Sonar Analyze - .NET](#sonar-analyze---net)
 
 ## Composite Actions
 
@@ -406,8 +407,10 @@ This action:
 It requires these inputs:
 - **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
 - **BINARIES_DIRECTORY**: The folder containing binaries to publish to the App Service/Function.
-- **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
 - **WEBAPP_NAME**: The name of the AppService/Function.
+
+It also requires these secrets:
+- **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
 
 In addition, it is possible to specify this optional input:
 - **WEBAPP_SLOT**: The App Service/Function slot where the binaries should be published to. By default, it is **production**.
@@ -1138,5 +1141,41 @@ jobs:
       WORKING_DIRECTORY: frontend
       ARTIFACT_FILENAME: lcov.info
       LABELS: "['pinga', 'pipeline', 'container']"
+    secrets: inherit
+```
+
+
+#### Sonar Analyze - .NET
+###### Requirements
+This workflow DOES NOT use the **sonar-project.properties** as the [Sonar Analyze](#sonar-analyze) workflow does. See the [documentation](https://community.sonarsource.com/t/how-to-specify-sonar-project-properties-file-in-dotnet-scanner-command/31805/3).
+
+Additional properties are provided by this workflow and the required ones are exposed as required inputs.
+
+###### Workflow
+**sonar-step-dotnet-analyze.yml** is the workflow that analyze a .NET solution, including the coverage, and sends the results to Sonarqube.
+
+It requires these inputs:
+- **CONTAINER_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels. The runner MUST be _docker_ based.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **SONAR_PROJECT_KEY**: The SonarQube project key.
+
+It also requires these secrets:
+- **SONAR_TOKEN**: The Sonarqube token.
+
+In addition, it is possible to specify these optional inputs:
+- **SONAR_IMAGE**: The SonarQube docker image where the runner execute all commands. By default, it is `sonarsource/sonar-scanner-cli`.
+- **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is `https://sonarqube.zupit.software`.
+- **DOTNET_VERSION**: The .NET version to build the solution. By default, it is `7`.
+
+This is an example to show how data should be formatted.
+```yaml
+jobs:
+  sonar-analyze:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/sonar-step-dotnet-analyze.yml@main
+    with:
+      CONTAINER_CI_LABELS: "['team', 'pipeline', 'container']"
+      WORKING_DIRECTORY: 'back-end'
+      SONAR_PROJECT_KEY: 'my-project-key'
     secrets: inherit
 ```
