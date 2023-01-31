@@ -20,6 +20,7 @@ on:
         required: false
         type: string
         default: "https://sonarqube.zupit.software"
+
       # Allowed values: https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#version
       DOTNET_VERSION:
         required: false
@@ -42,6 +43,7 @@ jobs:
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
+          ALPINE_OS: true
 
       - name: Install SonarSource for .NET
         run: |

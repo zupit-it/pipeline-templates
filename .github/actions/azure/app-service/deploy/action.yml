@@ -17,10 +17,6 @@ inputs:
     required: false
     type: string
     default: "production"
-  SHELL:
-    required: false
-    type: string
-    default: 'bash'
 
 runs:
   using: composite
@@ -31,7 +27,7 @@ runs:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
     - name: Deploy to Azure App Service
-      uses: Azure/webapps-deploy@v2
+      uses: Azure/webapps-deploy@v2.2.5
       with:
         app-name: ${{ inputs.WEBAPP_NAME }}
         slot-name: ${{ inputs.WEBAPP_SLOT }}

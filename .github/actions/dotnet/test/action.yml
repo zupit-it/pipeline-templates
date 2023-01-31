@@ -4,6 +4,10 @@ inputs:
   WORKING_DIRECTORY:
     required: true
     type: string
+  GENERATE_CODE_COVERAGE:
+    required: false
+    type: boolean
+    default: true
   SHELL:
     required: false
     type: string
@@ -12,7 +16,14 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Run tests
+    - name: Run tests with coverage report
+      if: ${{ inputs.GENERATE_CODE_COVERAGE == 'true' }}
       shell: ${{ inputs.SHELL }}
       run: dotnet test --no-build --logger trx -p:CollectCoverage=true -p:CoverletOutputFormat=opencover
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    - name: Run tests
+      if: ${{ inputs.GENERATE_CODE_COVERAGE == 'false' }}
+      shell: ${{ inputs.SHELL }}
+      run: dotnet test --no-build
       working-directory: ${{ inputs.WORKING_DIRECTORY }}

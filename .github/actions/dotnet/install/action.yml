@@ -8,9 +8,8 @@ inputs:
     required: true
     type: string
   ALPINE_OS:
-    required: false
+    required: true
     type: string
-    default: true
   SHELL:
     required: false
     type: string

@@ -19,9 +19,9 @@ inputs:
     default: 'bash'
 
 runs:
-    using: composite
-    steps:
-      - name: Publish
-        shell: ${{ inputs.SHELL }}
-        run: dotnet publish ${{ inputs.PROJECT }} --no-build -c ${{ inputs.BUILD_CONFIG }} -o '${{ inputs.OUTPUT_DIRECTORY }}'
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+  using: composite
+  steps:
+    - name: Publish
+      shell: ${{ inputs.SHELL }}
+      run: dotnet publish ${{ inputs.PROJECT }} --no-build -c ${{ inputs.BUILD_CONFIG }} -o '${{ inputs.OUTPUT_DIRECTORY }}'
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
