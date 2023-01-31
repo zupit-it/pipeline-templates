@@ -20,8 +20,6 @@ on:
         required: false
         type: string
         default: "https://sonarqube.zupit.software"
-
-      # Allowed values: https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#version
       DOTNET_VERSION:
         required: false
         type: string

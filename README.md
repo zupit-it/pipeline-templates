@@ -12,6 +12,13 @@ If you would like to get more details of these tasks, just look at this [doc](do
       1. [Build](#nodejs-action---build)
    3. [Docker](#docker-action)
       1. [Build and Push](#docker-action---build-and-push-docker-image)
+   4. [.NET](#net-action)
+      1. [Install](#net-action---install)
+      2. [Build](#net-action---build)
+      3. [Format](#net-action---format)
+      4. [Test](#net-action---test)
+      5. [Publish](#net-action---publish)
+      6. [Release](#net-action---release)
 2. [Reusable Workflows](#reusable-workflows)
    1. [Naming Convention](#naming-convention)
    2. [NodeJS](#nodejs)
@@ -53,6 +60,19 @@ Where:
 - **action-to-execute** is the action that you want to execute. In the previous example, **build** is the action.
 
 In this way, all actions for the same technology are grouped together.
+
+Sometimes you could need more than one nesting level because you want to group multiple actions. The only case, as of now, is to group deploy actions by service and by provider.
+
+For example:
+- Azure
+  - App Service
+  - Functions
+  - Storage Accounts
+- AWS
+  - App Runner
+  - Lambda
+  - S3 bucket
+
 
 ### NodeJS Action
 
@@ -152,6 +172,220 @@ This is an example to show how data should be formatted.
 ```
 
 ---
+
+### .NET Action
+
+#### .NET Action - Install
+This action:
+- auto-generate a `global.json`, if not provided;
+- [install .NET SDK dependencies on Alpine OS](https://learn.microsoft.com/en-us/dotnet/core/install/linux-alpine#dependencies);
+- install the specified .NET SDK version. The `dotnet` command becomes globally available.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/format** is the action that format a .NET solution.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+- **DOTNET_VERSION**: The .NET SDK version to install. See [documentation](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#version) for allowed values.
+- **ALPINE_OS**: Whatever or not the current Linux distribution is Alpine. This could be auto-detected in the future.
+
+In addition, it is possible to specify this optional input:
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Install .NET
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    DOTNET_VERSION: '7'
+    ALPINE_OS: true
+    SHELL: 'bash'
+```
+
+#### .NET Action - Build
+This action:
+- download NuGet packages from the cache, if available;
+- restore NuGet packages;
+- run the `dotnet build` command on the `WORKING_DIRECTORY`.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- A `packages.lock.json` file must be provided for the solution in order to enable [repeatable package restoration](https://github.com/NuGet/Home/wiki/Enable-repeatable-package-restore-using-lock-file).
+- The correct .NET version must be installed.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/build** is the action that builds a .NET project or solution.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+- **BUILD_CONFIG**: The configuration to use when building the solution or the project. Usually `Debug` or `Release`.
+
+In addition, it is possible to specify this optional input:
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Build
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    BUILD_CONFIG: 'Release'
+    SHELL: 'bash'
+```
+
+#### .NET Action - Format
+This action:
+- install or update the [dotnet-format](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-format) tool;
+- run the `dotnet format` command on the `WORKING_DIRECTORY`.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- The correct .NET version must be installed.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/format** is the action that format a .NET solution.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+
+In addition, it is possible to specify this optional input:
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Build
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    SHELL: 'bash'
+```
+
+#### .NET Action - Test
+This action:
+- discovers and executes tests on the .NET solution contained in the `WORKING_DIRECTORY` directory;
+- if specified, it generates tests and code coverage results.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- The correct .NET version must be installed.
+- The project must be already built.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/test** is the action that tests a .NET solution.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+
+In addition, it is possible to specify this optional input:
+- **GENERATE_CODE_COVERAGE**: Whatever or not the test results and code coverage files should be generated. If `true`, a `TestResults` folder containing `.trx` test results and a `coverage.opencover.xml` cover file are generated inside each test project folder. By default, it is **true**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Run tests
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    GENERATE_CODE_COVERAGE: true
+```
+
+---
+
+#### .NET Action - Publish
+This action run the [dotnet publish](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-publish) command on the `WORKING_DIRECTORY` directory.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must be an ancestor of the project file (`PROJECT` parameter).
+- The correct .NET version must be installed.
+- The project must be already built.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/publish** is the action that publishes a .NET project.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The ancestor directory of the project.
+- **BUILD_CONFIG**: The configuration to use when publishing the project. Usually `Release`.
+- **PROJECT**: The path to the `.csproj` file, relative to the `WORKING_DIRECTORY` directory.
+- **OUTPUT_DIRECTORY**: The directory where output binaries will be created. This is relative to the `WORKING_DIRECTORY` directory.
+
+In addition, it is possible to specify this optional input:
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Install .NET
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    PROJECT: 'My.Api/My.Api.csproj'
+    OUTPUT_DIRECTORY: 'binaries'
+    BUILD_CONFIG: 'Release'
+    SHELL: 'bash'
+```
+
+#### .NET Action - Release
+This action executes the following child-actions:
+- [.NET Install](#net-action---install)
+- [.NET Build](#net-action---build)
+- [.NET Publish](#net-action---publish)
+
+It's a convenience action for repeated actions used together for most of the time.
+
+###### Requirements
+Check the requirements of the child actions:
+- [.NET Install requirements](#net-action---install)
+- [.NET Build requirements](#net-action---build)
+- [.NET Publish requirements](#net-action---publish)
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/release** is the action that installs .NET, builds and publishes a .NET project.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**
+- **DOTNET_VERSION**
+- **BUILD_CONFIG**
+- **PROJECT**
+- **OUTPUT_DIRECTORY**
+
+In addition, it is possible to specify this optional input:
+- **ALPINE_OS**: See child actions. By default, it is **false**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+Each parameter is passed down to the homonym parameter of child actions (if available). Check out child actions' parameters definition.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Build
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    DOTNET_VERSION: '7'
+    BUILD_CONFIG: 'Release'
+    PROJECT: 'My.Api/My.Api.csproj'
+    OUTPUT_DIRECTORY: 'binaries'
+```
 
 ## Reusable Workflows
 In all the examples, we set *secrets: inherit* to pass all secrets to the reusable workflows, but it is also possible to pass only a subset of secrets.
