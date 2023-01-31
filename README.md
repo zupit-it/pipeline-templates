@@ -387,6 +387,48 @@ steps:
     OUTPUT_DIRECTORY: 'binaries'
 ```
 
+### Azure Action
+
+#### Azure Action - App Service
+This action:
+- logs in to Azure CLI;
+- deploy an application to an Azure App Service or Azure Function instance.
+
+**Note**: [Azure Functions are built on top of Azure App Service infrastructure](https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/service/app-service), reason for which this action is named just _App Service_. 
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must be an ancestor of the `BINARIES_DIRECTORY` directory.
+- The App Service/Function must be correctly configured with the correct technology and runtime version.
+
+###### Action
+**.github/actions/azure/app-service/deploy** is the action that deploys an application to an Azure App Service or Azure Function instance.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
+- **BINARIES_DIRECTORY**: The folder containing binaries to publish to the App Service/Function.
+- **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
+- **WEBAPP_NAME**: The name of the AppService/Function.
+
+In addition, it is possible to specify this optional input:
+- **WEBAPP_SLOT**: The App Service/Function slot where the binaries should be published to. By default, it is **production**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+**Note:** this action restarts the App Service/Function.
+
+**Note:** after this action completes it is not guaranteed that the App Service/Function will immediately run the new code. It may require some time based on the technology and hosting (e.g. App Service on Linux).
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+  - name: Publish to Azure App Service
+    uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@main
+    with:
+      WORKING_DIRECTORY: 'back-end'
+      BINARIES_DIRECTORY: 'output'
+      AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
+      WEBAPP_NAME: 'my-app-001'
+```
+
 ## Reusable Workflows
 In all the examples, we set *secrets: inherit* to pass all secrets to the reusable workflows, but it is also possible to pass only a subset of secrets.
 
