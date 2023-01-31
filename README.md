@@ -29,14 +29,16 @@ If you would like to get more details of these tasks, just look at this [doc](do
    4. [SpringBoot](#springboot)
       1. [Common SpringBoot](#springboot-common)
       2. [Build Docker Image and Push to Registry](#springboot-build-docker-image-and-push-to-registry)
-   5. [Docker](#docker)
+   5. [.NET](#net)
+      1. [Common Workflow](#net-common)
+   6. [Docker](#docker)
       1. [Build Docker Image and Push to Registry](#docker-build-docker-image-and-push-to-registry)
       2. [Deploy Docker Compose](#deploy-docker-compose)
       3. [Delete Docker Images](#delete-docker-images)
-   6. [Jira](#jira)
+   7. [Jira](#jira)
       1. [Jira Move Issue](#jira-move-issue)
       2. [Jira Create TODO Issue](#jira-create-todo-issue)
-   7. [Others](#others)
+   8. [Others](#others)
       1. [Sonar Analyze](#sonar-analyze)
       2. [Sonar Analyze - .NET](#sonar-analyze---net)
 
@@ -835,6 +837,44 @@ jobs:
       DOCKER_IMAGE_NAME: springboot
       DOCKER_IMAGE_TAG: latest
     secrets: inherit
+```
+
+---
+
+### .NET
+
+#### .NET Common
+###### Requirements
+This workflow is based on the following actions:
+- [.NET - Install](#net-action---install)
+- [.NET - Build](#net-action---build)
+- [.NET - Format](#net-action---format)
+- [.NET - Test](#net-action---test)
+
+Check these actions requirements before using this workflow.
+
+###### Workflow
+**dotnet-workflow-common.yml** is the reusable workflow to check that the code is correctly linted and that all tests pass.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: check actions used by this workflow for more information.
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
+- **DOTNET_VERSION**: check actions used by this workflow for more information.
+
+
+In addition, it is possible to specify this optional input:
+- **ALPINE_OS**: check actions used by this workflow for more information.
+
+This is an example to show how data should be formatted.
+```yaml
+jobs:
+  common:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/dotnet-workflow-common.yml@main
+    with:
+      WORKING_DIRECTORY: 'back-end'
+      DOTNET_VERSION: '7'
+      LABELS: "['team', 'pipeline', 'native']"
 ```
 
 ---
