@@ -1,0 +1,18 @@
+name: .NET test
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+  using: composite
+  steps:
+    - name: Run tests
+      shell: ${{ inputs.SHELL }}
+      run: dotnet test --no-build --logger trx -p:CollectCoverage=true -p:CoverletOutputFormat=opencover
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}

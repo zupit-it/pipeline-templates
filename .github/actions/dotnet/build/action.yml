@@ -1,0 +1,33 @@
+name: .NET build
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  BUILD_CONFIG:
+    required: true
+    type: string
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+    using: composite
+    steps:
+      - name: Restore NuGet packages cache
+        uses: actions/cache@v1
+        with:
+            path: ~/.nuget/packages
+            key: ${{ runner.os }}-nuget-${{ hashFiles('${{ inputs.WORKING_DIRECTORY }}/**/packages.lock.json') }}
+            restore-keys: ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        shell: ${{ inputs.SHELL }}
+        run: dotnet restore --locked-mode
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+      - name: Build
+        shell: ${{ inputs.SHELL }}
+        run: dotnet build --no-restore --configuration ${{ inputs.BUILD_CONFIG }}
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}

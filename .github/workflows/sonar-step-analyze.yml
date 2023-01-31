@@ -3,7 +3,7 @@ name: Sonar analyze with artifacts
 on:
   workflow_call:
     inputs:
-      LABELS:
+      CONTAINER_CI_LABELS:
         required: true
         type: string
       WORKING_DIRECTORY:
@@ -32,7 +32,8 @@ on:
 
 jobs:
   sonar-analyze:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    name: Analyze with SonarScanner
+    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
     container: ${{ inputs.SONAR_IMAGE }}
     defaults:
       run:
