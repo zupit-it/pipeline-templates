@@ -211,6 +211,7 @@ In addition, it is possible to specify these optional inputs:
 - **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *lcov.info* file. By default, it is **lcov.info**.
 - **ENABLE_TESTS**: Whether it should skip or not the cypress tests workflow. By default, it is **true**.
 - **TIMEOUT**: Used for tests, if the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
+- **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -226,6 +227,48 @@ jobs:
       CYPRESS_IMAGE: cypress/browsers:node16.17.0-chrome106
     secrets: inherit
 ```
+
+##### Run Optimization
+This workflow allows to skip the inner jobs using the input variable **RUN**. 
+This is useful when the code didn't change, and you want to skip the required checks and allow the PR to move on.
+One way to check whether the code changed or not is by using the **dorny/paths-filter@v2** action. 
+Here is an example of how to know if the code changed and based from that, run or not the workflows.
+
+```yaml
+jobs:
+  check-changes:
+    runs-on: [pinga, pipeline, native]
+
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+
+    steps:
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          backend:
+            - 'backend/**'
+          frontend:
+            - 'frontend/**'
+
+  angular-common:
+    needs: check-changes
+    uses:
+      ZupitSRL/pipeline-templates/.github/workflows/node-workflow-common.yml@main
+    with:
+      WORKING_DIRECTORY: 'frontend'
+      NODE_VERSION: '14.11.0'
+      NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
+      CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
+      ENABLE_TESTS: false
+      RUN: ${{ needs.check-changes.outputs.frontend == 'true' }}
+    secrets: inherit
+```
+
+This basically checks if the 2 folders: **backend** and **frontend**, were touched or not. 
+If there are any change in the **frontend** folder, then execute all inner workflows inside **node-workflow-common**. 
 
 ---
 
@@ -317,6 +360,7 @@ It requires these inputs:
 
 In addition, it is possible to specify this optional input:
 - **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file. By default, it is **coverage-django.xml**.
+- **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -332,6 +376,47 @@ jobs:
       COVERAGE_ARTIFACT_NAME: coverage-django.xml
     secrets: inherit
 ```
+
+##### Run Optimization
+This workflow allows to skip the inner jobs using the input variable **RUN**. 
+This is useful when the code didn't change, and you want to skip the required checks and allow the PR to move on.
+One way to check whether the code changed or not is by using the **dorny/paths-filter@v2** action. 
+Here is an example of how to know if the code changed and based from that, run or not the workflows.
+
+```yaml
+jobs:
+  check-changes:
+    runs-on: [pinga, pipeline, native]
+
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+
+    steps:
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          backend:
+            - 'backend/**'
+          frontend:
+            - 'frontend/**'
+
+  django-common:
+    needs: check-changes
+    uses:
+      ZupitSRL/pipeline-templates/.github/workflows/django-workflow-common.yml@main
+    with:
+      WORKING_DIRECTORY: 'backend'
+      PYTHON_IMAGE: 'python:3.8.2-slim-buster'
+      NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
+      CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
+      RUN: ${{ needs.check-changes.outputs.backend == 'true' }}
+    secrets: inherit
+```
+
+This basically checks if the 2 folders: **backend** and **frontend**, were touched or not. 
+If there are any change in the **backend** folder, then execute all inner workflows inside **django-workflow-common**. 
 
 ---
 
@@ -365,6 +450,7 @@ In addition, it is possible to specify this optional input:
 - **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
 - **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
 - **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
+- **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
 ```yaml
@@ -380,6 +466,47 @@ jobs:
       USE_CI_POSTGRES: false
     secrets: inherit
 ```
+
+##### Run Optimization
+This workflow allows to skip the inner jobs using the input variable **RUN**. 
+This is useful when the code didn't change, and you want to skip the required checks and allow the PR to move on.
+One way to check whether the code changed or not is by using the **dorny/paths-filter@v2** action. 
+Here is an example of how to know if the code changed and based from that, run or not the workflows.
+
+```yaml
+jobs:
+  check-changes:
+    runs-on: [pinga, pipeline, native]
+
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+      frontend: ${{ steps.changes.outputs.frontend }}
+
+    steps:
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+        filters: |
+          backend:
+            - 'backend/**'
+          frontend:
+            - 'frontend/**'
+
+  java-common:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/springboot-workflow-common.yml@main
+    with:
+      NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
+      CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
+      WORKING_DIRECTORY: backend
+      JAVA_IMAGE: openjdk:12
+      USE_CI_POSTGRES: false
+      RUN: ${{ needs.check-changes.outputs.backend == 'true' }}
+    secrets: inherit
+```
+
+This basically checks if the 2 folders: **backend** and **frontend**, were touched or not. 
+If there are any change in the **backend** folder, then execute all inner workflows inside **django-workflow-common**. 
 
 ---
 

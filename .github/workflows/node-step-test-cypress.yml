@@ -23,11 +23,16 @@ on:
         required: false
         type: number
         default: 30
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 env: "${{secrets}}"
 
 jobs:
   cypress-run:
+    if: ${{ inputs.RUN }}
     timeout-minutes: ${{ inputs.TIMEOUT }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container:

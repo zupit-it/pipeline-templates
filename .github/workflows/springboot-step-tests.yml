@@ -31,12 +31,17 @@ on:
         required: false
         type: string
         default:
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 
 env: "${{secrets}}"
 
 jobs:
   springboot-run-tests:
+    if: ${{ inputs.RUN }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.JAVA_IMAGE }}
 

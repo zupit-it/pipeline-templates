@@ -15,11 +15,16 @@ on:
       COVERAGE_ARTIFACT_NAME:
         required: true
         type: string
+      RUN:
+        required: false
+        type: boolean
+        default: true
 
 env: "${{secrets}}"
 
 jobs:
   django-tests:
+    if: ${{ inputs.RUN }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: ${{ inputs.PYTHON_IMAGE }}
 
