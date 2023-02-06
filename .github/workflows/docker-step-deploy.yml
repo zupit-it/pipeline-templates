@@ -21,6 +21,10 @@ on:
       DOCKER_COMPOSE_PATH:
         required: true
         type: string
+      DOCKER_COMPOSE_EXTRA_ARGS:
+        required: false
+        type: string
+        default: ''
       IMAGES:
         required: true
         type: string
@@ -44,6 +48,6 @@ jobs:
           registry: ${{ inputs.REGISTRY_URL }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} pull
-      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} down
-      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} up -d --build
+      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} pull
+      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} down
+      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} up -d --build
