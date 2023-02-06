@@ -624,6 +624,7 @@ It requires these inputs:
 - **REGISTRY_URL**: The registry url where to pull the Docker images.
 - **PROJECT_NAME**: The name that will be associated to the Docker Compose stack.
 - **DOCKER_COMPOSE_PATH**: The path to the docker-compose file to start.
+- **DOCKER_COMPOSE_EXTRA_ARGS**: Extra arguments to pass to the docker-compose command. Optional
 - **IMAGES**: A stringified json object containing as key the environment variables images used in the 
   Docker compose file and as value the name of the images that will be downloaded from the registry.
   You can retrieve dynamically the image name from the *docker build and push step* by adding the step's name to the **needs** array of the workflow 
