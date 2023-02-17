@@ -8,6 +8,10 @@ inputs:
     required: false
     type: boolean
     default: true
+  EXCLUDE_FILES:
+    required: false
+    type: boolean
+    default: ''
   SHELL:
     required: false
     type: string
@@ -19,7 +23,13 @@ runs:
     - name: Run tests with coverage report
       if: ${{ inputs.GENERATE_CODE_COVERAGE == 'true' }}
       shell: ${{ inputs.SHELL }}
-      run: dotnet test --no-build --logger trx -p:CollectCoverage=true -p:CoverletOutputFormat=opencover
+      run: |
+        dotnet test --no-build \
+          --logger trx -p:CollectCoverage=true \
+          -p:CoverletOutputFormat=opencover \
+          $(if [ -n "${{ inputs.EXCLUDE_FILES }}" ]; then \
+            echo "-p:ExcludeByFile=\"${{ inputs.EXCLUDE_FILES }}\""; \
+          fi)
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     - name: Run tests
