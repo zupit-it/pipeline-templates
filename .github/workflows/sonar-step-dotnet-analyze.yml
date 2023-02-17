@@ -57,6 +57,7 @@ jobs:
           ln -s $HOME/.dotnet/tools/dotnet-sonarscanner /usr/bin/dotnet-sonarscanner
 
       - name: Begin .NET SonarScanner
+        shell: 'bash'
         run: |
           params=()
           [[ -n "${{ inputs.SONAR_EXCLUSIONS }}" ]] && params+=(/d:sonar.exclusions="${{ inputs.SONAR_EXCLUSIONS }}")
