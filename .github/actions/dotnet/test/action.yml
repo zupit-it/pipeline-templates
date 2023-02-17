@@ -25,7 +25,7 @@ runs:
       shell: 'bash'
       run: |
         params=()
-        [[ -n "${{ inputs.EXCLUDE_FILES }}" ]] && params+=(-p:ExcludeByFile="${{ inputs.EXCLUDE_FILES }}")
+        [[ -n "${{ inputs.EXCLUDE_FILES }}" ]] && params+=(-p:ExcludeByFile=\"${{ inputs.EXCLUDE_FILES }}\")
         
         dotnet test --no-build \
           --logger trx -p:CollectCoverage=true \
