@@ -58,18 +58,17 @@ jobs:
 
       - name: Begin .NET SonarScanner
         run: |
+          params=()
+          [[ -n "${{ inputs.SONAR_EXCLUSIONS }}" ]] && params+=(/d:sonar.exclusions="${{ inputs.SONAR_EXCLUSIONS }}")
+          [[ -n "${{ inputs.COVERAGE_EXCLUSIONS }}" ]] && params+=(/d:sonar.coverage.exclusions="${{ inputs.COVERAGE_EXCLUSIONS }}")
+          
           dotnet-sonarscanner begin \
             /k:"${{ inputs.SONAR_PROJECT_KEY }}" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="${{ inputs.SONAR_HOST_URL }}" \
             /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml \
             /d:sonar.cs.vstest.reportsPaths=**/*.trx \
-            $(if [ -n "${{ inputs.SONAR_EXCLUSIONS }}" ]; then \
-              echo "/d:sonar.exclusions=\"${{ inputs.SONAR_EXCLUSIONS }}\""; \
-            fi) \
-            $(if [ -n "${{ inputs.COVERAGE_EXCLUSIONS }}" ]; then \
-              echo "/d:sonar.coverage.exclusions=\"${{ inputs.COVERAGE_EXCLUSIONS }}\""; \
-            fi)
+            "${params[@]}"
 
       - name: Build
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@MIGI-40/dotnet-workflows

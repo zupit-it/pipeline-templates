@@ -22,14 +22,16 @@ runs:
   steps:
     - name: Run tests with coverage report
       if: ${{ inputs.GENERATE_CODE_COVERAGE == 'true' }}
-      shell: ${{ inputs.SHELL }}
+      shell: 'bash'
       run: |
+        params=()
+        [[ -n "${{ inputs.EXCLUDE_FILES }}" ]] && params+=(-p:ExcludeByFile="${{ inputs.EXCLUDE_FILES }}")
+        
         dotnet test --no-build \
           --logger trx -p:CollectCoverage=true \
           -p:CoverletOutputFormat=opencover \
-          $(if [ -n "${{ inputs.EXCLUDE_FILES }}" ]; then \
-            echo "-p:ExcludeByFile=\"${{ inputs.EXCLUDE_FILES }}\""; \
-          fi)
+          "${params[@]}"
+
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     - name: Run tests
