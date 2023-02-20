@@ -9,10 +9,6 @@ on:
       NODE_VERSION:
         required: true
         type: string
-      BUILD_ARGS:
-        required: false
-        type: string
-        default: ""
       RELEASE_ENVIRONMENT:
         required: true
         type: string
@@ -29,6 +25,10 @@ on:
         required: false
         type: boolean
         default: true
+      BUILD_ARGS:
+        required: false
+        type: string
+        default: ""
       CDN_PROFILE_NAME:
         required: false
         type: string
