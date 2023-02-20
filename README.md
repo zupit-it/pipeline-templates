@@ -1194,6 +1194,8 @@ Additional properties are provided by this workflow and the required ones are ex
 ###### Workflow
 **sonar-step-dotnet-analyze.yml** is the workflow that analyze a .NET solution, including the coverage, and sends the results to Sonarqube.
 
+**IMPORTANT:** since this step relies on bash scripting, the _CONTAINER_CI_LABELS_ you provide must reference a container with bash already installed.
+
 It requires these inputs:
 - **CONTAINER_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels. The runner MUST be _docker_ based.
 - **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
@@ -1205,6 +1207,8 @@ It also requires these secrets:
 In addition, it is possible to specify these optional inputs:
 - **SONAR_IMAGE**: The SonarQube docker image where the runner execute all commands. By default, it is `sonarsource/sonar-scanner-cli`.
 - **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is `https://sonarqube.zupit.software`.
+- **SONAR_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded from Sonarqube analysis. You can't use a `sonar-project.properties` file since it's [not supported](https://community.sonarsource.com/t/configure-net-core-analysis-with-configuration-file/41299/2) from SonarScanner for .NET.
+- **COVERAGE_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded when computing tests code coverage ([docs](https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#source-files)). Since `dotnet test` expect absolute path for the exclusion list, you should provide this parameter in the form `**/my-path/*.cs` (always starting with `**/*`).
 - **DOTNET_VERSION**: The .NET version to build the solution. By default, it is `7`.
 
 This is an example to show how data should be formatted.
