@@ -54,38 +54,22 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js ${{ inputs.NODE_VERSION }}
-        uses: actions/setup-node@v3
+      - name: Deploy to Azure Storage
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@MIGI-41/angular-pipeline-to-azure-storage
         with:
-          node-version: ${{ inputs.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
+          NODE_VERSION: ${{ inputs.NODE_VERSION }}
+          RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Node.js ${{ inputs.NODE_VERSION }}
-        run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }} ${{ inputs.BUILD_ARGS }}
-
-      - name: Azure login
-        uses: azure/login@v1
+      - name: Deploy to Azure Storage
+        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@MIGI-41/angular-pipeline-to-azure-storage
         with:
-          creds: ${{ secrets.CI_AZURE_CREDENTIALS }}
-
-      - name: Upload to blob storage
-        uses: azure/CLI@v1
-        with:
-          inlineScript: az storage blob upload-batch --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} --auth-mode key -d '$web' -s ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.OUTPUT_DIRECTORY }}
-
-      - name: Purge CDN endpoint
-        uses: azure/CLI@v1
-        if: ${{ inputs.PURGE_CDN }}
-        with:
-          inlineScript: az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
-
-      - name: Azure logout
-        run: az logout
-        if: always()
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          BINARIES_DIRECTORY: ${{ inputs.OUTPUT_DIRECTORY }}
+          AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
+          STORAGE_ACCOUNT_NAME: ${{ inputs.STORAGE_ACCOUNT_NAME }}
+          CDN_PROFILE_NAME: ${{ inputs.CDN_PROFILE_NAME }}
+          CDN_ENDPOINT_NAME: ${{ inputs.CDN_ENDPOINT_NAME }}
+          CDN_RG_NAME: ${{ inputs.CDN_RG_NAME }}
+          PURGE_CDN: ${{ inputs.PURGE_CDN }}
