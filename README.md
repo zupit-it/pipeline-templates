@@ -12,25 +12,35 @@ If you would like to get more details of these tasks, just look at this [doc](do
       1. [Build](#nodejs-action---build)
    3. [Docker](#docker-action)
       1. [Build and Push](#docker-action---build-and-push-docker-image)
+   4. [.NET](#net-action)
+      1. [Install](#net-action---install)
+      2. [Build](#net-action---build)
+      3. [Format](#net-action---format)
+      4. [Test](#net-action---test)
+      5. [Publish](#net-action---publish)
+      6. [Release](#net-action---release)
 2. [Reusable Workflows](#reusable-workflows)
    1. [Naming Convention](#naming-convention)
    2. [NodeJS](#nodejs)
       1. [Common NodeJS](#nodejs-common)
       2. [Build Docker Image and Push to Registry](#nodejs-build-docker-image-and-push-to-registry)
    3. [Django](#django)
-      1. [Common Workflow](#django-common)
+      1. [Common Django](#django-common)
    4. [SpringBoot](#springboot)
       1. [Common SpringBoot](#springboot-common)
       2. [Build Docker Image and Push to Registry](#springboot-build-docker-image-and-push-to-registry)
-   5. [Docker](#docker)
+   5. [.NET](#net)
+      1. [Common .NET](#net-common)
+   6. [Docker](#docker)
       1. [Build Docker Image and Push to Registry](#docker-build-docker-image-and-push-to-registry)
       2. [Deploy Docker Compose](#deploy-docker-compose)
       3. [Delete Docker Images](#delete-docker-images)
-   6. [Jira](#jira)
+   7. [Jira](#jira)
       1. [Jira Move Issue](#jira-move-issue)
       2. [Jira Create TODO Issue](#jira-create-todo-issue)
-   7. [Others](#others)
+   8. [Others](#others)
       1. [Sonar Analyze](#sonar-analyze)
+      2. [Sonar Analyze - .NET](#sonar-analyze---net)
 
 ## Composite Actions
 
@@ -53,6 +63,19 @@ Where:
 - **action-to-execute** is the action that you want to execute. In the previous example, **build** is the action.
 
 In this way, all actions for the same technology are grouped together.
+
+Sometimes you could need more than one nesting level because you want to group multiple actions. The only case, as of now, is to group deploy actions by service and by provider.
+
+For example:
+- Azure
+  - App Service
+  - Functions
+  - Storage Accounts
+- AWS
+  - App Runner
+  - Lambda
+  - S3 bucket
+
 
 ### NodeJS Action
 
@@ -152,6 +175,264 @@ This is an example to show how data should be formatted.
 ```
 
 ---
+
+### .NET Action
+
+#### .NET Action - Install
+This action:
+- auto-generate a `global.json`, if not provided;
+- [install .NET SDK dependencies on Alpine OS](https://learn.microsoft.com/en-us/dotnet/core/install/linux-alpine#dependencies);
+- install the specified .NET SDK version. The `dotnet` command becomes globally available.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/format** is the action that format a .NET solution.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+- **DOTNET_VERSION**: The .NET SDK version to install. See [documentation](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#version) for allowed values.
+- **ALPINE_OS**: Whatever or not the current Linux distribution is Alpine. This could be auto-detected in the future.
+
+In addition, it is possible to specify this optional input:
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Install .NET
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    DOTNET_VERSION: '7'
+    ALPINE_OS: true
+    SHELL: 'bash'
+```
+
+#### .NET Action - Build
+This action:
+- download NuGet packages from the cache, if available;
+- restore NuGet packages;
+- run the `dotnet build` command on the `WORKING_DIRECTORY`.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- A `packages.lock.json` file must be provided for the solution in order to enable [repeatable package restoration](https://github.com/NuGet/Home/wiki/Enable-repeatable-package-restore-using-lock-file).
+- The correct .NET version must be installed.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/build** is the action that builds a .NET project or solution.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+- **BUILD_CONFIG**: The configuration to use when building the solution or the project. Usually `Debug` or `Release`.
+
+In addition, it is possible to specify this optional input:
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Build
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    BUILD_CONFIG: 'Release'
+    SHELL: 'bash'
+```
+
+#### .NET Action - Format
+This action:
+- install or update the [dotnet-format](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-format) tool;
+- run the `dotnet format` command on the `WORKING_DIRECTORY`.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- The correct .NET version must be installed.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/format** is the action that format a .NET solution.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+
+In addition, it is possible to specify this optional input:
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Build
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    SHELL: 'bash'
+```
+
+#### .NET Action - Test
+This action:
+- discovers and executes tests on the .NET solution contained in the `WORKING_DIRECTORY` directory;
+- if specified, it generates tests and code coverage results.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- The correct .NET version must be installed.
+- The project must be already built.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/test** is the action that tests a .NET solution.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+
+In addition, it is possible to specify this optional input:
+- **GENERATE_CODE_COVERAGE**: Whatever or not the test results and code coverage files should be generated. If `true`, a `TestResults` folder containing `.trx` test results and a `coverage.opencover.xml` cover file are generated inside each test project folder. By default, it is **true**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Run tests
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    GENERATE_CODE_COVERAGE: true
+```
+
+---
+
+#### .NET Action - Publish
+This action run the [dotnet publish](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-publish) command on the `WORKING_DIRECTORY` directory.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must be an ancestor of the project file (`PROJECT` parameter).
+- The correct .NET version must be installed.
+- The project must be already built.
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/publish** is the action that publishes a .NET project.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The ancestor directory of the project.
+- **BUILD_CONFIG**: The configuration to use when publishing the project. Usually `Release`.
+- **PROJECT**: The path to the `.csproj` file, relative to the `WORKING_DIRECTORY` directory.
+- **OUTPUT_DIRECTORY**: The directory where output binaries will be created. This is relative to the `WORKING_DIRECTORY` directory.
+
+In addition, it is possible to specify this optional input:
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Install .NET
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    PROJECT: 'My.Api/My.Api.csproj'
+    OUTPUT_DIRECTORY: 'binaries'
+    BUILD_CONFIG: 'Release'
+    SHELL: 'bash'
+```
+
+#### .NET Action - Release
+This action executes the following child-actions:
+- [.NET Install](#net-action---install)
+- [.NET Build](#net-action---build)
+- [.NET Publish](#net-action---publish)
+
+It's a convenience action for repeated actions used together for most of the time.
+
+###### Requirements
+Check the requirements of the child actions:
+- [.NET Install requirements](#net-action---install)
+- [.NET Build requirements](#net-action---build)
+- [.NET Publish requirements](#net-action---publish)
+
+*This workflow doesn't download the codebase. You have to check out the repo by yourself.*
+
+###### Action
+**.github/actions/dotnet/release** is the action that installs .NET, builds and publishes a .NET project.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**
+- **DOTNET_VERSION**
+- **BUILD_CONFIG**
+- **PROJECT**
+- **OUTPUT_DIRECTORY**
+
+In addition, it is possible to specify this optional input:
+- **ALPINE_OS**: See child actions. By default, it is **false**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+Each parameter is passed down to the homonym parameter of child actions (if available). Check out child actions' parameters definition.
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+- name: Build
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@main
+  with:
+    WORKING_DIRECTORY: 'back-end'
+    DOTNET_VERSION: '7'
+    BUILD_CONFIG: 'Release'
+    PROJECT: 'My.Api/My.Api.csproj'
+    OUTPUT_DIRECTORY: 'binaries'
+```
+
+### Azure Action
+
+#### Azure Action - App Service
+This action:
+- logs in to Azure CLI;
+- deploy an application to an Azure App Service or Azure Function instance.
+
+**Note**: [Azure Functions are built on top of Azure App Service infrastructure](https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/service/app-service), reason for which this action is named just _App Service_. 
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must be an ancestor of the `BINARIES_DIRECTORY` directory.
+- The App Service/Function must be correctly configured with the correct technology and runtime version.
+
+###### Action
+**.github/actions/azure/app-service/deploy** is the action that deploys an application to an Azure App Service or Azure Function instance.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
+- **BINARIES_DIRECTORY**: The folder containing binaries to publish to the App Service/Function.
+- **WEBAPP_NAME**: The name of the AppService/Function.
+
+It also requires these secrets:
+- **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
+
+In addition, it is possible to specify this optional input:
+- **WEBAPP_SLOT**: The App Service/Function slot where the binaries should be published to. By default, it is **production**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
+
+**Note:** this action restarts the App Service/Function.
+
+**Note:** after this action completes it is not guaranteed that the App Service/Function will immediately run the new code. It may require some time based on the technology and hosting (e.g. App Service on Linux).
+
+This is an example to show how data should be formatted.
+```yaml~~~~
+steps:
+  - name: Publish to Azure App Service
+    uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@main
+    with:
+      WORKING_DIRECTORY: 'back-end'
+      BINARIES_DIRECTORY: 'output'
+      AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
+      WEBAPP_NAME: 'my-app-001'
+```
 
 ## Reusable Workflows
 In all the examples, we set *secrets: inherit* to pass all secrets to the reusable workflows, but it is also possible to pass only a subset of secrets.
@@ -560,6 +841,44 @@ jobs:
 
 ---
 
+### .NET
+
+#### .NET Common
+###### Requirements
+This workflow is based on the following actions:
+- [.NET - Install](#net-action---install)
+- [.NET - Build](#net-action---build)
+- [.NET - Format](#net-action---format)
+- [.NET - Test](#net-action---test)
+
+Check these actions requirements before using this workflow.
+
+###### Workflow
+**dotnet-workflow-common.yml** is the reusable workflow to check that the code is correctly linted and that all tests pass.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: check actions used by this workflow for more information.
+- **LABELS**: the *labels* to select the correct *github-runner* that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
+- **DOTNET_VERSION**: check actions used by this workflow for more information.
+
+
+In addition, it is possible to specify this optional input:
+- **ALPINE_OS**: check actions used by this workflow for more information.
+
+This is an example to show how data should be formatted.
+```yaml
+jobs:
+  common:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/dotnet-workflow-common.yml@main
+    with:
+      WORKING_DIRECTORY: 'back-end'
+      DOTNET_VERSION: '7'
+      LABELS: "['team', 'pipeline', 'native']"
+```
+
+---
+
 ### Docker
 
 #### Docker build docker image and push to registry
@@ -862,5 +1181,45 @@ jobs:
       WORKING_DIRECTORY: frontend
       ARTIFACT_FILENAME: lcov.info
       LABELS: "['pinga', 'pipeline', 'container']"
+    secrets: inherit
+```
+
+
+#### Sonar Analyze - .NET
+###### Requirements
+This workflow DOES NOT use the **sonar-project.properties** as the [Sonar Analyze](#sonar-analyze) workflow does. See the [documentation](https://community.sonarsource.com/t/how-to-specify-sonar-project-properties-file-in-dotnet-scanner-command/31805/3).
+
+Additional properties are provided by this workflow and the required ones are exposed as required inputs.
+
+###### Workflow
+**sonar-step-dotnet-analyze.yml** is the workflow that analyze a .NET solution, including the coverage, and sends the results to Sonarqube.
+
+**IMPORTANT:** since this step relies on bash scripting, the _CONTAINER_CI_LABELS_ you provide must reference a container with bash already installed.
+
+It requires these inputs:
+- **CONTAINER_CI_LABELS**: the *labels* to select the correct *github-runner* that will execute this workflow. The format is a stringified JSON list of labels. The runner MUST be _docker_ based.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **SONAR_PROJECT_KEY**: The SonarQube project key.
+
+It also requires these secrets:
+- **SONAR_TOKEN**: The Sonarqube token.
+
+In addition, it is possible to specify these optional inputs:
+- **SONAR_IMAGE**: The SonarQube docker image where the runner execute all commands. By default, it is `sonarsource/sonar-scanner-cli`.
+- **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is `https://sonarqube.zupit.software`.
+- **SONAR_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded from Sonarqube analysis. You can't use a `sonar-project.properties` file since it's [not supported](https://community.sonarsource.com/t/configure-net-core-analysis-with-configuration-file/41299/2) from SonarScanner for .NET.
+- **COVERAGE_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded when computing tests code coverage ([docs](https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#source-files)). Since `dotnet test` expect absolute path for the exclusion list, you should provide this parameter in the form `**/my-path/*.cs` (always starting with `**/*`).
+- **DOTNET_VERSION**: The .NET version to build the solution. By default, it is `7`.
+
+This is an example to show how data should be formatted.
+```yaml
+jobs:
+  sonar-analyze:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/sonar-step-dotnet-analyze.yml@main
+    with:
+      CONTAINER_CI_LABELS: "['team', 'pipeline', 'container']"
+      WORKING_DIRECTORY: 'back-end'
+      SONAR_PROJECT_KEY: 'my-project-key'
     secrets: inherit
 ```

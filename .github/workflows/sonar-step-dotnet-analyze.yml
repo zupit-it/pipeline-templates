@@ -1,0 +1,88 @@
+name: Sonar analyze with artifacts
+
+on:
+  workflow_call:
+    inputs:
+      CONTAINER_CI_LABELS:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      SONAR_PROJECT_KEY:
+        required: true
+        type: string
+      SONAR_IMAGE:
+        required: false
+        type: string
+        default: "sonarsource/sonar-scanner-cli"
+      SONAR_HOST_URL:
+        required: false
+        type: string
+        default: "https://sonarqube.zupit.software"
+      SONAR_EXCLUSIONS:
+        required: false
+        type: string
+        default: ""
+      COVERAGE_EXCLUSIONS:
+        required: false
+        type: string
+        default: ""
+      DOTNET_VERSION:
+        required: false
+        type: string
+        default: "7"
+
+jobs:
+  sonar-analyze:
+    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
+    container: ${{ inputs.SONAR_IMAGE }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install .NET
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@MIGI-40/dotnet-workflows
+        with:
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
+          ALPINE_OS: true
+
+      - name: Install SonarSource for .NET
+        run: |
+          dotnet tool update dotnet-sonarscanner --global
+          ln -s $HOME/.dotnet/tools/dotnet-sonarscanner /usr/bin/dotnet-sonarscanner
+
+      - name: Begin .NET SonarScanner
+        shell: 'bash'
+        run: |
+          params=()
+          [[ -n "${{ inputs.SONAR_EXCLUSIONS }}" ]] && params+=(/d:sonar.exclusions="${{ inputs.SONAR_EXCLUSIONS }}")
+          [[ -n "${{ inputs.COVERAGE_EXCLUSIONS }}" ]] && params+=(/d:sonar.coverage.exclusions="${{ inputs.COVERAGE_EXCLUSIONS }}")
+          
+          dotnet-sonarscanner begin \
+            /k:"${{ inputs.SONAR_PROJECT_KEY }}" \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.host.url="${{ inputs.SONAR_HOST_URL }}" \
+            /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml \
+            /d:sonar.cs.vstest.reportsPaths=**/*.trx \
+            "${params[@]}"
+
+      - name: Build
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@MIGI-40/dotnet-workflows
+        with:
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          BUILD_CONFIG: "Debug"
+
+      - name: Run tests
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@MIGI-40/dotnet-workflows
+        with:
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          EXCLUDE_FILES: ${{ inputs.COVERAGE_EXCLUSIONS }}
+
+      - name: End .NET SonarScanner
+        run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+

@@ -1,0 +1,37 @@
+name: .NET install
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  DOTNET_VERSION:
+    required: true
+    type: string
+  ALPINE_OS:
+    required: true
+    type: string
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+  using: composite
+  steps:
+    - name: Use global.json
+      shell: ${{ inputs.SHELL }}
+      run: |
+        test -f global.json || echo $'{ "sdk": { "version": "${{ inputs.DOTNET_VERSION }}", "rollForward": "latestMajor" } }' > global.json
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    - name: Install .NET dependencies for Alpine
+      if: ${{ inputs.ALPINE_OS == 'true' }}
+      shell: ${{ inputs.SHELL }}
+      run: |
+          # Dependencies: https://learn.microsoft.com/en-us/dotnet/core/install/linux-alpine
+          apk add bash icu-libs krb5-libs libgcc libintl libssl1.1 libstdc++ zlib
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        global-json-file: ${{ inputs.WORKING_DIRECTORY }}/global.json

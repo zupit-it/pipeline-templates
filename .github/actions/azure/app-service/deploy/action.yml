@@ -1,0 +1,38 @@
+name: Deploy app to Azure App Service
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  BINARIES_DIRECTORY:
+    required: true
+    type: string
+  AZURE_CREDENTIALS:
+    required: true
+    type: string
+  WEBAPP_NAME:
+    required: true
+    type: string
+  WEBAPP_SLOT:
+    required: false
+    type: string
+    default: "production"
+
+runs:
+  using: composite
+  steps:
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ inputs.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure App Service
+      uses: Azure/webapps-deploy@v2.2.5
+      with:
+        app-name: ${{ inputs.WEBAPP_NAME }}
+        slot-name: ${{ inputs.WEBAPP_SLOT }}
+        package:  ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
+
+    - name: Azure logout
+      run: az logout
+      if: always()

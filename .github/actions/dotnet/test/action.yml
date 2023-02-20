@@ -1,0 +1,41 @@
+name: .NET test
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  GENERATE_CODE_COVERAGE:
+    required: false
+    type: boolean
+    default: true
+  EXCLUDE_FILES:
+    required: false
+    type: boolean
+    default: ''
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+  using: composite
+  steps:
+    - name: Run tests with coverage report
+      if: ${{ inputs.GENERATE_CODE_COVERAGE == 'true' }}
+      shell: 'bash'
+      run: |
+        params=()
+        [[ -n "${{ inputs.EXCLUDE_FILES }}" ]] && params+=(-p:ExcludeByFile=\"${{ inputs.EXCLUDE_FILES }}\")
+        
+        dotnet test --no-build \
+          --logger trx -p:CollectCoverage=true \
+          -p:CoverletOutputFormat=opencover \
+          "${params[@]}"
+
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    - name: Run tests
+      if: ${{ inputs.GENERATE_CODE_COVERAGE == 'false' }}
+      shell: ${{ inputs.SHELL }}
+      run: dotnet test --no-build
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}

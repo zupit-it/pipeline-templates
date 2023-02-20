@@ -1,0 +1,27 @@
+name: .NET publish
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  BUILD_CONFIG:
+    required: true
+    type: string
+  PROJECT:
+    requires: true
+    type: string
+  OUTPUT_DIRECTORY:
+    required: true
+    type: string
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+  using: composite
+  steps:
+    - name: Publish
+      shell: ${{ inputs.SHELL }}
+      run: dotnet publish ${{ inputs.PROJECT }} --no-build -c ${{ inputs.BUILD_CONFIG }} -o '${{ inputs.OUTPUT_DIRECTORY }}'
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
