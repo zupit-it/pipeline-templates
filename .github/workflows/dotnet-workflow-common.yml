@@ -38,7 +38,7 @@ jobs:
           ALPINE_OS: ${{ inputs.ALPINE_OS }}
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@main
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@MIGI-41/angular-pipeline-to-azure-storage
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"

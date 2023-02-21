@@ -54,8 +54,8 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     steps:
-      - name: Deploy to Azure Storage
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@MIGI-41/angular-pipeline-to-azure-storage
+      - name: Build
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@main
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
@@ -63,7 +63,7 @@ jobs:
           BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
 
       - name: Deploy to Azure Storage
-        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@MIGI-41/angular-pipeline-to-azure-storage
+        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@main
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BINARIES_DIRECTORY: ${{ inputs.OUTPUT_DIRECTORY }}
