@@ -10,6 +10,10 @@ inputs:
   WORKING_DIRECTORY:
     required: true
     type: string
+  BUILD_ARGS:
+    required: false
+    type: string
+    default: ""
   SHELL:
     required: false
     type: string
@@ -35,6 +39,6 @@ runs:
 
       - name: Build Node.js ${{ inputs.NODE_VERSION }}
         shell: ${{ inputs.SHELL }}
-        run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }}
+        run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }} -- ${{ inputs.BUILD_ARGS }}
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 

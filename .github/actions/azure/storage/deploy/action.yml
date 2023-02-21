@@ -1,0 +1,59 @@
+name: Deploy app to Azure Storage
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  BINARIES_DIRECTORY:
+    required: true
+    type: string
+  AZURE_CREDENTIALS:
+    required: true
+    type: string
+  STORAGE_ACCOUNT_NAME:
+    required: true
+    type: string
+  CDN_PROFILE_NAME:
+    required: false
+    type: string
+    default: ""
+  CDN_ENDPOINT_NAME:
+    required: false
+    type: string
+    default: ""
+  CDN_RG_NAME:
+    required: false
+    type: string
+    default: ""
+  PURGE_CDN:
+    required: false
+    type: boolean
+    default: true
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+  using: composite
+  steps:
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ inputs.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure Storage
+      uses: azure/CLI@v1
+      with:
+        inlineScript: az storage blob upload-batch --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} --auth-mode key -d '$web' -s ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
+
+    - name: Purge CDN endpoint
+      uses: azure/CLI@v1
+      if: ${{ inputs.PURGE_CDN }}
+      with:
+        inlineScript: az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
+
+    - name: Azure logout
+      shell: ${{ inputs.SHELL }}
+      run: az logout
+      if: always()

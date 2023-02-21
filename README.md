@@ -19,11 +19,15 @@ If you would like to get more details of these tasks, just look at this [doc](do
       4. [Test](#net-action---test)
       5. [Publish](#net-action---publish)
       6. [Release](#net-action---release)
+   5. [Azure](#azure-action)
+      1. [App Service](#azure-action---app-service)
+      2. [Storage Account](#azure-action---storage-account)
 2. [Reusable Workflows](#reusable-workflows)
    1. [Naming Convention](#naming-convention)
    2. [NodeJS](#nodejs)
       1. [Common NodeJS](#nodejs-common)
       2. [Build Docker Image and Push to Registry](#nodejs-build-docker-image-and-push-to-registry)
+      3. [Build and deploy to Azure Storage](#nodejs-build-and-deploy-to-azure-storage)
    3. [Django](#django)
       1. [Common Django](#django-common)
    4. [SpringBoot](#springboot)
@@ -201,7 +205,7 @@ In addition, it is possible to specify this optional input:
 - **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
-```yaml~~~~
+```yaml
 steps:
 - name: Install .NET
   uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@main
@@ -236,7 +240,7 @@ In addition, it is possible to specify this optional input:
 - **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
-```yaml~~~~
+```yaml
 steps:
 - name: Build
   uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@main
@@ -267,7 +271,7 @@ In addition, it is possible to specify this optional input:
 - **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
-```yaml~~~~
+```yaml
 steps:
 - name: Build
   uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@main
@@ -299,7 +303,7 @@ In addition, it is possible to specify this optional input:
 - **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
-```yaml~~~~
+```yaml
 steps:
 - name: Run tests
   uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@main
@@ -333,7 +337,7 @@ In addition, it is possible to specify this optional input:
 - **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
-```yaml~~~~
+```yaml
 steps:
 - name: Install .NET
   uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@main
@@ -378,7 +382,7 @@ In addition, it is possible to specify this optional input:
 Each parameter is passed down to the homonym parameter of child actions (if available). Check out child actions' parameters definition.
 
 This is an example to show how data should be formatted.
-```yaml~~~~
+```yaml
 steps:
 - name: Build
   uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@main
@@ -423,7 +427,7 @@ In addition, it is possible to specify this optional input:
 **Note:** after this action completes it is not guaranteed that the App Service/Function will immediately run the new code. It may require some time based on the technology and hosting (e.g. App Service on Linux).
 
 This is an example to show how data should be formatted.
-```yaml~~~~
+```yaml
 steps:
   - name: Publish to Azure App Service
     uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@main
@@ -432,6 +436,47 @@ steps:
       BINARIES_DIRECTORY: 'output'
       AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
       WEBAPP_NAME: 'my-app-001'
+```
+
+#### Azure Action - Storage Account
+This action:
+- logs in to Azure CLI;
+- deploy a static web-app to Azure Storage Blob Service.
+
+###### Requirements
+- The `WORKING_DIRECTORY` directory must be an ancestor of the `BINARIES_DIRECTORY` directory.
+- The Storage Account must be configured to [serve static content](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website).
+
+###### Action
+**.github/actions/azure/storage/deploy** is the action that deploys a static web-app to an Azure Storage Account.
+
+It requires these inputs:
+- **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
+- **BINARIES_DIRECTORY**: The folder containing binaries to publish to the Storage Account.
+- **STORAGE_ACCOUNT_NAME**: The name of the Storage Account.
+- **CDN_PROFILE_NAME**: Name of the CDN profile name. Required if `PURGE_CDN` is `true`.
+- **CDN_ENDPOINT_NAME**: Name of the CDN endpoint name. It must be a child of the `CDN_PROFILE_NAME` CDN profile. Required if `PURGE_CDN` is `true`.
+- **CDN_RG_NAME**: Resource group name where the CDN profile is hold. Required if `PURGE_CDN` is `true`.
+
+It also requires these secrets:
+- **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
+
+In addition, it is possible to specify this optional input:
+- **PURGE_CDN**: Whatever to purge the CDN linked to the Storage Account.
+
+This is an example to show how data should be formatted.
+```yaml
+steps:
+  - name: Deploy to Azure Storage
+    uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@main
+    with:
+      WORKING_DIRECTORY: front-end
+      BINARIES_DIRECTORY: dist/apps/my-app
+      AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
+      STORAGE_ACCOUNT_NAME: stmyproject001
+      CDN_PROFILE_NAME: cdnp-myproject-001
+      CDN_ENDPOINT_NAME: cdne-myproject-001
+      CDN_RG_NAME: rg-myproject-001
 ```
 
 ## Reusable Workflows
@@ -610,6 +655,33 @@ jobs:
       BUILD_ARGS: |
         DIST_PATH=dist/apps/enci
     secrets: inherit
+```
+
+---
+
+#### NodeJS build and deploy to Azure Storage
+This workflow combines two actions:
+- [Node.js Build](#nodejs-action---build)
+- [Azure Storage Account](#azure-action---storage-account)
+
+The input parameters of this workflow have the same name of the corresponding parameters in child actions. Refer to them for more information. 
+
+This is an example to show how data should be formatted.
+```yaml
+
+jobs:
+  build-and-push-image:
+    uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy.yml@main
+    with:
+      LABELS: "['my-team', 'pipeline', 'native']"
+      WORKING_DIRECTORY: front-end
+      NODE_VERSION: '16.17.0'
+      RELEASE_ENVIRONMENT: testing
+      OUTPUT_DIRECTORY: dist/apps/cta-conta
+      STORAGE_ACCOUNT_NAME: stmyproject001
+      CDN_PROFILE_NAME: cdnp-myproject-001
+      CDN_ENDPOINT_NAME: cdne-myproject-001
+      CDN_RG_NAME: rg-myproject-001
 ```
 
 ---
