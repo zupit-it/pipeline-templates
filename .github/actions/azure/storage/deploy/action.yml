@@ -29,10 +29,6 @@ inputs:
     required: false
     type: boolean
     default: true
-  SHELL:
-    required: false
-    type: string
-    default: 'bash'
 
 runs:
   using: composite
@@ -54,6 +50,10 @@ runs:
         inlineScript: az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
 
     - name: Azure logout
-      shell: ${{ inputs.SHELL }}
-      run: az logout
+      uses: azure/CLI@v1
       if: always()
+      with:
+        inlineScript: |
+          az logout
+          az cache purge
+          az account clear

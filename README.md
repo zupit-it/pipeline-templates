@@ -163,7 +163,7 @@ This is an example to show how data should be formatted.
 
       - name: Build & Push Docker
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@MIGI-42/test-composite-actions
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@main
         with:
           REGISTRY_URL: ghcr.io
           REGISTRY_USER: ${{ github.actor }}
@@ -420,7 +420,6 @@ It also requires these secrets:
 
 In addition, it is possible to specify this optional input:
 - **WEBAPP_SLOT**: The App Service/Function slot where the binaries should be published to. By default, it is **production**.
-- **SHELL**: The shell type to use. By default, it is **bash**.
 
 **Note:** this action restarts the App Service/Function.
 
