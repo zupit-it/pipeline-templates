@@ -163,7 +163,7 @@ This is an example to show how data should be formatted.
 
       - name: Build & Push Docker
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@MIGI-42/test-composite-actions
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@main
         with:
           REGISTRY_URL: ghcr.io
           REGISTRY_USER: ${{ github.actor }}
