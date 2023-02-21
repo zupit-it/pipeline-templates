@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - run: npm ci
+      - run: npm config set cache /tmp/npm_cache && npm ci
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
