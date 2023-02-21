@@ -29,10 +29,6 @@ inputs:
     required: false
     type: boolean
     default: true
-  SHELL:
-    required: false
-    type: string
-    default: 'bash'
 
 runs:
   using: composite

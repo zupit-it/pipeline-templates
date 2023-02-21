@@ -17,10 +17,6 @@ inputs:
     required: false
     type: string
     default: "production"
-  SHELL:
-    required: false
-    type: string
-    default: 'bash'
 
 runs:
   using: composite

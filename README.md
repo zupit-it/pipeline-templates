@@ -420,7 +420,6 @@ It also requires these secrets:
 
 In addition, it is possible to specify this optional input:
 - **WEBAPP_SLOT**: The App Service/Function slot where the binaries should be published to. By default, it is **production**.
-- **SHELL**: The shell type to use. By default, it is **bash**.
 
 **Note:** this action restarts the App Service/Function.
 
