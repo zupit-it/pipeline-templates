@@ -45,6 +45,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{inputs.ARTIFACT_FILENAME}}
-          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}${{inputs.ARTIFACT_FILENAME}}
+          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
       - name: Run Sonar
         run: find . -name "lcov.info" && sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
