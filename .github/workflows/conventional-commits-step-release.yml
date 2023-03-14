@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           cache: npm
-          node-version: 18
+          node-version: 16
       - run: npm ci --ignore-scripts
       - run: npx semantic-release
         env:
