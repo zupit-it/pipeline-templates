@@ -41,6 +41,10 @@ on:
         required: false
         type: string
         default: ""
+      ENV_VARIABLES:
+        required: false
+        type: string
+        default: '{}'
 
 env: "${{secrets}}"
 
@@ -53,6 +57,8 @@ jobs:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
+    env: ${{ fromJson(inputs.ENV_VARIABLES) }}
+    
     steps:
       - name: Build
         uses: zupit-it/pipeline-templates/.github/actions/node/build@main
