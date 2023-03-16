@@ -16,6 +16,10 @@ on:
         required: false
         type: boolean
         default: true
+      DJANGO_MIGRATIONS_CHECK_APPS:
+        required: false
+        type: string
+        default: ""
 
 env: "${{secrets}}"
 
@@ -55,6 +59,6 @@ jobs:
       - name: Django validate templates
         run: python manage.py validate_templates
       - name: Django check migrations
-        run: python manage.py makemigrations ${DJANGO_MIGRATIONS_CHECK_APPS} --check --dry-run
+        run: python manage.py makemigrations ${{ inputs.DJANGO_MIGRATIONS_CHECK_APPS }} --check --dry-run
       - name: Django validate migration
         run: python manage.py migrate --fake --no-input

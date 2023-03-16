@@ -807,6 +807,7 @@ In addition, it is possible to specify this optional input:
 
 -   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _coverage-django.xml_ file. By default, it is **coverage-django.xml**.
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
+-   **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
 
 This is an example to show how data should be formatted.
 
