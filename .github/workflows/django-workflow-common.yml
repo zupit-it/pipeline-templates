@@ -25,6 +25,10 @@ on:
         required: false
         type: boolean
         default: true
+      DJANGO_MIGRATIONS_CHECK_APPS:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   django-lint-check:
@@ -35,6 +39,7 @@ jobs:
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
       RUN: ${{inputs.RUN}}
+      DJANGO_MIGRATIONS_CHECK_APPS: ${{inputs.DJANGO_MIGRATIONS_CHECK_APPS}}
     secrets: inherit
 
   django-tests:
