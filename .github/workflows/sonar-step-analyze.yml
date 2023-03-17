@@ -48,8 +48,14 @@ jobs:
           name: ${{inputs.ARTIFACT_FILENAME}}
           path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}${{inputs.ARTIFACT_FILENAME}}
 
-      - name: Rename coverage file
-        if: ${{ inputs.DOWNLOAD_ARTIFACT }}
+      - name: Check lcov in wrong position file existence (workaround)
+        id: check_lcov_file
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "coverage/lcov.info/lcov.info"
+
+      - name: lcov in wrong position file exists (workaround)
+        if: steps.check_lcov_file.outputs.files_exists == 'true'
         run: mv coverage/lcov.info/lcov.info ./lcov.info && rm -rf coverage/lcov.info && mv ./lcov.info ./coverage/lcov.info
 
       - name: Run Sonar
