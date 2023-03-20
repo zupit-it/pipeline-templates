@@ -41,7 +41,7 @@ runs:
     - name: Deploy to Azure Storage
       uses: azure/CLI@v1
       with:
-        inlineScript: az storage blob upload-batch --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} --auth-mode key -d '$web' -s ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
+        inlineScript: az storage blob upload-batch --overwrite true --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} --auth-mode key -d '$web' -s ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
 
     - name: Purge CDN endpoint
       uses: azure/CLI@v1
