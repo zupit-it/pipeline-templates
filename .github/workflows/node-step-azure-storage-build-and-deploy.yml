@@ -45,6 +45,10 @@ on:
         required: false
         type: string
         default: '{}'
+      PROJECT:
+        required: false
+        type: string
+        default: ""
 
 env: "${{secrets}}"
 
@@ -58,7 +62,7 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
-    
+
     steps:
       - name: Build
         uses: zupit-it/pipeline-templates/.github/actions/node/build@main
@@ -67,6 +71,7 @@ jobs:
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
+          PROJECT: ${{ inputs.PROJECT }}
 
       - name: Deploy to Azure Storage
         uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@main

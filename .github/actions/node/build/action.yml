@@ -14,31 +14,41 @@ inputs:
     required: false
     type: string
     default: ""
+  PROJECT:
+    required: false
+    type: string
+    default: ""
   SHELL:
     required: false
     type: string
     default: 'bash'
 
 runs:
-    using: composite
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Setup Node.js ${{ inputs.NODE_VERSION }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.NODE_VERSION }}
-#          cache: 'npm'
-#          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
+    - name: Setup Node.js ${{ inputs.NODE_VERSION }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.NODE_VERSION }}
+    #          cache: 'npm'
+    #          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
-      - name: Install dependencies
-        shell: ${{ inputs.SHELL }}
-        run: npm ci
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+    - name: Install dependencies
+      shell: ${{ inputs.SHELL }}
+      run: npm ci
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
-      - name: Build Node.js ${{ inputs.NODE_VERSION }}
-        shell: ${{ inputs.SHELL }}
-        run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }} -- ${{ inputs.BUILD_ARGS }}
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+    - name: Build Node.js ${{ inputs.NODE_VERSION }}
+      if: ${{ inputs.PROJECT == '' }}
+      shell: ${{ inputs.SHELL }}
+      run: npm run build:${{ inputs.RELEASE_ENVIRONMENT }} -- ${{ inputs.BUILD_ARGS }}
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
+    - name: Build Node.js ${{ inputs.NODE_VERSION }}
+      if: ${{ inputs.PROJECT != '' }}
+      shell: ${{ inputs.SHELL }}
+      run: npm run ${{ inputs.PROJECT }}:build:${{ inputs.RELEASE_ENVIRONMENT }} -- ${{ inputs.BUILD_ARGS }}
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}

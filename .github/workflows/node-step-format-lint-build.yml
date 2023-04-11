@@ -16,6 +16,10 @@ on:
         required: false
         type: boolean
         default: true
+      PROJECT:
+        required: false
+        type: string
+        default: ""
 
 env: "${{secrets}}"
 
@@ -37,6 +41,23 @@ jobs:
 #        cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
     - run: npm ci
+
+    # GENERIC
     - run: npm run ci:format:check
+      if:  ${{ inputs.PROJECT == '' }}
+
     - run: npm run ci:lint
+      if:  ${{ inputs.PROJECT == '' }}
+
     - run: npm run ci:build
+      if:  ${{ inputs.PROJECT == '' }}
+
+    # PROJECT SPECIFIC
+    - run: npm run ${{ inputs.PROJECT }}:ci:format:check
+      if:  ${{ inputs.PROJECT != '' }}
+
+    - run: npm run ${{ inputs.PROJECT }}:ci:lint
+      if:  ${{ inputs.PROJECT != '' }}
+
+    - run: npm run ${{ inputs.PROJECT }}:ci:build
+      if:  ${{ inputs.PROJECT != '' }}

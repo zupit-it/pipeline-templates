@@ -39,6 +39,11 @@ on:
         required: false
         type: string
         default: '{}'
+      PROJECT:
+        required: false
+        type: string
+        default: ""
+
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
@@ -62,6 +67,7 @@ jobs:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          PROJECT: ${{ inputs.PROJECT }}
         env: "${{secrets}}"
 
       - name: Docker Build & Push
