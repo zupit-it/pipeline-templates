@@ -27,6 +27,10 @@ on:
         required: false
         type: boolean
         default: true
+      PROJECT:
+        required: false
+        type: string
+        default: ""
 
 env: "${{secrets}}"
 
@@ -43,14 +47,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - run: npm config set cache /tmp/npm_cache && npm ci
+
       - name: Cypress run
         uses: cypress-io/github-action@v4
+        if: ${{ inputs.PROJECT == '' }}
         with:
           install: false
           command: npm run ci:e2e
           working-directory: ${{ inputs.WORKING_DIRECTORY }}
           browser: ${{ inputs.BROWSER }}
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        if: ${{ inputs.PROJECT != '' }}
+        with:
+          install: false
+          command: npm run ${{ inputs.PROJECT }}:ci:e2e
+          working-directory: ${{ inputs.WORKING_DIRECTORY }}
+          browser: ${{ inputs.BROWSER }}
+
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:

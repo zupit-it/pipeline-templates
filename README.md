@@ -113,6 +113,7 @@ It requires these inputs:
 In addition, it is possible to specify this optional input:
 
 -   **SHELL**: The shell type to use. By default, it is **bash**.
+-   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
 
 This is an example to show how data should be formatted.
 
@@ -584,12 +585,14 @@ Thus, it is easy to understand that the workflows uses a specific technology or 
 
 This workflow requires these commands in order to succeed:
 
-1. **ci:format:check**: Check that the code is formatted correctly.
-2. **ci:lint**: Check that the code is linted correctly.
-3. **ci:build**: Check that the project builds correctly
-4. **ci:e2e**: Check that all cypress tests pass _(only if tests are enabled)_.
+1. **[PROJECT:]ci:format:check**: Check that the code is formatted correctly.
+2. **[PROJECT:]ci:lint**: Check that the code is linted correctly.
+3. **[PROJECT:]ci:build**: Check that the project builds correctly
+4. **[PROJECT:]ci:e2e**: Check that all cypress tests pass _(only if tests are enabled)_.
    This command must generate the coverage report **lcov.info** inside the **coverage** folder in the NodeJS directory.
    (e.g. `frontend/coverage/lcov.info`)
+
+The **optional** `PROJECT` value is used in configurations where a single Node solution hosts multiple projects. This is the case for NX, where multiple applications and libraries exist in the same Node project.
 
 This workflow uses **npm** as package manager.
 
@@ -617,6 +620,7 @@ In addition, it is possible to specify these optional inputs:
 -   **ENABLE_TESTS**: Whether it should skip or not the cypress tests workflow. By default, it is **true**.
 -   **TIMEOUT**: Used for tests, if the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
+-   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
 
 This is an example to show how data should be formatted.
 
@@ -717,6 +721,7 @@ In addition, it is possible to specify these optional inputs:
 -   **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
 -   **REGISTRY_USER**: The registry url where to push the Docker image.
     By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
+-   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
 
 It then outputs this variable:
 

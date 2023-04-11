@@ -36,6 +36,10 @@ on:
         required: false
         type: boolean
         default: true
+      PROJECT:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   lint-check-build:
@@ -46,6 +50,7 @@ jobs:
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       NODE_VERSION: ${{inputs.NODE_VERSION}}
       RUN: ${{inputs.RUN}}
+      PROJECT: ${{ inputs.PROJECT }}
     secrets: inherit
 
   cypress-run:
@@ -59,5 +64,6 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       TIMEOUT: ${{ inputs.TIMEOUT }}
       RUN: ${{ inputs.RUN }}
+      PROJECT: ${{ inputs.PROJECT }}
     secrets: inherit
 
