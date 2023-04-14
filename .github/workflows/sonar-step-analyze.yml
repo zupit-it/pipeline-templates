@@ -58,5 +58,11 @@ jobs:
         if: steps.check_lcov_file.outputs.files_exists == 'true'
         run: mv coverage/lcov.info/lcov.info ./lcov.info && rm -rf coverage/lcov.info && mv ./lcov.info ./coverage/lcov.info
 
+      - name: Check pwd
+        run: pwd
+
+      - name: Cat ./coverage/lcov.info
+        run: cat ./coverage/lcov.info
+
       - name: Run Sonar
         run: sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
