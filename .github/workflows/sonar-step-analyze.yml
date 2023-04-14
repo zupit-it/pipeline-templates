@@ -46,17 +46,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{inputs.ARTIFACT_FILENAME}}
-          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}${{inputs.ARTIFACT_FILENAME}}
-
-      - name: Check lcov in wrong position file existence (workaround)
-        id: check_lcov_file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "coverage/lcov.info/lcov.info"
-
-      - name: lcov in wrong position file exists (workaround)
-        if: steps.check_lcov_file.outputs.files_exists == 'true'
-        run: mv coverage/lcov.info/lcov.info ./lcov.info && rm -rf coverage/lcov.info && mv ./lcov.info ./coverage/lcov.info
+          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
 
       - name: Run Sonar
         run: sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
