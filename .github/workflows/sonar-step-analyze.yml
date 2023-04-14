@@ -46,7 +46,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{inputs.ARTIFACT_FILENAME}}
-          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}${{inputs.ARTIFACT_FILENAME}}
+          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
 
       - name: Check lcov in wrong position file existence (workaround)
         id: check_lcov_file
