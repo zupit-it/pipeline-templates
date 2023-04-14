@@ -50,7 +50,7 @@ jobs:
 
       - name: Check lcov in wrong position file existence (workaround)
         id: check_lcov_file
-        uses: andstor/file-existence-action@v1
+        uses: andstor/file-existence-action@v2
         with:
           files: "./coverage/lcov.info/lcov.info"
 
