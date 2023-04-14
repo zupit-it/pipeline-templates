@@ -52,11 +52,11 @@ jobs:
         id: check_lcov_file
         uses: andstor/file-existence-action@v1
         with:
-          files: "coverage/lcov.info/lcov.info"
+          files: "./coverage/lcov.info/lcov.info"
 
       - name: lcov in wrong position file exists (workaround)
         if: steps.check_lcov_file.outputs.files_exists == 'true'
-        run: mv coverage/lcov.info/lcov.info ./lcov.info && rm -rf coverage/lcov.info && mv ./lcov.info ./coverage/lcov.info
+        run: mv ./coverage/lcov.info/lcov.info ./lcov.info && rm -rf coverage/lcov.info && mv ./lcov.info ./coverage/lcov.info
 
       - name: Check pwd
         run: pwd
