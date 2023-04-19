@@ -23,6 +23,8 @@ If you would like to get more details of these tasks, just look at this [doc](do
     5. [Azure](#azure-action)
         1. [App Service](#azure-action---app-service)
         2. [Storage Account](#azure-action---storage-account)
+    6. [IIS](#iis-action)
+       1. [Deploy](#iis-action---deploy)
 2. [Reusable Workflows](#reusable-workflows)
     1. [Naming Convention](#naming-convention)
     2. [NodeJS](#nodejs)
@@ -550,6 +552,48 @@ steps:
           CDN_ENDPOINT_NAME: cdne-myproject-001
           CDN_RG_NAME: rg-myproject-001
 ```
+
+### IIS Action
+
+#### IIS Action - Deploy
+
+This action:
+-   deploy an application to IIS.
+
+###### Requirements
+- IIS 6
+- The account used to run the GitHub runner must be part of the `Administrators` group.
+- The application pool must have the same name as the folder of the application.
+- The entrypoint for the IIS website must be located inside the application's folder, and it must be named `htdocs`.
+
+**Example**
+- Application pool name: `example.zupit.software`
+- Application folder: `C:\inetpub\example.zupit.software`
+- IIS website entrypoint: `C:\inetpub\example.zupit.software\htdocs`
+
+###### Action
+
+**.github/actions/iis/deploy** is the action that deploys an application to IIS.
+
+
+It requires these inputs:
+
+- **ARTIFACT_NAME**: The artifact's name holding the application's binaries.
+- **APPS_PATH**: The folder path where IIS websites are hosted. This must be the parent of the application's folder.
+- **APP_POOL_NAME**: The name of the application pool.
+
+This is an example to show how data should be formatted.
+
+```yaml
+steps:
+    - name: Deploy to IIS
+      uses: zupit-it/pipeline-templates/.github/actions/iis/deploy@main
+      with:
+          ARTIFACT_NAME: my-artifact-name
+          APPS_PATH: 'C:\inetpub'
+          APP_POOL_NAME: 'example.zupit.software'
+```
+
 
 ## Reusable Workflows
 

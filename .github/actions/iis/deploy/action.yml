@@ -1,0 +1,69 @@
+name: NodeJS build
+
+inputs:
+  ARTIFACT_NAME:
+    required: true
+    type: string
+  APPS_PATH:
+    required: true
+    type: string
+  APP_POOL_NAME:
+    required: false
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - name: Download artifact
+      id: download-artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.ARTIFACT_NAME }}
+        path: ${{ inputs.ARTIFACT_NAME }}
+
+    - name: Create variables
+      id: vars
+      shell: powershell
+      working-directory: ${{ inputs.APPS_PATH }}
+      run: |
+        $date = Get-Date -format "yyyy-MM-dd_HH.mm.ss"
+        $finalPath = "${{ inputs.APPS_PATH }}\${{ inputs.APP_POOL_NAME }}\htdocs".replace("\\", "\");
+        $backupPath = "${{ inputs.APPS_PATH }}\${{ inputs.APP_POOL_NAME }}\$date".replace("\\", "\");
+
+        echo "final-path=$finalPath" >> $env:GITHUB_OUTPUT
+        echo "backup-path=$backupPath" >> $env:GITHUB_OUTPUT
+
+    - name: Stop App Pool
+      shell: powershell
+      working-directory: ${{ inputs.APPS_PATH }}
+      run: |
+        if ((Get-WebAppPoolState -Name ${{ inputs.APP_POOL_NAME }}).Value -eq "Started") {
+            Stop-WebAppPool -Name "${{ inputs.APP_POOL_NAME }}"
+            do
+            {
+              Start-Sleep -Seconds 1
+            }
+            until ((Get-WebAppPoolState -Name ${{ inputs.APP_POOL_NAME }}).Value -eq "Stopped")
+        }
+
+    - name: Backup previous app binaries
+      shell: powershell
+      working-directory: ${{ inputs.APPS_PATH }}
+      run: |
+        move "${{ steps.vars.outputs.final-path }}" "${{ steps.vars.outputs.backup-path }}"
+        mkdir "${{ steps.vars.outputs.final-path }}"
+
+    - name: Copy new app
+      shell: powershell
+      working-directory: ${{ inputs.APPS_PATH }}
+      run: Copy-Item -Path "${{ steps.download-artifact.outputs.download-path }}\*" -Destination "${{ steps.vars.outputs.final-path }}" -Recurse
+
+    - name: Remove backup
+      shell: powershell
+      working-directory: ${{ inputs.APPS_PATH }}
+      run: rm "${{ steps.vars.outputs.backup-path }}" -r -force
+
+    - name: Start App Pool
+      shell: powershell
+      working-directory: ${{ inputs.APPS_PATH }}
+      run: Start-WebAppPool -Name "${{ inputs.APP_POOL_NAME }}"
