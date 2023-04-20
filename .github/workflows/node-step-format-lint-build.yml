@@ -45,7 +45,10 @@ jobs:
         node-version: ${{ inputs.NODE_VERSION }}
 #        cache: 'npm'
 #        cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
-
+    
+    - name: Authenticate with private NPM package
+      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+      
     - run: npm ci
 
     # GENERIC
