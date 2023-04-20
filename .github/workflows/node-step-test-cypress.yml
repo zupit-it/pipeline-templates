@@ -48,6 +48,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Authenticate with private NPM package
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+
       - run: npm config set cache /tmp/npm_cache && npm ci
 
       - name: Cypress run
