@@ -36,6 +36,9 @@ runs:
     #          cache: 'npm'
     #          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
+    - name: Authenticate with private NPM package
+      run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+        
     - name: Install dependencies
       shell: ${{ inputs.SHELL }}
       run: npm ci
