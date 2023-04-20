@@ -52,6 +52,7 @@ runs:
     - name: Azure logout
       uses: azure/CLI@v1
       if: always()
+      continue-on-error: true
       with:
         inlineScript: |
           az logout
