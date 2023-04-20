@@ -20,13 +20,6 @@ on:
         required: false
         type: string
         default: ""
-      REGISTRY_URL:
-        required: false
-        type: string
-      NPM_TOKEN:
-        required: false
-        type: string
-        default: ""
 
 env: "${{secrets}}"
 
@@ -44,13 +37,12 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.NODE_VERSION }}
-        registry-url: ${{inputs.REGISTRY_URL}}
 #        cache: 'npm'
 #        cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
     - name: Authenticate with private NPM package
-      if: ${{ secrets.NPM_TOKEN == '' }}
-      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc    
+      run: echo "//registry.npmjs.org/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+      
     - run: npm ci
 
     # GENERIC
