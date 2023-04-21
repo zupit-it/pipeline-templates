@@ -1,0 +1,91 @@
+name: Docker build and push node image to registry
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      NODE_VERSION:
+        required: true
+        type: string
+      RELEASE_ENVIRONMENT:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      DOCKERFILE_PATH:
+        required: true
+        type: string
+      DOCKER_IMAGE_NAME:
+        required: true
+        type: string
+      DOCKER_IMAGE_TAG:
+        required: true
+        type: string
+      BUILD_ARGS:
+        required: true
+        type: string
+      REGISTRY_URL:
+        required: false
+        type: string
+        default: ghcr.io
+      REGISTRY_USER:
+        required: false
+        type: string
+        default: ${{ github.actor }}
+      ENV_VARIABLES:
+        required: false
+        type: string
+        default: '{}'
+      PROJECT:
+        required: false
+        type: string
+        default: ""
+      IMAGE:
+        required: false
+        type: string
+        default: "ubuntu:23.04"
+
+    outputs:
+      DOCKER_IMAGE_NAME:
+        description: "The docker image name that has been built"
+        value: ${{ jobs.docker-build-and-push.outputs.DOCKER_IMAGE_NAME }}
+
+env: "${{secrets}}"
+
+jobs:
+  docker-build-and-push:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    container:
+      image: ${{ inputs.IMAGE }}
+
+    outputs:
+      DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
+
+    env: ${{ fromJson(inputs.ENV_VARIABLES) }}
+
+    steps:
+      - name: NodeJS Build
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@main
+        with:
+          NODE_VERSION: ${{ inputs.NODE_VERSION }}
+          RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          PROJECT: ${{ inputs.PROJECT }}
+        env: "${{secrets}}"
+
+      - name: Docker Build & Push
+        id: docker
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@main
+        with:
+          REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
+          REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          DOCKERFILE_PATH: ${{ inputs.DOCKERFILE_PATH }}
+          DOCKER_IMAGE_NAME: ${{ inputs.DOCKER_IMAGE_NAME }}
+          DOCKER_IMAGE_TAG: ${{ inputs.DOCKER_IMAGE_TAG }}
+          BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
+        env: "${{secrets}}"
