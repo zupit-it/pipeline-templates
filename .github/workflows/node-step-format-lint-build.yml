@@ -1,4 +1,4 @@
-name: Lint, check and build a Javascript app
+name: DEPRECATED Lint, check and build a Javascript app
 
 on:
   workflow_call:

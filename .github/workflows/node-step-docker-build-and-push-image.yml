@@ -1,4 +1,4 @@
-name: Docker build and push node image to registry
+name: DEPRECATED Docker build and push node image to registry
 
 on:
   workflow_call:

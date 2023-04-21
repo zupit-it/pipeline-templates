@@ -24,7 +24,7 @@ If you would like to get more details of these tasks, just look at this [doc](do
         1. [App Service](#azure-action---app-service)
         2. [Storage Account](#azure-action---storage-account)
     6. [IIS](#iis-action)
-       1. [Deploy](#iis-action---deploy)
+        1. [Deploy](#iis-action---deploy)
 2. [Reusable Workflows](#reusable-workflows)
     1. [Naming Convention](#naming-convention)
     2. [NodeJS](#nodejs)
@@ -558,29 +558,31 @@ steps:
 #### IIS Action - Deploy
 
 This action:
+
 -   deploy an application to IIS.
 
 ###### Requirements
-- IIS 6
-- The account used to run the GitHub runner must be part of the `Administrators` group.
-- The application pool must have the same name as the folder of the application.
-- The entrypoint for the IIS website must be located inside the application's folder, and it must be named `htdocs`.
+
+-   IIS 6
+-   The account used to run the GitHub runner must be part of the `Administrators` group.
+-   The application pool must have the same name as the folder of the application.
+-   The entrypoint for the IIS website must be located inside the application's folder, and it must be named `htdocs`.
 
 **Example**
-- Application pool name: `example.zupit.software`
-- Application folder: `C:\inetpub\example.zupit.software`
-- IIS website entrypoint: `C:\inetpub\example.zupit.software\htdocs`
+
+-   Application pool name: `example.zupit.software`
+-   Application folder: `C:\inetpub\example.zupit.software`
+-   IIS website entrypoint: `C:\inetpub\example.zupit.software\htdocs`
 
 ###### Action
 
 **.github/actions/iis/deploy** is the action that deploys an application to IIS.
 
-
 It requires these inputs:
 
-- **ARTIFACT_NAME**: The artifact's name holding the application's binaries.
-- **APPS_PATH**: The folder path where IIS websites are hosted. This must be the parent of the application's folder.
-- **APP_POOL_NAME**: The name of the application pool.
+-   **ARTIFACT_NAME**: The artifact's name holding the application's binaries.
+-   **APPS_PATH**: The folder path where IIS websites are hosted. This must be the parent of the application's folder.
+-   **APP_POOL_NAME**: The name of the application pool.
 
 This is an example to show how data should be formatted.
 
@@ -591,9 +593,8 @@ steps:
       with:
           ARTIFACT_NAME: my-artifact-name
           APPS_PATH: 'C:\inetpub'
-          APP_POOL_NAME: 'example.zupit.software'
+          APP_POOL_NAME: "example.zupit.software"
 ```
-
 
 ## Reusable Workflows
 
@@ -623,6 +624,13 @@ Thus, it is easy to understand that the workflows uses a specific technology or 
 
 ### NodeJS - Backend & Frontend
 
+> The following workflows are deprecated:
+>
+> -   node-step-azure-storage-build-and-deploy.yml
+> -   node-step-docker-build-and-push-image.yml
+> -   node-step-format-lint-build.yml
+> -   node-workflow-common.yml
+
 #### NodeJS Common
 
 ###### Requirements
@@ -642,12 +650,12 @@ This workflow uses **npm** as package manager.
 
 ###### Workflow
 
-**node-workflow-common.yml** is the reusable workflow to check that the code is correctly formatted and linted, that it
+**node-workflow-common-container.yml** is the reusable workflow to check that the code is correctly formatted and linted, that it
 builds correctly and that all tests pass.
 
 It groups together these reusable workflows:
 
--   _node-step-format-lint-build.yml_
+-   _node-step-format-lint-build-container.yml_
 -   _node-step-test-cypress.yml_
 
 It requires these inputs:
@@ -671,7 +679,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     node-common:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-workflow-common.yml@main
+        uses: zupit-it/pipeline-templates/.github/workflows/node-workflow-common-container.yml@main
         with:
             NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
             CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
@@ -709,7 +717,7 @@ jobs:
 
     angular-common:
         needs: check-changes
-        uses: ZupitSRL/pipeline-templates/.github/workflows/node-workflow-common.yml@main
+        uses: ZupitSRL/pipeline-templates/.github/workflows/node-workflow-common-container.yml@main
         with:
             WORKING_DIRECTORY: "frontend"
             NODE_VERSION: "14.11.0"
@@ -739,7 +747,7 @@ This workflow uses **npm** as package manager.
 
 ###### Workflow
 
-**node-step-docker-build-and-push-image.yml** is the workflow that builds the docker image and then push it to the registry.
+**node-step-docker-build-and-push-image-container.yml** is the workflow that builds the docker image and then push it to the registry.
 This is a similar version of the _docker-step-build-and-push-image.yml_ as this adds the NodeJS build of the project.
 
 This workflow uses these composite actions:
@@ -776,7 +784,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@main
+        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image-container.yml@main
         with:
             LABELS: "['pinga', 'pipeline', 'container']"
             NODE_VERSION: 16.17.0
@@ -807,7 +815,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy.yml@main
+        uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy-container.yml@main
         with:
             LABELS: "['my-team', 'pipeline', 'native']"
             WORKING_DIRECTORY: front-end

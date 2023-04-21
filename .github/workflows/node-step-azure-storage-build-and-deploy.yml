@@ -1,4 +1,4 @@
-name: Node build and deploy to Azure Storage
+name: DEPRECATED Node build and deploy to Azure Storage
 
 on:
   workflow_call:

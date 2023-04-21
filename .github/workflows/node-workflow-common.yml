@@ -1,4 +1,4 @@
-name: Node.js common
+name: DEPRECATED Node.js common
 
 on:
   workflow_call:
