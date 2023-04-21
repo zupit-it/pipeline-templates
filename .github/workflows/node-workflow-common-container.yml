@@ -1,0 +1,69 @@
+name: Node.js common
+
+on:
+  workflow_call:
+    inputs:
+      # Projects inputs
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      NODE_VERSION:
+        required: true
+        type: string
+      ENABLE_TESTS:
+        required: false
+        type: boolean
+        default: true
+      CYPRESS_IMAGE:
+        required: false
+        type: string
+      COVERAGE_ARTIFACT_NAME:
+        required: false
+        type: string
+        default: "lcov.info"
+      TIMEOUT:
+        required: false
+        type: number
+        default: 30
+      # Workflow inputs
+      NATIVE_CI_LABELS:
+        required: true
+        type: string
+      CONTAINER_CI_LABELS:
+        required: true
+        type: string
+      RUN:
+        required: false
+        type: boolean
+        default: true
+      PROJECT:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  lint-check-build:
+    uses:
+      ./.github/workflows/node-step-format-lint-build-container.yml
+    with:
+      LABELS: ${{ inputs.NATIVE_CI_LABELS }}
+      WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
+      NODE_VERSION: ${{inputs.NODE_VERSION}}
+      RUN: ${{inputs.RUN}}
+      PROJECT: ${{ inputs.PROJECT }}
+    secrets: inherit
+
+  cypress-run:
+    if: ${{ inputs.ENABLE_TESTS }}
+    uses:
+      ./.github/workflows/node-step-test-cypress.yml
+    with:
+      LABELS: ${{ inputs.CONTAINER_CI_LABELS }}
+      WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
+      CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}
+      COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+      TIMEOUT: ${{ inputs.TIMEOUT }}
+      RUN: ${{ inputs.RUN }}
+      PROJECT: ${{ inputs.PROJECT }}
+    secrets: inherit
+
