@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: NodeJS Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@main
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@ci-add-private-npm-support
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
