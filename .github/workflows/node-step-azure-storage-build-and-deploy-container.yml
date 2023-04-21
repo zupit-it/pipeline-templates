@@ -49,6 +49,11 @@ on:
         required: false
         type: string
         default: ""
+      IMAGE:
+        required: false
+        type: string
+        default: "ubuntu:23.04"
+
 
 env: "${{secrets}}"
 
