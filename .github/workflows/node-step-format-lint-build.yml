@@ -47,6 +47,7 @@ jobs:
 #        cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
     - name: Authenticate with private NPM package
+      if: ${{ secrets }}
       run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
 
     - run: npm ci
