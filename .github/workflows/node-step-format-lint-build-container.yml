@@ -1,4 +1,4 @@
-name: DEPRECATED Lint, check and build a Javascript app
+name: Lint, check and build a Javascript app
 
 on:
   workflow_call:
@@ -20,6 +20,10 @@ on:
         required: false
         type: string
         default: ""
+      IMAGE:
+        required: false
+        type: string
+        default: "ubuntu:23.04"
 
 env: "${{secrets}}"
 
@@ -27,6 +31,8 @@ jobs:
   lint-check-build:
     if: ${{ inputs.RUN }}
     runs-on: ${{ fromJson(inputs.LABELS) }}
+    container:
+      image: ${{ inputs.IMAGE }}
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
@@ -39,6 +45,10 @@ jobs:
         node-version: ${{ inputs.NODE_VERSION }}
 #        cache: 'npm'
 #        cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
+
+    - name: Authenticate with private NPM package
+      if: ${{ env.github_token }}
+      run: echo "//npm.pkg.github.com/:_authToken=${{ env.github_token }}" > ~/.npmrc
 
     - run: npm ci
 

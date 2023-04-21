@@ -1,4 +1,4 @@
-name: DEPRECATED Node build and deploy to Azure Storage
+name: Node build and deploy to Azure Storage
 
 on:
   workflow_call:
@@ -49,6 +49,11 @@ on:
         required: false
         type: string
         default: ""
+      IMAGE:
+        required: false
+        type: string
+        default: "ubuntu:23.04"
+
 
 env: "${{secrets}}"
 
@@ -56,6 +61,8 @@ jobs:
   angular-build-and-deploy-azure-storage:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
+    container:
+      image: ${{ inputs.IMAGE }}
 
     defaults:
       run:

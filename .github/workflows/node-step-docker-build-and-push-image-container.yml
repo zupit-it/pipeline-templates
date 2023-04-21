@@ -1,4 +1,4 @@
-name: DEPRECATED Docker build and push node image to registry
+name: Docker build and push node image to registry
 
 on:
   workflow_call:
@@ -43,6 +43,10 @@ on:
         required: false
         type: string
         default: ""
+      IMAGE:
+        required: false
+        type: string
+        default: "ubuntu:23.04"
 
     outputs:
       DOCKER_IMAGE_NAME:
@@ -54,6 +58,8 @@ env: "${{secrets}}"
 jobs:
   docker-build-and-push:
     runs-on: ${{ fromJson(inputs.LABELS) }}
+    container:
+      image: ${{ inputs.IMAGE }}
 
     outputs:
       DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
