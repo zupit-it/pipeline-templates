@@ -46,7 +46,7 @@ jobs:
     uses:
       ./.github/workflows/node-step-format-lint-build-container.yml
     with:
-      LABELS: ${{ inputs.NATIVE_CI_LABELS }}
+      CI_LABELS: ${{ inputs.CONTAINER_CI_LABELS }}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       NODE_VERSION: ${{inputs.NODE_VERSION}}
       RUN: ${{inputs.RUN}}
