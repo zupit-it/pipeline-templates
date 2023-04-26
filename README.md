@@ -665,6 +665,7 @@ It requires these inputs:
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the NodeJS application.
 -   **NODE_VERSION**: The NodeJS Docker image where the runner execute all the commands.
 -   **CYPRESS_IMAGE**: The Cypress Docker image where the runner execute all the commands.
+-   **DIST_PATH**: The output distribution path of the node build
 
 In addition, it is possible to specify these optional inputs:
 
@@ -759,7 +760,8 @@ _This workflow uses a NodeJS Docker image, hence remember to use labels to match
 
 It requires these inputs:
 
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
+-   **NATIVE_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
+-   **CONTAINER_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
 -   **NODE_VERSION**: The NodeJS version required to build the project.
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 -   **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
@@ -767,6 +769,7 @@ It requires these inputs:
 -   **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
 -   **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
 -   **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
+-   **DIST_PATH**: The output distribution path of the node build
 
 In addition, it is possible to specify these optional inputs:
 

@@ -3,7 +3,10 @@ name: Docker build and push node image to registry
 on:
   workflow_call:
     inputs:
-      LABELS:
+      NATIVE_CI_LABELS:
+        required: true
+        type: string
+      CONTAINER_CI_LABELS:
         required: true
         type: string
       NODE_VERSION:
@@ -47,6 +50,9 @@ on:
         required: false
         type: string
         default: "ubuntu:23.04"
+      DIST_PATH:
+        required: true
+        type: string
 
     outputs:
       DOCKER_IMAGE_NAME:
@@ -56,13 +62,10 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  docker-build-and-push:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+  build-node-project:
+    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
     container:
       image: ${{ inputs.IMAGE }}
-
-    outputs:
-      DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
 
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
 
@@ -75,6 +78,28 @@ jobs:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           PROJECT: ${{ inputs.PROJECT }}
         env: "${{secrets}}"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: node-build
+          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
+          retention-days: 1
+        
+  docker-build-and-push:
+    runs-on: ${{ fromJson(inputs.NATIVE_CI_LABELS) }}
+
+    outputs:
+      DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
+
+    env: ${{ fromJson(inputs.ENV_VARIABLES) }}
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: node-build
+          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
 
       - name: Docker Build & Push
         id: docker
