@@ -94,6 +94,8 @@ jobs:
 
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
 
+    needs: [ build-node-project ]
+    
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v3
