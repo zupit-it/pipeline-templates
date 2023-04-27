@@ -16,7 +16,7 @@ on:
         required: true
         type: string
       AZURE_FUNCTIONAPP_PUBLISH_PROFILE:
-        required: false
+        required: true
         type: string
       SLOT_NAME:
         required: false
