@@ -1,0 +1,56 @@
+name: Docker build and push image
+
+on:
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
+      PYTHON_VERSION:
+        required: true
+        type: string
+      AZURE_FUNCTIONAPP_NAME:
+        required: true
+        type: string
+      AZURE_FUNCTIONAPP_PACKAGE_PATH:
+        required: true
+        type: string
+      AZURE_FUNCTIONAPP_PUBLISH_PROFILE:
+        required: false
+        type: string
+      SLOT_NAME:
+        required: false
+        type: string
+
+env: "${{secrets}}"
+
+jobs:
+  build-and-deploy:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Setup Python ${{ inputs.PYTHON_VERSION }} Environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ inputs.PYTHON_VERSION }}
+
+      - name: 'Resolve Project Dependencies Using Pip'
+        shell: bash
+        run: |
+          pushd './${{ inputs.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt --target=".python_packages/lib/site-packages"
+          popd
+          
+      - name: 'Run Azure Functions Action'
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ inputs.AZURE_FUNCTIONAPP_NAME }}
+          package: ${{ inputs.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          publish-profile: ${{ inputs.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          slot-name: ${{ inputs.SLOT_NAME }}
+          respect-funcignore: true
+
