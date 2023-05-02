@@ -53,12 +53,15 @@ on:
         required: false
         type: string
         default: "ubuntu:23.04"
+      DIST_PATH:
+        required: true
+        type: string
 
 
 env: "${{secrets}}"
 
 jobs:
-  angular-build-and-deploy-azure-storage:
+  node-build:
     runs-on: ${{ fromJson(inputs.LABELS) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:
@@ -69,7 +72,6 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
-
     steps:
       - name: Build
         uses: zupit-it/pipeline-templates/.github/actions/node/build@main
@@ -79,6 +81,20 @@ jobs:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
           PROJECT: ${{ inputs.PROJECT }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: node-build
+          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
+          retention-days: 1
+
+  node-deploy-azure-storage:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: node-build
+          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
 
       - name: Deploy to Azure Storage
         uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@main
