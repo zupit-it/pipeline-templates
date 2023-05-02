@@ -3,7 +3,10 @@ name: Node build and deploy to Azure Storage
 on:
   workflow_call:
     inputs:
-      LABELS:
+      NATIVE_CI_LABELS:
+        required: true
+        type: string
+      CONTAINER_CI_LABELS:
         required: true
         type: string
       NODE_VERSION:
@@ -61,8 +64,8 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  node-build:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+  build-node-project:
+    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:
       image: ${{ inputs.IMAGE }}
@@ -90,6 +93,10 @@ jobs:
           retention-days: 1
 
   node-deploy-azure-storage:
+    runs-on: ${{ fromJson(inputs.NATIVE_CI_LABELS) }}
+    env: ${{ fromJson(inputs.ENV_VARIABLES) }}
+    needs: [ build-node-project ]
+    steps:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
