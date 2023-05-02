@@ -95,6 +95,9 @@ jobs:
     runs-on: ${{ fromJson(inputs.NATIVE_CI_LABELS) }}
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
     needs: [ build-node-project ]
     steps:
       - name: Download artifact
