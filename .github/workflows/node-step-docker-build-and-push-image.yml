@@ -62,7 +62,7 @@ jobs:
 
     steps:
       - name: NodeJS Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@main
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.0.0
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
@@ -72,7 +72,7 @@ jobs:
 
       - name: Docker Build & Push
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@main
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.0.0
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
