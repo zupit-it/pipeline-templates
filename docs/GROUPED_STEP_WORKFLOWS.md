@@ -44,7 +44,7 @@ This is an example to show how data should be formatted.
 jobs:
   node-lint-check-build:
     uses:
-      zupit-it/pipeline-templates/.github/workflows/node-step-format-lint-build.yml@main
+      zupit-it/pipeline-templates/.github/workflows/node-step-format-lint-build.yml@v1.0.0
     with:
       LABELS: "['pinga', 'pipeline', 'native']"
       WORKING_DIRECTORY: frontend
@@ -86,7 +86,7 @@ This is an example to show how data should be formatted.
 jobs:
   cypress-run:
     uses:
-      zupit-it/pipeline-templates/.github/workflows/node-step-test-cypress.yml@main
+      zupit-it/pipeline-templates/.github/workflows/node-step-test-cypress.yml@v1.0.0
     with:
       LABELS: "['pinga', 'pipeline', 'container']"
       WORKING_DIRECTORY: frontend
@@ -126,7 +126,7 @@ This is an example to show how data should be formatted.
 jobs:
   django-lint-check:
     uses:
-      zupit-it/pipeline-templates/.github/workflows/django-step-lint-check.yml@main
+      zupit-it/pipeline-templates/.github/workflows/django-step-lint-check.yml@v1.0.0
     with:
       LABELS: "['pinga', 'pipeline', 'container']"
       WORKING_DIRECTORY: backend
@@ -164,7 +164,7 @@ This is an example to show how data should be formatted.
 jobs:
   django-step-tests:
     uses:
-      zupit-it/pipeline-templates/.github/workflows/django-step-tests.yml@main
+      zupit-it/pipeline-templates/.github/workflows/django-step-tests.yml@v1.0.0
     with:
       LABELS: "['pinga', 'pipeline', 'container']"
       WORKING_DIRECTORY: backend
