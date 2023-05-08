@@ -882,7 +882,7 @@ jobs:
             NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
             CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
             COVERAGE_ARTIFACT_NAME: coverage-django.xml
-            SETUP_COMMANDS: "apt update  apt install -y gcc"
+            SETUP_COMMANDS: "apt update && apt install -y gcc"
         secrets: inherit
 ```
 

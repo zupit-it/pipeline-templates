@@ -136,7 +136,7 @@ jobs:
       LABELS: "['pinga', 'pipeline', 'container']"
       WORKING_DIRECTORY: backend
       PYTHON_IMAGE: python:3.8.2-slim-buster
-      SETUP_COMMANDS: "apt update  apt install -y gcc"
+      SETUP_COMMANDS: "apt update && apt install -y gcc"
     secrets: inherit
 ```
 
@@ -181,7 +181,7 @@ jobs:
       WORKING_DIRECTORY: backend
       PYTHON_IMAGE: python:3.8.2-slim-buster
       COVERAGE_ARTIFACT_NAME: coverage-django.xml
-      SETUP_COMMANDS: "apt update  apt install -y gcc"
+      SETUP_COMMANDS: "apt update && apt install -y gcc"
     secrets: inherit
 ```
 
