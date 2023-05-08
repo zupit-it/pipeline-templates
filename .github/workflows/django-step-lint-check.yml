@@ -20,6 +20,10 @@ on:
         required: false
         type: string
         default: ""
+      SETUP_COMMANDS:
+        required: false
+        type: string
+        default: ""
 
 env: "${{secrets}}"
 
@@ -46,6 +50,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Setup
+        run: ${{ inputs.SETUP_COMMANDS }}
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Copy env file

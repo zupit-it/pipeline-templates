@@ -119,6 +119,11 @@ It requires these inputs:
 - **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands
 
 In addition, it is possible to specify this optional input:
+
+-   **SETUP_COMMANDS**: Allow to execute commands before the download of the dependencies. Useful to install packages required for Python dependencies.
+
+
+In addition, it is possible to specify this optional input:
 - RUN: Whether to run all the workflow or not. This is useful when you want to skip the workflow since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
@@ -131,6 +136,7 @@ jobs:
       LABELS: "['pinga', 'pipeline', 'container']"
       WORKING_DIRECTORY: backend
       PYTHON_IMAGE: python:3.8.2-slim-buster
+      SETUP_COMMANDS: "apt update && apt install -y gcc"
     secrets: inherit
 ```
 
@@ -157,6 +163,11 @@ It requires these inputs:
 - **COVERAGE_ARTIFACT_NAME**: The artifact's name for the *coverage-django.xml* file.
 
 In addition, it is possible to specify this optional input:
+
+-   **SETUP_COMMANDS**: Allow to execute commands before the download of the dependencies. Useful to install packages required for Python dependencies.
+
+
+In addition, it is possible to specify this optional input:
 - RUN: Whether to run all the workflow or not. This is useful when you want to skip the workflow since the code didn't change. By default, it is **true**.
 
 This is an example to show how data should be formatted. 
@@ -170,6 +181,7 @@ jobs:
       WORKING_DIRECTORY: backend
       PYTHON_IMAGE: python:3.8.2-slim-buster
       COVERAGE_ARTIFACT_NAME: coverage-django.xml
+      SETUP_COMMANDS: "apt update && apt install -y gcc"
     secrets: inherit
 ```
 
