@@ -1,4 +1,4 @@
-name: NodeJS build
+name: IIS Deploy
 
 inputs:
   ARTIFACT_NAME:
