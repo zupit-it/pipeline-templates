@@ -44,7 +44,7 @@ on:
 jobs:
   lint-check-build:
     uses:
-      ./.github/workflows/node-step-format-lint-build-container.yml
+      ./.github/workflows/node-step-format-lint-build.yml
     with:
       CI_LABELS: ${{ inputs.CONTAINER_CI_LABELS }}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
