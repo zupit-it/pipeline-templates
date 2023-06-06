@@ -650,12 +650,12 @@ This workflow uses **npm** as package manager.
 
 ###### Workflow
 
-**node-workflow-common-container.yml** is the reusable workflow to check that the code is correctly formatted and linted, that it
+**node-workflow-common.yml** is the reusable workflow to check that the code is correctly formatted and linted, that it
 builds correctly and that all tests pass.
 
 It groups together these reusable workflows:
 
--   _node-step-format-lint-build-container.yml_
+-   _node-step-format-lint-build.yml_
 -   _node-step-test-cypress.yml_
 
 It requires these inputs:
@@ -680,7 +680,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     node-common:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-workflow-common-container.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/node-workflow-common.yml@v1.0.0
         with:
             NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
             CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
@@ -718,7 +718,7 @@ jobs:
 
     angular-common:
         needs: check-changes
-        uses: ZupitSRL/pipeline-templates/.github/workflows/node-workflow-common-container.yml@v1.0.0
+        uses: ZupitSRL/pipeline-templates/.github/workflows/node-workflow-common.yml@v1.0.0
         with:
             WORKING_DIRECTORY: "frontend"
             NODE_VERSION: "14.11.0"
@@ -748,7 +748,7 @@ This workflow uses **npm** as package manager.
 
 ###### Workflow
 
-**node-step-docker-build-and-push-image-container.yml** is the workflow that builds the docker image and then push it to the registry.
+**node-step-docker-build-and-push-image.yml** is the workflow that builds the docker image and then push it to the registry.
 This is a similar version of the _docker-step-build-and-push-image.yml_ as this adds the NodeJS build of the project.
 
 This workflow uses these composite actions:
@@ -787,7 +787,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image-container.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@v1.0.0
         with:
             LABELS: "['pinga', 'pipeline', 'container']"
             NODE_VERSION: 16.17.0
@@ -818,7 +818,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy-container.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy.yml@v1.0.0
         with:
             LABELS: "['my-team', 'pipeline', 'native']"
             WORKING_DIRECTORY: front-end
