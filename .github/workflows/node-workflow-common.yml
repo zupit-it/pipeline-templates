@@ -1,4 +1,4 @@
-name: DEPRECATED Node.js common
+name: Node.js common
 
 on:
   workflow_call:
@@ -44,9 +44,9 @@ on:
 jobs:
   lint-check-build:
     uses:
-      ./.github/workflows/node-step-format-lint-build.yml
+      ./.github/workflows/node-step-format-lint-build-container.yml
     with:
-      LABELS: ${{ inputs.NATIVE_CI_LABELS }}
+      CI_LABELS: ${{ inputs.CONTAINER_CI_LABELS }}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       NODE_VERSION: ${{inputs.NODE_VERSION}}
       RUN: ${{inputs.RUN}}
