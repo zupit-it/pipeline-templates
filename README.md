@@ -122,7 +122,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'container']"
             NODE_VERSION: 16.17.0
@@ -181,7 +181,7 @@ steps:
 
     - name: Build & Push Docker
       id: docker
-      uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.0.2
       with:
           REGISTRY_URL: ghcr.io
           REGISTRY_USER: ${{ github.actor }}
@@ -232,7 +232,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Install .NET
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.0.2
       with:
           WORKING_DIRECTORY: "back-end"
           DOTNET_VERSION: "7"
@@ -274,7 +274,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Build
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.0.2
       with:
           WORKING_DIRECTORY: "back-end"
           BUILD_CONFIG: "Release"
@@ -312,7 +312,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Build
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.0.2
       with:
           WORKING_DIRECTORY: "back-end"
           SHELL: "bash"
@@ -351,7 +351,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Run tests
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.0.2
       with:
           WORKING_DIRECTORY: "back-end"
           GENERATE_CODE_COVERAGE: true
@@ -391,7 +391,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Install .NET
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.0.2
       with:
           WORKING_DIRECTORY: "back-end"
           PROJECT: "My.Api/My.Api.csproj"
@@ -444,7 +444,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Build
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.0.2
       with:
           WORKING_DIRECTORY: "back-end"
           DOTNET_VERSION: "7"
@@ -496,7 +496,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Publish to Azure App Service
-      uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.0.2
       with:
           WORKING_DIRECTORY: "back-end"
           BINARIES_DIRECTORY: "output"
@@ -542,7 +542,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Deploy to Azure Storage
-      uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.0.2
       with:
           WORKING_DIRECTORY: front-end
           BINARIES_DIRECTORY: dist/apps/my-app
@@ -589,7 +589,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Deploy to IIS
-      uses: zupit-it/pipeline-templates/.github/actions/iis/deploy@v1.0.0
+      uses: zupit-it/pipeline-templates/.github/actions/iis/deploy@v1.0.2
       with:
           ARTIFACT_NAME: my-artifact-name
           APPS_PATH: 'C:\inetpub'
@@ -680,7 +680,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     node-common:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-workflow-common.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/node-workflow-common.yml@v1.0.2
         with:
             NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
             CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
@@ -718,7 +718,7 @@ jobs:
 
     angular-common:
         needs: check-changes
-        uses: ZupitSRL/pipeline-templates/.github/workflows/node-workflow-common.yml@v1.0.0
+        uses: ZupitSRL/pipeline-templates/.github/workflows/node-workflow-common.yml@v1.0.2
         with:
             WORKING_DIRECTORY: "frontend"
             NODE_VERSION: "14.11.0"
@@ -787,7 +787,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'container']"
             NODE_VERSION: 16.17.0
@@ -818,7 +818,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy.yml@v1.0.2
         with:
             LABELS: "['my-team', 'pipeline', 'native']"
             WORKING_DIRECTORY: front-end
@@ -875,7 +875,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     django-common:
-        uses: zupit-it/pipeline-templates/.github/workflows/django-workflow-common.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/django-workflow-common.yml@v1.0.2
         with:
             WORKING_DIRECTORY: backend
             PYTHON_IMAGE: python:3.8.2-slim-buster
@@ -914,7 +914,7 @@ jobs:
 
     django-common:
         needs: check-changes
-        uses: ZupitSRL/pipeline-templates/.github/workflows/django-workflow-common.yml@v1.0.0
+        uses: ZupitSRL/pipeline-templates/.github/workflows/django-workflow-common.yml@v1.0.2
         with:
             WORKING_DIRECTORY: "backend"
             PYTHON_IMAGE: "python:3.8.2-slim-buster"
@@ -973,7 +973,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     java-common:
-        uses: zupit-it/pipeline-templates/.github/workflows/springboot-workflow-common.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/springboot-workflow-common.yml@v1.0.2
         with:
             NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
             CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
@@ -1010,7 +1010,7 @@ jobs:
                         - 'frontend/**'
 
     java-common:
-        uses: zupit-it/pipeline-templates/.github/workflows/springboot-workflow-common.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/springboot-workflow-common.yml@v1.0.2
         with:
             NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
             CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
@@ -1068,7 +1068,7 @@ jobs:
     springboot-build-and-push-image:
         needs: [common]
 
-        uses: zupit-it/pipeline-templates/.github/workflows/springboot-step-docker-build-and-push-image.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/springboot-step-docker-build-and-push-image.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'container']"
             JAVA_IMAGE: openjdk:12
@@ -1116,7 +1116,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     common:
-        uses: zupit-it/pipeline-templates/.github/workflows/dotnet-workflow-common.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/dotnet-workflow-common.yml@v1.0.2
         with:
             WORKING_DIRECTORY: "back-end"
             DOTNET_VERSION: "7"
@@ -1168,7 +1168,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/docker-step-build-and-push-image.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/docker-step-build-and-push-image.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'native']"
             RELEASE_ENVIRONMENT: testing
@@ -1211,7 +1211,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     deploy:
-        uses: zupit-it/pipeline-templates/.github/workflows/docker-step-deploy.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/docker-step-deploy.yml@v1.0.2
         with:
             LABELS: "[ 'pinga', 'deploy', 'native', 'zupit-applications' ]"
             ENVIRONMENT: testing
@@ -1259,7 +1259,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     clean-ionic-images:
-        uses: ZupitSRL/pipeline-templates/.github/workflows/docker-step-delete-images.yml@v1.0.0
+        uses: ZupitSRL/pipeline-templates/.github/workflows/docker-step-delete-images.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'native']"
             IMAGE_NAME: "ionic"
@@ -1293,7 +1293,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     jira-move-issue-to-developed:
-        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'native']"
             STATUS: Developed
@@ -1325,7 +1325,7 @@ on:
 
 jobs:
     jira-move-issue-to-in-progress:
-        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'native']"
             STATUS: "In progress"
@@ -1347,7 +1347,7 @@ on:
 jobs:
     jira-move-issue-to-merge-request:
         if: ${{ !github.event.pull_request.draft }}
-        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'native']"
             STATUS: "Merge request"
@@ -1370,7 +1370,7 @@ on:
 
 jobs:
     jira-move-issue-to-developed:
-        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.0.2
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         with:
             LABELS: "['pinga', 'pipeline', 'native']"
@@ -1397,7 +1397,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     lint-pr:
-        uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-lint.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-lint.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'native']"
             CONFIG_FILE: .commitlintrc.json
@@ -1421,7 +1421,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     lint-pr:
-        uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-release.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-release.yml@v1.0.2
         with:
             LABELS: "['pinga', 'pipeline', 'native']"
         secrets: inherit
@@ -1462,7 +1462,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     angular-sonar-analyze:
-        uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-analyze.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-analyze.yml@v1.0.2
         with:
             WORKING_DIRECTORY: frontend
             ARTIFACT_FILENAME: lcov.info
@@ -1507,7 +1507,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     sonar-analyze:
-        uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-dotnet-analyze.yml@v1.0.0
+        uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-dotnet-analyze.yml@v1.0.2
         with:
             CONTAINER_CI_LABELS: "['team', 'pipeline', 'container']"
             WORKING_DIRECTORY: "back-end"
