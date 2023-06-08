@@ -38,6 +38,10 @@ on:
         required: false
         type: string
         default: ${{ github.actor }}
+      ARTIFACT_NAME:
+        required: false
+        type: string
+        default: node-build
       ENV_VARIABLES:
         required: false
         type: string
@@ -82,7 +86,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
-          name: node-build
+          name: ${{ inputs.ARTIFACT_NAME }}
           path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
           retention-days: 1
         
@@ -100,7 +104,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: node-build
+          name: ${{ inputs.ARTIFACT_NAME }}
           path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
 
       - name: Docker Build & Push
