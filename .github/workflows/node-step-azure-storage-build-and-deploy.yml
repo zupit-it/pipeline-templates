@@ -76,7 +76,7 @@ jobs:
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     steps:
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.0.2
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.0.3
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
@@ -107,7 +107,7 @@ jobs:
           path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
 
       - name: Deploy to Azure Storage
-        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.0.2
+        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.0.3
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BINARIES_DIRECTORY: ${{ inputs.OUTPUT_DIRECTORY }}
