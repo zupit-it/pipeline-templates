@@ -1,0 +1,33 @@
+{
+  "name": "pipeline-templates",
+  "version": "0.0.0-development",
+  "description": "This repository contains reusable workflows to check, build, and deploy our projects.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/cli": "^17.6.5",
+    "@commitlint/config-conventional": "^17.6.5",
+    "@commitlint/cz-commitlint": "^17.5.0",
+    "commitizen": "^4.3.0",
+    "cz": "^1.8.2",
+    "husky": "^8.0.3",
+    "semantic-release": "^21.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "semantic-release": "semantic-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zupit-it/pipeline-templates.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zupit-it/pipeline-templates/issues"
+  },
+  "homepage": "https://github.com/zupit-it/pipeline-templates#readme"
+}
