@@ -1,0 +1,19 @@
+name: Pull request workflow
+
+on:
+    pull_request:
+        branches: ['main']
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint-commits:
+        name: Conventional Commits
+        uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-lint.yml@v1.0.3
+        with:
+            LABELS: "['pinga', 'pipeline', 'native']"
+            CONFIG_FILE: .commitlintrc
+        secrets: inherit
