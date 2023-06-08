@@ -1,4 +1,4 @@
 export OLDV=$1
 export NEWV=$2
-echo "Tagging workflows from ${OLDV} to ${NEWV}"
-find .github -name "*.yml" -exec sed -E -i 's/\@'$OLDV'/\@'NEWV'/g' {} \;
+echo "Tagging workflows from v${OLDV} to v${NEWV}"
+find .github -name "*.yml" -exec sed -E -i 's/\@v'$OLDV'/\@v'$NEWV'/g' {} \;
