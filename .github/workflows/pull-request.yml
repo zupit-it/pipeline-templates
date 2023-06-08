@@ -10,10 +10,21 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    lint-commits:
-        name: Conventional Commits
-        uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-lint.yml@v1.0.3
+  lint-commits:
+    name: Lint Commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
         with:
-            LABELS: "['pinga', 'pipeline', 'native']"
-            CONFIG_FILE: .commitlintrc
-        secrets: inherit
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v5
+        with:
+          configFile: .commitlintrc
+
+  lint-pr:
+    name: Lint PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
