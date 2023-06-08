@@ -770,6 +770,7 @@ It requires these inputs:
 -   **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
 -   **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
 -   **DIST_PATH**: The output distribution path of the node build
+-   **ARTIFACT_NAME**: The name of the artifact. Should be changed when using multiple node builds for the same project at the same time
 
 In addition, it is possible to specify these optional inputs:
 
