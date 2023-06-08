@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/zupit-it/pipeline-templates/compare/v1.1.0...v1.1.1) (2023-06-08)
+
+
+### Bug Fixes
+
+* fix version tagging ([b64a1c6](https://github.com/zupit-it/pipeline-templates/commit/b64a1c62ac2634e21b523f457a665ba34b4e868b))
+
 # [1.1.0](https://github.com/zupit-it/pipeline-templates/compare/v1.0.3...v1.1.0) (2023-06-08)
 
 
