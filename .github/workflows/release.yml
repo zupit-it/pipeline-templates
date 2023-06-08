@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  release-npm:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.ZUPIT_BOT_TOKEN }}
+      - name: Setup git user
+        run: |
+          git config user.name "ZupitDevs"
+          git config user.email "49716732+ZupitDevs@users.noreply.github.com"
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          node-version: 18
+      - run: npm ci
+      - name: Release
+        shell: bash
+        run: npm run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.ZUPIT_BOT_TOKEN }}
