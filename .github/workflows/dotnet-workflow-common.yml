@@ -31,25 +31,25 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install .NET
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.0.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.1.0
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
           ALPINE_OS: ${{ inputs.ALPINE_OS }}
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.0.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.1.0
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
 
       - name: Check code formatting
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.0.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.1.0
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
 
       - name: Run tests
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.0.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.1.0
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           GENERATE_CODE_COVERAGE: false
