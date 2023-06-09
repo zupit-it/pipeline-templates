@@ -11,7 +11,7 @@
     "@semantic-release/changelog",
     "@semantic-release/github",
     ["@semantic-release/git",
-      "assets": [".github/**/*.yml"],
+      "assets": [".github/**/*.yml", "README.md"],
     ]
   ]
 }
