@@ -1,4 +1,4 @@
-name: Add Jira description
+name: Add Jira description to pr
 
 on:
   workflow_call:
