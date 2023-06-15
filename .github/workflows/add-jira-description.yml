@@ -1,0 +1,17 @@
+name: Add Jira description
+
+on:
+  workflow_call
+
+jobs:
+  jira-description:
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+
+    steps:
+      - uses: cakeinpanic/jira-description-action@v0.4.0
+        name: jira-description-action
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          jira-token: ${{ secrets.JIRA_USER_EMAIL}}:${{ secrets.JIRA_API_TOKEN }}
+          jira-base-url: ${{ secrets.JIRA_BASE_URL }}
+          use: branch
