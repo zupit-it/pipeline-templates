@@ -1,7 +1,11 @@
 name: Add Jira description
 
 on:
-  workflow_call
+  workflow_call:
+    inputs:
+      LABELS:
+        required: true
+        type: string
 
 jobs:
   jira-description:
