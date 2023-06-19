@@ -83,11 +83,14 @@ jobs:
           PROJECT: ${{ inputs.PROJECT }}
         env: "${{secrets}}"
 
+      - name: Archive build
+        run: tar czvf dist.tar.gz ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
-          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
+          path: dist.tar.gz
           retention-days: 1
 
   docker-build-and-push:
@@ -105,7 +108,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
-          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
+          path: .
+
+      - name: unpack build
+        run: tar xzvf dist.tar.gz
 
       - name: Docker Build & Push
         id: docker
