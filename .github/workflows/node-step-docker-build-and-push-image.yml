@@ -108,7 +108,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
-          path: dist.tar.gz
+          path: .
 
       - name: unpack build
         run: tar xzvf dist.tar.gz
