@@ -90,7 +90,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
-          path: dist.zip
+          path: dist.tar.gz
           retention-days: 1
 
   docker-build-and-push:
@@ -108,7 +108,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
-          path: dist.zip
+          path: dist.tar.gz
 
       - name: unpack build
         run: tar xzvf dist.tar.gz
