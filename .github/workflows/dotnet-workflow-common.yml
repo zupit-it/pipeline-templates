@@ -44,7 +44,7 @@ jobs:
           BUILD_CONFIG: "Debug"
 
       - name: Check code formatting
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.3.1
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@dotnet-formatter
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
 
