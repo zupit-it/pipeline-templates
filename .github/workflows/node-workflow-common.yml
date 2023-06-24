@@ -26,9 +26,6 @@ on:
         type: number
         default: 30
       # Workflow inputs
-      NATIVE_CI_LABELS:
-        required: true
-        type: string
       CONTAINER_CI_LABELS:
         required: true
         type: string
