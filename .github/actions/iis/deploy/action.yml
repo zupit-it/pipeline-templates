@@ -2,8 +2,13 @@ name: IIS Deploy
 
 inputs:
   ARTIFACT_NAME:
-    required: true
+    required: false
     type: string
+    default: ''
+  SOURCE_PATH:
+    required: false
+    type: string
+    default: ''
   APPS_PATH:
     required: true
     type: string
@@ -17,6 +22,7 @@ runs:
     - name: Download artifact
       id: download-artifact
       uses: actions/download-artifact@v3
+      if: ${{ inputs.ARTIFACT_NAME != '' }}
       with:
         name: ${{ inputs.ARTIFACT_NAME }}
         path: ${{ inputs.ARTIFACT_NAME }}
@@ -53,10 +59,17 @@ runs:
         move "${{ steps.vars.outputs.final-path }}" "${{ steps.vars.outputs.backup-path }}"
         mkdir "${{ steps.vars.outputs.final-path }}"
 
-    - name: Copy new app
+    - name: Copy new app from artifact
       shell: powershell
       working-directory: ${{ inputs.APPS_PATH }}
+      if: ${{ inputs.ARTIFACT_NAME != '' }}
       run: Copy-Item -Path "${{ steps.download-artifact.outputs.download-path }}\*" -Destination "${{ steps.vars.outputs.final-path }}" -Recurse
+
+    - name: Copy new app from source path
+      shell: powershell
+      working-directory: ${{ inputs.APPS_PATH }}
+      if: ${{ inputs.ARTIFACT_NAME == '' }}
+      run: Copy-Item -Path "${{ inputs.SOURCE_PATH }}\*" -Destination "${{ steps.vars.outputs.final-path }}" -Recurse
 
     - name: Remove backup
       shell: powershell
