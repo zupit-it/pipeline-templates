@@ -67,7 +67,6 @@ runs:
 
     - name: Copy new app from source path
       shell: powershell
-      working-directory: ${{ inputs.APPS_PATH }}
       if: ${{ inputs.ARTIFACT_NAME == '' }}
       run: Copy-Item -Path "${{ inputs.SOURCE_PATH }}\*" -Destination "${{ steps.vars.outputs.final-path }}" -Recurse
 
