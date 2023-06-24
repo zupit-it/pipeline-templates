@@ -59,6 +59,7 @@ runs:
         move "${{ steps.vars.outputs.final-path }}" "${{ steps.vars.outputs.backup-path }}"
         mkdir "${{ steps.vars.outputs.final-path }}"
 
+    # Don't specify a working directory for the following step so that the caller can decide it
     - name: Copy new app from artifact
       shell: powershell
       working-directory: ${{ inputs.APPS_PATH }}
