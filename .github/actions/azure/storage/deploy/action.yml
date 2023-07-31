@@ -1,3 +1,5 @@
+#IMPORTANT: THIS ACTION MUST BE EXECUTED ON A CLEAN ENVIRONMENT WITH AZ INSTALLED
+
 name: Deploy app to Azure Storage
 
 inputs:
@@ -25,10 +27,22 @@ inputs:
     required: false
     type: string
     default: ""
-  PURGE_CDN:
+  FD_RG_NAME:
     required: false
-    type: boolean
-    default: true
+    type: string
+    default: ""
+  FD_ENDPOINT_NAME:
+    required: false
+    type: string
+    default: ""
+  FD_DOMAIN_NAME:
+    required: false
+    type: string
+    default: ""
+  FD_PROFILE_NAME:
+    required: false
+    type: string
+    default: ""
 
 runs:
   using: composite
@@ -39,22 +53,27 @@ runs:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
     - name: Deploy to Azure Storage
-      uses: azure/CLI@v1
-      with:
-        inlineScript: az storage blob upload-batch --overwrite true --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} --auth-mode key -d '$web' -s ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
+      shell: 'bash'
+      run: |
+        az storage blob sync --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} -c '$web' -s ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
 
     - name: Purge CDN endpoint
-      uses: azure/CLI@v1
-      if: ${{ inputs.PURGE_CDN }}
-      with:
-        inlineScript: az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
+      shell: 'bash'
+      if: ${{ inputs.CDN_RG_NAME != '' }}
+      run: |
+        az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
+
+    - name: Purge Azure Front Door endpoint
+      shell: 'bash'
+      if: ${{ inputs.FD_RG_NAME != '' }}
+      run: |
+        az afd endpoint purge --content-paths  "/*" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" --domains "${{ inputs.FD_DOMAIN_NAME }}" --profile-name "${{ inputs.FD_PROFILE_NAME }}"
 
     - name: Azure logout
-      uses: azure/CLI@v1
+      shell: 'bash'
       if: always()
       continue-on-error: true
-      with:
-        inlineScript: |
+      run: |
           az logout
           az cache purge
           az account clear

@@ -1,0 +1,35 @@
+name: Generate unique artifact name
+
+inputs:
+  SOURCE_FOLDER:
+    required: true
+    type: string
+  ARTIFACT_NAME:
+    required: true
+    type: string
+  ARCHIVE_PATH:
+    required: false
+    type: string
+    default: "/tmp/dist.tar.gz"
+  RETENTION_DAYS:
+    required: false
+    type: number
+    default: 1
+
+runs:
+  using: composite
+
+  steps:
+    - name: Archive build
+      id: archive
+      uses: zupit-it/pipeline-templates/.github/actions/artifact/create-archive@v1.3.1
+      with:
+        SOURCE_FOLDER: ${{ inputs.SOURCE_FOLDER }}
+        ARCHIVE_PATH: ${{ inputs.ARCHIVE_PATH }}
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.ARTIFACT_NAME }}
+        path: ${{ steps.archive.outputs.ARCHIVE_PATH }}
+        retention-days: ${{ inputs.RETENTION_DAYS }}

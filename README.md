@@ -21,13 +21,19 @@ If you would like to get more details of these tasks, just look at this [doc](do
         5. [Publish](#net-action---publish)
         6. [Release](#net-action---release)
     5. [Azure](#azure-action)
-        1. [App Service](#azure-action---app-service)
-        2. [Storage Account](#azure-action---storage-account)
+        1. [App Service](#azure-action---app-service---deploy)
+        2. [Storage Account](#azure-action---storage-account---deploy)
     6. [IIS](#iis-action)
         1. [Deploy](#iis-action---deploy)
+    7. [Artifact](#artifact-action)
+        1. [Generate name](#artifact-action---generate-name)
+        2. [Download](#artifact-action---download)
+        3. [Upload](#artifact-action---upload)
+        4. [Create archive](#artifact-action---create-archive)
+        5. [Extract archive](#artifact-action---extract-archive)
 2. [Reusable Workflows](#reusable-workflows)
     1. [Naming Convention](#naming-convention)
-    2. [NodeJS](#nodejs)
+    2. [NodeJS](#nodejs---backend--frontend)
         1. [Common NodeJS](#nodejs-common)
         2. [Build Docker Image and Push to Registry](#nodejs-build-docker-image-and-push-to-registry)
         3. [Build and deploy to Azure Storage](#nodejs-build-and-deploy-to-azure-storage)
@@ -116,6 +122,7 @@ In addition, it is possible to specify this optional input:
 
 -   **SHELL**: The shell type to use. By default, it is **bash**.
 -   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
+-   **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
 
 This is an example to show how data should be formatted.
 
@@ -404,7 +411,6 @@ steps:
 
 This action executes the following child-actions:
 
--   [.NET Install](#net-action---install)
 -   [.NET Build](#net-action---build)
 -   [.NET Publish](#net-action---publish)
 
@@ -414,7 +420,6 @@ It's a convenience action for repeated actions used together for most of the tim
 
 Check the requirements of the child actions:
 
--   [.NET Install requirements](#net-action---install)
 -   [.NET Build requirements](#net-action---build)
 -   [.NET Publish requirements](#net-action---publish)
 
@@ -455,12 +460,13 @@ steps:
 
 ### Azure Action
 
-#### Azure Action - App Service
+#### Azure Action - App Service - Deploy
 
 This action:
 
 -   logs in to Azure CLI;
 -   deploy an application to an Azure App Service or Azure Function instance.
+-   logs out from Azure CLI.
 
 **Note**: [Azure Functions are built on top of Azure App Service infrastructure](https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/service/app-service), reason for which this action is named just _App Service_.
 
@@ -468,6 +474,9 @@ This action:
 
 -   The `WORKING_DIRECTORY` directory must be an ancestor of the `BINARIES_DIRECTORY` directory.
 -   The App Service/Function must be correctly configured with the correct technology and runtime version.
+-   This action must run in an environment with the Azure CLI installed.
+-   This action must run in an environment without any other action performing AZ login/logout in parallel.
+-   Bash
 
 ###### Action
 
@@ -504,38 +513,56 @@ steps:
           WEBAPP_NAME: "my-app-001"
 ```
 
-#### Azure Action - Storage Account
+#### Azure Action - Storage Account - Deploy
 
 This action:
 
 -   logs in to Azure CLI;
 -   deploy a static web-app to Azure Storage Blob Service.
+-   [optional] cleans the Azure CDN or Azure Front-door cache.
+-   logs out from Azure CLI.
 
 ###### Requirements
 
 -   The `WORKING_DIRECTORY` directory must be an ancestor of the `BINARIES_DIRECTORY` directory.
 -   The Storage Account must be configured to [serve static content](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website).
+-   This action must run in an environment with the Azure CLI installed.
+-   This action must run in an environment without any other action performing AZ login/logout in parallel.
+-   Bash
 
 ###### Action
 
-**.github/actions/azure/storage/deploy** is the action that deploys a static web-app to an Azure Storage Account.
+**.github/actions/azure/storage/deploy** is the action that deploys a static web-app to an Azure Storage Account. It also cleans the cache of the Azure CDN or Azure Front-door if specified.
 
 It requires these inputs:
-
 -   **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
 -   **BINARIES_DIRECTORY**: The folder containing binaries to publish to the Storage Account.
 -   **STORAGE_ACCOUNT_NAME**: The name of the Storage Account.
--   **CDN_PROFILE_NAME**: Name of the CDN profile name. Required if `PURGE_CDN` is `true`.
--   **CDN_ENDPOINT_NAME**: Name of the CDN endpoint name. It must be a child of the `CDN_PROFILE_NAME` CDN profile. Required if `PURGE_CDN` is `true`.
--   **CDN_RG_NAME**: Resource group name where the CDN profile is hold. Required if `PURGE_CDN` is `true`.
-
-It also requires these secrets:
-
--   **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
 
 In addition, it is possible to specify this optional input:
+-   **CDN_PROFILE_NAME**: Name of the Azure CDN profile name. Required if `CDN_RG_NAME` is specified.
+-   **CDN_ENDPOINT_NAME**: Name of the Azure CDN endpoint name. It must be a child of the `CDN_PROFILE_NAME` CDN profile. Required if `CDN_RG_NAME` is specified.
+-   **CDN_RG_NAME**: Resource group name where the Azure CDN profile is hold.
+-   **FD_ENDPOINT_NAME**: Name of the Azure Front-door endpoint name. Required if `FD_RG_NAME` is specified.
+-   **FD_DOMAIN_NAME**: Domain name of the Azure Front-door endpoint. It must be a child of the `FD_ENDPOINT_NAME` Front-door endpoint. Required if `FD_RG_NAME` is specified.
+-   **FD_PROFILE_NAME**: Name of the Azure Front-door profile name. Required if `FD_RG_NAME` is specified.
+-   **FD_RG_NAME**: Resource group name where the Front-door instance is hold.
 
--   **PURGE_CDN**: Whatever to purge the CDN linked to the Storage Account.
+If no Front-door or CDN is specified, the action will only upload the files to the Storage Account.
+
+If you want to purge the CDN cache, you must specify:
+-   **CDN_PROFILE_NAME**
+-   **CDN_ENDPOINT_NAME**
+-   **CDN_RG_NAME**
+
+If you want to purge the Front-door cache, you must specify:
+-  **FD_ENDPOINT_NAME**
+-  **FD_DOMAIN_NAME**
+-  **FD_PROFILE_NAME**
+-  **FD_RG_NAME**
+
+It also requires these secrets:
+-   **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
 
 This is an example to show how data should be formatted.
 
@@ -596,6 +623,188 @@ steps:
           APP_POOL_NAME: "example.zupit.software"
 ```
 
+### Artifact Action
+
+#### Artifact Action - Generate name
+
+This action:
+- generates a unique name for an artifact using the specified prefix
+
+The generated artifact name is in the format `prefix-<random-string>`.
+
+###### Requirements
+- Bash
+
+###### Action
+
+**.github/actions/artifact/generate-name** is the action that generates a unique name for an artifact using the specified prefix. This is useful when you have multiple artifacts to upload on the same workflow, and you want to avoid name collisions.
+
+It requires these inputs:
+-   **NAME_PREFIX**: The prefix to use when generating the artifact name.
+
+It then outputs this variable:
+-   **ARTIFACT_NAME**: The generated artifact name.
+
+This is an example to show how to use this action with the support of the **Generate artifact name** action.
+
+```yaml
+  - name: Generate artifact name
+    id: artifact-name
+    uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.4.0
+    with:
+        NAME_PREFIX: dotnet-build
+
+  - name: Build
+    uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.4.0
+    with:
+        WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+        BUILD_CONFIG: "Release"
+        PROJECT: my-project
+        OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+
+  - name: Upload build artifact
+    uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.4.0
+    with:
+        SOURCE_FOLDER: my-source-folder
+        ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+```
+
+#### Artifact Action - Download
+
+This action:
+- downloads an archived artifact.
+- extracts the artifact in the specified directory.
+
+###### Requirements
+- See the requirements of [Artifact Action - Extract archive](#artifact-action---extract-archive).
+
+###### Action
+
+**.github/actions/artifact/download** is the action that downloads an artifact and extracts the archive it holds in the specified directory.
+
+It requires these inputs:
+-   **ARTIFACT_NAME**: The artifact's name. Usually, it is the name generated using the action **artifact/generate-name**.
+
+In addition, it is possible to specify this optional input:
+-   **OUTPUT_FOLDER**: The folder where the artifact will be extracted. By default, it is **/tmp**.
+-   **ARCHIVE_NAME**: The name of the archive hold in the artifact. By default, it is **dist.tar.gz**.
+
+This is an example to show how data should be formatted.
+
+```yaml
+steps:
+    - name: Download artifact
+      uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.4.0
+      with:
+          ARTIFACT_NAME: my-artifact-name
+```
+
+#### Artifact Action - Upload
+
+This action:
+- creates an archive containing the files in the specified folder and uploads it as an artifact.
+
+###### Requirements
+- See the requirements of [Artifact Action - Create archive](#artifact-action---create-archive).
+
+###### Action
+
+**.github/actions/artifact/upload** is the action that creates an archive containing the files in the specified folder and uploads it as an artifact.
+
+It requires these inputs:
+- **SOURCE_FOLDER**: The folder containing the files to archive and upload.
+- **ARTIFACT_NAME**: The name of the artifact to create.
+
+In addition, it is possible to specify this optional input:
+- **ARCHIVE_PATH**: The path to the archive to create. By default, it is **/tmp/dist.tar.gz**.
+- **RETENTION_DAYS**: The number of days to keep the artifact. By default, it is **1**.
+
+This is an example to show how to use this action with the support of the **Generate artifact name** action.
+
+```yaml
+  - name: Generate artifact name
+    id: artifact-name
+    uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.4.0
+    with:
+        NAME_PREFIX: dotnet-build
+
+  - name: Build
+    uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.4.0
+    with:
+        WORKING_DIRECTORY: my-dir
+        BUILD_CONFIG: "Release"
+        PROJECT: my-project
+        OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+
+  - name: Upload build artifact
+    uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.4.0
+    with:
+        SOURCE_FOLDER: my-source-folder
+        ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+```
+
+#### Artifact Action - Create archive
+
+This action:
+- creates an archive containing the files in the specified folder.
+
+###### Requirements
+- Bash
+- OS: Linux or Windows 10 Build 17063 and more recent. The action is based on the `tar` command.
+
+###### Action
+
+**.github/actions/artifact/create-archive** is the action that creates an archive containing the files in the specified folder.
+
+It requires these inputs:
+  - **SOURCE_FOLDER**: The folder containing the files to archive.
+
+In addition, it is possible to specify this optional input:
+  - **ARCHIVE_PATH**: The path to the archive to create. By default, it is **/tmp/dist.tar.gz**.
+
+
+It then outputs this variable:
+- **ARCHIVE_PATH**: The path to the archive created.
+
+You may want to use the [Artifact Action - Upload](#artifact-action---upload) instead of this action, as it creates an archive and uploads it as an artifact.
+
+This is an example to show how data should be formatted.
+```yaml
+    - name: Create archive
+      uses: zupit-it/pipeline-templates/.github/actions/artifact/create-archive@v1.4.0
+      with:
+          SOURCE_FOLDER: my-source-folder
+          ARCHIVE_NAME: my-archive
+```
+
+#### Artifact Action - Extract archive
+
+This action:
+- extracts an archive in the specified directory.
+
+###### Requirements
+- Bash
+- OS: Linux or Windows 10 Build 17063 and more recent. The action is based on the `tar` command.
+
+###### Action
+
+**.github/actions/artifact/extract-archive** is the action that extracts an archive in the specified directory.
+
+It requires these inputs:
+- **ARCHIVE_PATH**: The path to the archive to extract.
+- **OUTPUT_FOLDER**: The folder where the archive will be extracted.
+
+You may want to use the [Artifact Action - Download](#artifact-action---download) instead of this action, as it downloads an archived artifact and extracts it in the specified directory.
+
+This is an example to show how data should be formatted.
+```yaml
+    - name: Extract archive
+      uses: zupit-it/pipeline-templates/.github/actions/artifact/extract-archive@v1.4.0
+      with:
+          ARCHIVE_PATH: /tmp/my-archive.tar.gz
+          OUTPUT_FOLDER: my-output-folder
+```
+
 ## Reusable Workflows
 
 In all the examples, we set _secrets: inherit_ to pass all secrets to the reusable workflows, but it is also possible to pass only a subset of secrets.
@@ -626,7 +835,6 @@ Thus, it is easy to understand that the workflows uses a specific technology or 
 
 > The following workflows are deprecated:
 >
-> -   node-step-azure-storage-build-and-deploy.yml
 > -   node-step-docker-build-and-push-image.yml
 > -   node-step-format-lint-build.yml
 > -   node-workflow-common.yml
@@ -807,25 +1015,29 @@ jobs:
 
 #### NodeJS build and deploy to Azure Storage
 
-This workflow combines two actions:
+This workflow combines two main actions:
 
 -   [Node.js Build](#nodejs-action---build)
--   [Azure Storage Account](#azure-action---storage-account)
+-   [Azure Storage Account](#azure-action---storage-account---deploy)
 
 The input parameters of this workflow have the same name of the corresponding parameters in child actions. Refer to them for more information.
+
+Also, these input parameters are optional:
+- **IMAGE**: the docker image to use when running the node build. By default, it is **ubuntu:23.04**.
+- **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.50.0**.
 
 This is an example to show how data should be formatted.
 
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy.yml@v1.3.1
+        uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy.yml@v1.4.0
         with:
-            LABELS: "['my-team', 'pipeline', 'native']"
+            CONTAINER_CI_LABELS: "['my-team', 'pipeline', 'container']"
             WORKING_DIRECTORY: front-end
             NODE_VERSION: "16.17.0"
             RELEASE_ENVIRONMENT: testing
-            OUTPUT_DIRECTORY: dist/apps/cta-conta
+            DIST_PATH: dist/apps/cta-conta
             STORAGE_ACCOUNT_NAME: stmyproject001
             CDN_PROFILE_NAME: cdnp-myproject-001
             CDN_ENDPOINT_NAME: cdne-myproject-001

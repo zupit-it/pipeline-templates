@@ -1,0 +1,28 @@
+name: Create archive
+
+inputs:
+  SOURCE_FOLDER:
+    required: true
+    type: string
+  ARCHIVE_PATH:
+    required: true
+    type: string
+
+outputs:
+  ARCHIVE_PATH:
+    description: "The path of the generated archive"
+    value: ${{ steps.archive-path.outputs.ARCHIVE_PATH }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Archive
+      shell: 'bash'
+      run: tar czvf ${{ inputs.ARCHIVE_PATH }} .
+      working-directory: ${{ inputs.SOURCE_FOLDER }}
+
+    - name: Output archive path
+      shell: 'bash'
+      id: archive-path
+      run: echo "ARCHIVE_PATH=${{ inputs.ARCHIVE_PATH }}"  >> "$GITHUB_OUTPUT"
