@@ -4,9 +4,6 @@ inputs:
   WORKING_DIRECTORY:
     required: true
     type: string
-  DOTNET_VERSION:
-    required: true
-    type: string
   BUILD_CONFIG:
     required: true
     type: string
@@ -28,14 +25,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install .NET
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.3.1
-      with:
-        WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
-        DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
-        ALPINE_OS: ${{ inputs.ALPINE_OS }}
-        SHELL: ${{ inputs.SHELL }}
-
     - name: Build
       uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.3.1
       with:

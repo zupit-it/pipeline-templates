@@ -34,10 +34,9 @@ runs:
         package:  ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
 
     - name: Azure logout
-      uses: azure/CLI@v1
+      shell: 'bash'
       if: always()
-      with:
-        inlineScript: |
+      run: |
           az logout
           az cache purge
           az account clear

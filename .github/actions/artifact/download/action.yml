@@ -1,0 +1,41 @@
+name: Generate unique artifact name
+
+inputs:
+  ARTIFACT_NAME:
+    required: true
+    type: string
+  OUTPUT_FOLDER:
+    required: false
+    type: string
+    default: "/tmp"
+  ARCHIVE_NAME:
+    required: false
+    type: string
+    default: "dist.tar.gz"
+
+outputs:
+  OUTPUT_FOLDER:
+    description: "The folder where the artifact archive has been unpacked"
+    value: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.ARTIFACT_NAME }}
+        path: ${{ inputs.OUTPUT_FOLDER }}
+
+    - name: Unpack
+      uses: zupit-it/pipeline-templates/.github/actions/artifact/extract-archive@v1.3.1
+      with:
+        ARCHIVE_PATH: ${{ inputs.OUTPUT_FOLDER }}/${{ inputs.ARCHIVE_NAME }}
+        OUTPUT_FOLDER: ${{ inputs.OUTPUT_FOLDER }}
+
+    - name: Output folder
+      shell: 'bash'
+      id: output-folder
+      run: echo "OUTPUT_FOLDER=${{ inputs.OUTPUT_FOLDER }}"  >> "$GITHUB_OUTPUT"
+

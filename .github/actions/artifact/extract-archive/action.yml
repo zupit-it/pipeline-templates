@@ -1,0 +1,22 @@
+name: Extract archive
+
+inputs:
+  ARCHIVE_PATH:
+    required: true
+    type: string
+  OUTPUT_FOLDER:
+    required: true
+    type: string
+
+runs:
+  using: composite
+
+  steps:
+    - name: Extract
+      shell: 'bash'
+      run: tar xzvf ${{ inputs.ARCHIVE_PATH }}
+      working-directory: ${{ inputs.OUTPUT_FOLDER }}
+
+    - name: Remove tar
+      shell: 'bash'
+      run: rm ${{ inputs.ARCHIVE_PATH }}

@@ -1,0 +1,102 @@
+name: .NET build and deploy to Azure WebApp
+
+on:
+  workflow_call:
+    inputs:
+      CONTAINER_CI_LABELS:
+        required: true
+        type: string
+      RELEASE_ENVIRONMENT:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      PROJECT:
+        required: true
+        type: string
+      WEBAPP_NAME:
+        required: true
+        type: string
+      CHECKOUT_REF:
+        required: false
+        type: string
+        default: ''
+      ENV_VARIABLES:
+        required: false
+        type: string
+        default: '{}'
+      DOTNET_IMAGE:
+        required: false
+        type: string
+        default: 'mcr.microsoft.com/dotnet/sdk:7.0'
+      AZURE_CLI_IMAGE:
+        required: false
+        type: string
+        default: "mcr.microsoft.com/azure-cli:2.50.0"
+
+
+env: "${{secrets}}"
+
+jobs:
+  build:
+    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
+    container:
+      image: ${{ inputs.DOTNET_IMAGE }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    outputs:
+      ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+
+    env: ${{ fromJson(inputs.ENV_VARIABLES) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.CHECKOUT_REF }}
+
+      - name: Generate artifact name
+        id: artifact-name
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.3.1
+        with:
+          NAME_PREFIX: dotnet-build
+
+      - name: Build
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.3.1
+        with:
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          BUILD_CONFIG: "Release"
+          PROJECT: ${{ inputs.PROJECT }}
+          OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+
+      - name: Upload build artifact
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.3.1
+        with:
+          SOURCE_FOLDER: ${{ inputs.WORKING_DIRECTORY }}/${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+          ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+
+  deploy:
+    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
+    env: ${{ fromJson(inputs.ENV_VARIABLES) }}
+    environment: ${{ inputs.RELEASE_ENVIRONMENT }}
+    container:
+      image: ${{ inputs.AZURE_CLI_IMAGE }}
+
+    needs: [ build ]
+    steps:
+      - name: Download build artifact
+        id: output-folder
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.3.1
+        with:
+          ARTIFACT_NAME: ${{ needs.build.outputs.ARTIFACT_NAME }}
+
+      - name: Publish to Azure App Service
+        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.3.1
+        with:
+          WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
+          BINARIES_DIRECTORY: ''
+          AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
+          WEBAPP_NAME: ${{ inputs.WEBAPP_NAME }}

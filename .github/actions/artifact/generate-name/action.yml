@@ -1,0 +1,22 @@
+name: Generate unique artifact name
+
+inputs:
+  NAME_PREFIX:
+    required: true
+    type: string
+
+outputs:
+  ARTIFACT_NAME:
+    description: "The generated artifact name"
+    value: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Generate artifact name
+      shell: 'bash'
+      id: artifact-name
+      run: |
+        NAME=$(echo $RANDOM | md5sum | head -c 20)
+        echo "ARTIFACT_NAME=${{ inputs.NAME_PREFIX }}-$NAME"  >> "$GITHUB_OUTPUT"
