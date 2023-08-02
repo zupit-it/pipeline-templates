@@ -36,6 +36,10 @@ on:
         required: false
         type: string
         default: '{}'
+      COVERAGE_FILES:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   sonar-analyze:
@@ -68,12 +72,13 @@ jobs:
           params=()
           [[ -n "${{ inputs.SONAR_EXCLUSIONS }}" ]] && params+=(/d:sonar.exclusions="${{ inputs.SONAR_EXCLUSIONS }}")
           [[ -n "${{ inputs.COVERAGE_EXCLUSIONS }}" ]] && params+=(/d:sonar.coverage.exclusions="${{ inputs.COVERAGE_EXCLUSIONS }}")
+          [[ -n "${{ inputs.COVERAGE_FILES }}" ]] && params+=(/d:sonar.cs.opencover.reportsPaths="${{ inputs.COVERAGE_FILES }}")
+          [[ -z "${{ inputs.COVERAGE_FILES }}" ]] && params+=(/d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml)
 
           dotnet-sonarscanner begin \
             /k:"${{ inputs.SONAR_PROJECT_KEY }}" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="${{ inputs.SONAR_HOST_URL }}" \
-            /d:sonar.cs.opencover.reportsPaths=**/coverage.opencover.xml \
             /d:sonar.cs.vstest.reportsPaths=**/*.trx \
             "${params[@]}"
 
