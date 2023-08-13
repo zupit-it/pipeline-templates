@@ -222,7 +222,7 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 
 ###### Action
 
-**.github/actions/dotnet/format** is the action that format a .NET solution.
+**.github/actions/dotnet/install** is the action that install .NET in the current runner.
 
 It requires these inputs:
 
@@ -292,8 +292,8 @@ steps:
 
 This action:
 
--   install or update the [dotnet-format](https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-format) tool;
--   run the `dotnet format` command on the `WORKING_DIRECTORY`.
+-   install or update [CSharpier](https://csharpier.com/);
+-   run the `dotnet-csharpier . --check` command on the `WORKING_DIRECTORY`.
 
 ###### Requirements
 
@@ -304,7 +304,7 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 
 ###### Action
 
-**.github/actions/dotnet/format** is the action that format a .NET solution.
+**.github/actions/dotnet/format** is the action that checks the code formatting of a .NET solution.
 
 It requires these inputs:
 
