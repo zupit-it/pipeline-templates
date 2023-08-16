@@ -44,12 +44,14 @@ jobs:
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
+          verified_states=("verified" "non compliant" "done" "billed" "to be billed")
           output=$(jira view ${{ steps.find.outputs.issue }} --field status -e ${{ secrets.JIRA_BASE_URL }} --login ${{ secrets.JIRA_USER_EMAIL }} | sed -n 's/status: \(.*\)/\L\1/p')
-          echo "status=$output" >> "$GITHUB_OUTPUT"
+          [[ ${verified_states[*]} =~ ${output} ]] && is_verified=true || is_verified=false
+          echo "verified=$is_verified" >> "$GITHUB_OUTPUT"
 
       - name: Transition issue
         uses: atlassian/gajira-transition@master
-        if: steps.find.outcome == 'success' && steps.check-status.outputs.status != 'verified'
+        if: steps.find.outcome == 'success' && steps.check-status.outputs.verified != 'true'
         with:
           issue: ${{ steps.find.outputs.issue }}
           transition: ${{ inputs.STATUS }}
@@ -59,7 +61,7 @@ jobs:
         run: echo "### Found JIRA issue key '${{ steps.find.outputs.issue }}'" >> $GITHUB_STEP_SUMMARY
 
       - name: Show no issue moved because of verified state
-        if: steps.find.outcome == 'success' && steps.check-status.outputs.status == 'verified'
+        if: steps.find.outcome == 'success' && steps.check-status.outputs.verified == 'true'
         run: echo "### JIRA issue not moved because its state is 'Verified'" >> $GITHUB_STEP_SUMMARY
 
       - name: Show no issue key found message
