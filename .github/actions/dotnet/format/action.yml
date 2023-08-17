@@ -12,12 +12,12 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install dotnet format
+    - name: Install code formatter
       shell: ${{ inputs.SHELL }}
-      run: dotnet tool update --global dotnet-format
+      run: dotnet tool update --global csharpier
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
-    - name: Run dotnet format
+    - name: Check code formatting
       shell: ${{ inputs.SHELL }}
-      run: dotnet format --verify-no-changes
+      run: ~/.dotnet/tools/dotnet-csharpier . --check
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
