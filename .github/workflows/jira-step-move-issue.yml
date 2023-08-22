@@ -18,31 +18,52 @@ jobs:
     runs-on: ${{ fromJson(inputs.LABELS) }}
 
     steps:
-    - name: Login to Jira
-      uses: atlassian/gajira-login@master
-      env:
-        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      - name: Setup
+        uses: atlassian/gajira-cli@v3
+        with:
+          version: 1.0.27
 
-    - name: Find issue key
-      id: find
-      uses: atlassian/gajira-find-issue-key@master
-      with:
-        string: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}
-      continue-on-error: true
+      - name: Login to Jira
+        uses: atlassian/gajira-login@master
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
-    - name: Transition issue
-      uses: atlassian/gajira-transition@master
-      if: steps.find.outcome == 'success'
-      with:
-        issue: ${{ steps.find.outputs.issue }}
-        transition: ${{ inputs.STATUS }}
+      - name: Find issue key
+        id: find
+        uses: atlassian/gajira-find-issue-key@master
+        with:
+          string: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}
+        continue-on-error: true
 
-    - name: Show no issue key found message
-      if: steps.find.outcome != 'success'
-      run: echo "### No JIRA issue key found in '${{ inputs.BRANCH_OR_COMMIT_TITLE }}'" >> $GITHUB_STEP_SUMMARY
+      - name: Check issue status
+        id: check-status
+        shell: 'bash'
+        if: steps.find.outcome == 'success'
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: |
+          verified_states=("verified" "non compliant" "done" "billed" "to be billed")
+          output=$(jira view ${{ steps.find.outputs.issue }} --field status -e ${{ secrets.JIRA_BASE_URL }} --login ${{ secrets.JIRA_USER_EMAIL }} | sed -n 's/status: \(.*\)/\L\1/p')
+          [[ ${verified_states[*]} =~ ${output} ]] && is_verified=true || is_verified=false
+          echo "verified=$is_verified" >> "$GITHUB_OUTPUT"
 
-    - name: Show issue key found message
-      if: steps.find.outcome == 'success'
-      run: echo "### Found JIRA issue key '${{ steps.find.outputs.issue }}'" >> $GITHUB_STEP_SUMMARY
+      - name: Transition issue
+        uses: atlassian/gajira-transition@master
+        if: steps.find.outcome == 'success' && steps.check-status.outputs.verified != 'true'
+        with:
+          issue: ${{ steps.find.outputs.issue }}
+          transition: ${{ inputs.STATUS }}
+
+      - name: Show issue key found message
+        if: steps.find.outcome == 'success'
+        run: echo "### Found JIRA issue key '${{ steps.find.outputs.issue }}'" >> $GITHUB_STEP_SUMMARY
+
+      - name: Show no issue moved because of verified state
+        if: steps.find.outcome == 'success' && steps.check-status.outputs.verified == 'true'
+        run: echo "### JIRA issue not moved because its state is 'Verified'" >> $GITHUB_STEP_SUMMARY
+
+      - name: Show no issue key found message
+        if: steps.find.outcome != 'success'
+        run: echo "### No JIRA issue key found in '${{ inputs.BRANCH_OR_COMMIT_TITLE }}'" >> $GITHUB_STEP_SUMMARY

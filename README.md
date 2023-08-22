@@ -1489,6 +1489,8 @@ jobs:
 
 **jira-step-move-issue.yml** is the workflow that moves Jira issues to the desired state.
 
+> **NOTE**: If the issue is in the 'Verified' state, the issue won't be moved to the desired state.
+
 It requires these inputs:
 
 -   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
