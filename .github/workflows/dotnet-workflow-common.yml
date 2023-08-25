@@ -10,14 +10,14 @@ on:
         required: true
         type: string
         default: 'mcr.microsoft.com/dotnet/sdk:7.0'
-      LABELS:
+      CONTAINER_CI_LABELS:
         required: true
         type: string
 
 jobs:
   dotnet-common:
     name: Run .NET build, check formatting and test
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
     container:
       image: ${{ inputs.DOTNET_IMAGE }}
 
