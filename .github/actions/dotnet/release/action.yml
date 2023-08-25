@@ -13,10 +13,6 @@ inputs:
   OUTPUT_DIRECTORY:
     required: true
     type: string
-  ALPINE_OS:
-    required: false
-    type: string
-    default: false
   SHELL:
     required: false
     type: string
