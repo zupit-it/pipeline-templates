@@ -432,14 +432,12 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 It requires these inputs:
 
 -   **WORKING_DIRECTORY**
--   **DOTNET_VERSION**
 -   **BUILD_CONFIG**
 -   **PROJECT**
 -   **OUTPUT_DIRECTORY**
 
 In addition, it is possible to specify this optional input:
 
--   **ALPINE_OS**: See child actions. By default, it is **false**.
 -   **SHELL**: The shell type to use. By default, it is **bash**.
 
 Each parameter is passed down to the homonym parameter of child actions (if available). Check out child actions' parameters definition.
@@ -452,7 +450,6 @@ steps:
       uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.6.0
       with:
           WORKING_DIRECTORY: "back-end"
-          DOTNET_VERSION: "7"
           BUILD_CONFIG: "Release"
           PROJECT: "My.Api/My.Api.csproj"
           OUTPUT_DIRECTORY: "binaries"
