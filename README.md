@@ -1314,12 +1314,8 @@ Check these actions requirements before using this workflow.
 It requires these inputs:
 
 -   **WORKING_DIRECTORY**: check actions used by this workflow for more information.
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
--   **DOTNET_VERSION**: check actions used by this workflow for more information.
-
-In addition, it is possible to specify this optional input:
-
--   **ALPINE_OS**: check actions used by this workflow for more information.
+-   **CONTAINER_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
+-   **DOTNET_IMAGE**: the .NET docker image (usually 'mcr.microsoft.com/dotnet/sdk') to use.
 
 This is an example to show how data should be formatted.
 
@@ -1329,8 +1325,8 @@ jobs:
         uses: zupit-it/pipeline-templates/.github/workflows/dotnet-workflow-common.yml@v1.6.0
         with:
             WORKING_DIRECTORY: "back-end"
-            DOTNET_VERSION: "7"
-            LABELS: "['team', 'pipeline', 'native']"
+            DOTNET_IMAGE: "'mcr.microsoft.com/dotnet/sdk:7.0"
+            CONTAINER_CI_LABELS: "['team', 'pipeline', 'container']"
 ```
 
 ---

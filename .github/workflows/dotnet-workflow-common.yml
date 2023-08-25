@@ -7,9 +7,8 @@ on:
         required: true
         type: string
       DOTNET_IMAGE:
-        required: false
+        required: true
         type: string
-        default: 'mcr.microsoft.com/dotnet/sdk:7.0'
       CONTAINER_CI_LABELS:
         required: true
         type: string
