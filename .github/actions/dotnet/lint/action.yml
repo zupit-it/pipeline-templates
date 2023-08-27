@@ -1,0 +1,25 @@
+name: .NET lint
+
+# Note: this action requires .NET 6+ SDK
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  SHELL:
+    required: false
+    type: string
+    default: 'bash'
+
+runs:
+  using: composite
+  steps:
+    - name: .NET lint style
+      shell: ${{ inputs.SHELL }}
+      run: dotnet format style --no-verify-changes
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    - name: .NET lint analyzers
+      shell: ${{ inputs.SHELL }}
+      run: dotnet format analyzers --no-verify-changes
+      working-directory: ${{ inputs.WORKING_DIRECTORY }}

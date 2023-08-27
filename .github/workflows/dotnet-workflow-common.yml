@@ -43,6 +43,11 @@ jobs:
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
+          
+      - name: Run linter
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/lint@dotnet-linter
+        with:
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
 
       - name: Run tests
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.9.0
