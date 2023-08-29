@@ -17,9 +17,10 @@ If you would like to get more details of these tasks, just look at this [doc](do
         1. [Install](#net-action---install)
         2. [Build](#net-action---build)
         3. [Format](#net-action---format)
-        4. [Test](#net-action---test)
-        5. [Publish](#net-action---publish)
-        6. [Release](#net-action---release)
+        4. [Lint](#net-action---lint)
+        5. [Test](#net-action---test)
+        6. [Publish](#net-action---publish)
+        7. [Release](#net-action---release)
     5. [Azure](#azure-action)
         1. [App Service](#azure-action---app-service---deploy)
         2. [Storage Account](#azure-action---storage-account---deploy)
@@ -325,6 +326,41 @@ steps:
           WORKING_DIRECTORY: "back-end"
           SHELL: "bash"
           CSHARPIER_VERSION: "0.25.0"
+```
+
+#### .NET Action - Lint
+
+This action:
+-   run the `dotnet format` command on the `WORKING_DIRECTORY`.
+
+###### Requirements
+
+-   The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+-   The correct .NET (6+) version must be installed.
+
+_This workflow doesn't download the codebase. You have to check out the repo by yourself._
+
+###### Action
+
+**.github/actions/dotnet/lint** is the action that lints the code of a .NET solution.
+
+It requires these inputs:
+
+-   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+
+In addition, it is possible to specify this optional input:
+
+-   **SHELL**: The shell type to use. By default, it is **bash**.
+
+This is an example to show how data should be formatted.
+
+```yaml
+steps:
+    - name: Build
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/lint@v1.7.0
+      with:
+          WORKING_DIRECTORY: "back-end"
+          SHELL: "bash"
 ```
 
 #### .NET Action - Test
