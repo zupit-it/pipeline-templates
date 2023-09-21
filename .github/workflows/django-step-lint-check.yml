@@ -67,4 +67,4 @@ jobs:
       - name: Django check migrations
         run: python manage.py makemigrations ${{ inputs.DJANGO_MIGRATIONS_CHECK_APPS }} --check --dry-run
       - name: Django validate migration
-        run: python manage.py migrate --fake --noinput
+        run: python manage.py migrate --noinput
