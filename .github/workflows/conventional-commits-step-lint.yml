@@ -10,12 +10,17 @@ on:
         required: true
         type: string
         default: .commitlintrc
+      RUN_LINT_COMMITS:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   lint-commits:
     name: Lint Commits
     runs-on: ${{ fromJson(inputs.LABELS) }}
     container: node:20-alpine
+    if: ${{ fromJson(inputs.RUN_LINT_COMMITS) }}
     steps:
       - uses: actions/checkout@v3
         with:
