@@ -8,13 +8,17 @@ inputs:
     required: false
     type: string
     default: 'bash'
+  CSHARPIER_VERSION:
+    required: false
+    type: string
+    default: ''
 
 runs:
   using: composite
   steps:
     - name: Install code formatter
       shell: ${{ inputs.SHELL }}
-      run: dotnet tool update --global csharpier
+      run: dotnet tool update --global csharpier ${{ inputs.CSHARPIER_VERSION != '' && '--version' || '' }} ${{ inputs.CSHARPIER_VERSION }}
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     - name: Check code formatting

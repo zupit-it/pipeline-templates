@@ -12,6 +12,10 @@ on:
       CONTAINER_CI_LABELS:
         required: true
         type: string
+      CSHARPIER_VERSION:
+        required: false
+        type: string
+        default: ''
 
 jobs:
   dotnet-common:
@@ -38,6 +42,7 @@ jobs:
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.7.0
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          CSHARPIER_VERSION: ${{ inputs.CSHARPIER_VERSION }}
 
       - name: Run tests
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.7.0
