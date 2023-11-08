@@ -33,7 +33,10 @@ on:
         required: false
         type: string
         default: ""
-
+      ENABLE_LFS:
+        required: false
+        type: boolean
+        default: false
 jobs:
   django-lint-check:
     uses:
@@ -45,6 +48,7 @@ jobs:
       RUN: ${{inputs.RUN}}
       DJANGO_MIGRATIONS_CHECK_APPS: ${{inputs.DJANGO_MIGRATIONS_CHECK_APPS}}
       SETUP_COMMANDS: ${{inputs.SETUP_COMMANDS}}
+      ENABLE_LFS: ${{inputs.ENABLE_LFS}}
     secrets: inherit
 
   django-tests:
@@ -57,4 +61,5 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       RUN: ${{inputs.RUN}}
       SETUP_COMMANDS: ${{ inputs.SETUP_COMMANDS }}
+      ENABLE_LFS: ${{inputs.ENABLE_LFS}}
     secrets: inherit

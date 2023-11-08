@@ -24,6 +24,10 @@ on:
         required: false
         type: string
         default: ""
+      ENABLE_LFS:
+        required: false
+        type: boolean
+        default: false
 
 env: "${{secrets}}"
 
@@ -50,6 +54,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        if: ${{ inputs.ENABLE_LFS == 'true' }}
+        with:
+          lfs: 'true'
       - name: Setup
         run: ${{ inputs.SETUP_COMMANDS }}
       - name: Install dependencies
