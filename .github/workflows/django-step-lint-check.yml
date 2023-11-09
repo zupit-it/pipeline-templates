@@ -60,6 +60,9 @@ jobs:
         if: ${{ inputs.ENABLE_LFS == 'true' }}
         with:
           lfs: 'true'
+      - name: Checkout LFS objects
+        if: ${{ inputs.ENABLE_LFS == 'true' }}
+        run: git lfs pull
       - name: Setup
         run: ${{ inputs.SETUP_COMMANDS }}
       - name: Install dependencies
