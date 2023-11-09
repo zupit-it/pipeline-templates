@@ -54,12 +54,11 @@ jobs:
       - name: Install prerequisites
         if: ${{ inputs.ENABLE_LFS == 'true' }}
         run: apt-get update && apt-get install -y git-lfs
-      - name: Workaround for https://github.com/actions/checkout/issues/1169
-        run: git config --global --add safe.directory /__w/mobygis-waterjade/mobygis-waterjade
       - uses: actions/checkout@v3
         if: ${{ inputs.ENABLE_LFS == 'true' }}
         with:
           lfs: 'true'
+        run: git config --global --add safe.directory /__w/mobygis-waterjade/mobygis-waterjade
       - name: Checkout LFS objects
         if: ${{ inputs.ENABLE_LFS == 'true' }}
         run: git lfs pull
