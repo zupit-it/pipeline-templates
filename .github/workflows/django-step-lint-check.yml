@@ -28,6 +28,11 @@ on:
         required: false
         type: boolean
         default: false
+      # Workaround for https://github.com/actions/checkout/issues/1169
+      LFS_REPO_PATH:
+        required: false
+        type: string
+        default: ""
 
 env: "${{secrets}}"
 
