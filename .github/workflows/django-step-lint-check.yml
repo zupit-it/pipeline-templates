@@ -56,7 +56,7 @@ jobs:
         if: ${{ inputs.ENABLE_LFS == 'true' }}
         run: apt-get update && apt-get install -y git-lfs
       - name: Workaround for https://github.com/actions/checkout/issues/1169
-        run: /usr/bin/git config --global --add safe.directory /__w/mobygis-waterjade/mobygis-waterjade
+        run: git config --global --add safe.directory /__w/mobygis-waterjade/mobygis-waterjade
       - name: Checkout code
         uses: actions/checkout@v3
         if: ${{ inputs.ENABLE_LFS == 'true' }}
