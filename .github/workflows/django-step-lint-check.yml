@@ -52,6 +52,9 @@ jobs:
         image: redis
 
     steps:
+      - name: Install prerequisites
+        if: ${{ inputs.ENABLE_LFS == 'true' }}
+        run: apt-get update && apt-get install -y git-lfs
       - name: Checkout code
         uses: actions/checkout@v3
         if: ${{ inputs.ENABLE_LFS == 'true' }}
