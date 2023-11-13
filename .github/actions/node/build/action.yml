@@ -26,6 +26,10 @@ inputs:
     required: false
     type: string
     default: ''
+  NX_CACHE_FOLDER:
+    required: false
+    type: string
+    default: '.nx-cache'
 
 runs:
   using: composite
@@ -51,6 +55,14 @@ runs:
       shell: ${{ inputs.SHELL }}
       run: npm ci
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    - name: Restore NX cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.NX_CACHE_FOLDER }}
+        key: nx-cache-${{ hashFiles('${{ inputs.WORKING_DIRECTORY }}/package-lock.json') }}-${{ inputs.PROJECT }}-${{ github.sha }}
+        restore-keys: |
+          nx-cache-${{ hashFiles('${{ inputs.WORKING_DIRECTORY }}/package-lock.json') }}-${{ inputs.PROJECT }}-
 
     - name: Build Node.js ${{ inputs.NODE_VERSION }}
       if: ${{ inputs.PROJECT == '' }}

@@ -52,6 +52,14 @@ jobs:
 
     - run: npm ci
 
+    - name: Restore NX cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.NX_CACHE_FOLDER }}
+        key: nx-cache-${{ hashFiles('${{ inputs.WORKING_DIRECTORY }}/package-lock.json') }}-${{ inputs.PROJECT }}-${{ github.sha }}
+        restore-keys: |
+          nx-cache-${{ hashFiles('${{ inputs.WORKING_DIRECTORY }}/package-lock.json') }}-${{ inputs.PROJECT }}-
+
     # GENERIC
     - run: npm run ci:format:check
       if:  ${{ inputs.PROJECT == '' }}

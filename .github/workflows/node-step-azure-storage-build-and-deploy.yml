@@ -98,7 +98,7 @@ jobs:
           NAME_PREFIX: node-build
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.7.0
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@nx-computation-caching
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
