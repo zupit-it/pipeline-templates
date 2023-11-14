@@ -23,6 +23,16 @@ on:
         required: false
         type: string
         default: ""
+      ENABLE_LFS:
+        required: false
+        type: boolean
+        default: false
+
+      # Workaround for https://github.com/actions/checkout/issues/1169
+      LFS_REPO_PATH:
+        required: false
+        type: string
+        default: ""
 
 env: "${{secrets}}"
 
@@ -47,7 +57,20 @@ jobs:
         image: redis
 
     steps:
+      - name: Install prerequisites
+        if: ${{ inputs.ENABLE_LFS == true }}
+        run: apt-get update && apt-get install -y git-lfs
       - uses: actions/checkout@v3
+        if: ${{ inputs.ENABLE_LFS == true }}
+        with:
+          lfs: 'true'
+      - uses: actions/checkout@v3
+        if: ${{ inputs.ENABLE_LFS == false }}
+      - run: git config --global --add safe.directory ${{ inputs.LFS_REPO_PATH }}
+        if: ${{ inputs.ENABLE_LFS == true }}
+      - name: Checkout LFS objects
+        if: ${{ inputs.ENABLE_LFS == true }}
+        run: git lfs pull
       - name: Setup
         run: ${{ inputs.SETUP_COMMANDS }}
       - name: Install dependencies

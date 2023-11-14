@@ -1079,6 +1079,8 @@ In addition, it is possible to specify this optional input:
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
 -   **SETUP_COMMANDS**: Allow to execute commands before the download of the dependencies. Useful to install packages required for Python dependencies.
+-   **ENABLE_LFS**: To enable Git LFS support on checkout  
+-   **LFS_REPO_PATH**: Required when ENABLE_LFS is true. Workaround for https://github.com/actions/checkout/issues/1169. Set to "/__w/repo-name/repo-name" 
 
 This is an example to show how data should be formatted.
 
