@@ -42,6 +42,11 @@ on:
         required: false
         type: string
         default: ""
+      COVERAGE_THRESHOLD:
+        required: false
+        type: number
+        default: 50
+
 jobs:
   django-lint-check:
     uses:
@@ -69,4 +74,5 @@ jobs:
       SETUP_COMMANDS: ${{ inputs.SETUP_COMMANDS }}
       ENABLE_LFS: ${{inputs.ENABLE_LFS}}
       LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
+      COVERAGE_THRESHOLD: ${{inputs.COVERAGE_THRESHOLD}}
     secrets: inherit
