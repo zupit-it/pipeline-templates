@@ -1081,6 +1081,7 @@ In addition, it is possible to specify this optional input:
 -   **SETUP_COMMANDS**: Allow to execute commands before the download of the dependencies. Useful to install packages required for Python dependencies.
 -   **ENABLE_LFS**: To enable Git LFS support on checkout  
 -   **LFS_REPO_PATH**: Required when ENABLE_LFS is true. Workaround for https://github.com/actions/checkout/issues/1169. Set to "/__w/repo-name/repo-name" 
+-   **COVERAGE_THRESHOLD**: The minimal code coverage for this project. If the coverage is lower than this value, the workflow will fail. By default, it is **50**.
 
 This is an example to show how data should be formatted.
 

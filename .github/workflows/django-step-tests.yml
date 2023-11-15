@@ -34,6 +34,11 @@ on:
         type: string
         default: ""
 
+      COVERAGE_THRESHOLD:
+        required: false
+        type: number
+        default: 50
+
 env: "${{secrets}}"
 
 jobs:
@@ -84,7 +89,7 @@ jobs:
          coverage erase
          coverage run --source='.' manage.py test --noinput
          coverage xml -i -o coverage-reports/coverage-django.xml
-         coverage report --fail-under 50 
+         coverage report --fail-under ${{ inputs.COVERAGE_THRESHOLD }} 
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
