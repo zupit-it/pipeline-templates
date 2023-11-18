@@ -12,6 +12,10 @@ on:
       CONTAINER_CI_LABELS:
         required: true
         type: string
+      CSHARPIER_VERSION:
+        required: false
+        type: string
+        default: ''
 
 jobs:
   dotnet-common:
@@ -28,16 +32,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Check code formatting
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.8.1
+        with:
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          CSHARPIER_VERSION: ${{ inputs.CSHARPIER_VERSION }}
+
       - name: Build
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.8.1
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
-
-      - name: Check code formatting
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.8.1
-        with:
-          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
 
       - name: Run tests
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.8.1

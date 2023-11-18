@@ -313,6 +313,7 @@ It requires these inputs:
 In addition, it is possible to specify this optional input:
 
 -   **SHELL**: The shell type to use. By default, it is **bash**.
+-   **CSHARPIER_VERSION**: The [CSharpier version](https://github.com/belav/csharpier/releases) to install. By default, it is the latest.
 
 This is an example to show how data should be formatted.
 
@@ -323,6 +324,7 @@ steps:
       with:
           WORKING_DIRECTORY: "back-end"
           SHELL: "bash"
+          CSHARPIER_VERSION: "0.25.0"
 ```
 
 #### .NET Action - Test
