@@ -324,7 +324,7 @@ steps:
       with:
           WORKING_DIRECTORY: "back-end"
           SHELL: "bash"
-          CSARPIER_VERSION: "0.25.0"
+          CSHARPIER_VERSION: "0.25.0"
 ```
 
 #### .NET Action - Test
