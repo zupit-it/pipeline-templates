@@ -18,7 +18,7 @@ runs:
   steps:
     - name: Install code formatter
       shell: ${{ inputs.SHELL }}
-      run: dotnet tool update --tool-path /tmp/dotnet-tools csharpier ${{ inputs.CSHARPIER_VERSION != '' && '--version' || '' }} ${{ inputs.CSHARPIER_VERSION }}
+      run: dotnet tool update --tool-path /tmp/dotnet-tools csharpier ${{ inputs.CSHARPIER_VERSION != '' && ('--version' + inputs.CSHARPIER_VERSION) || '' }}
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     - name: Check code formatting
