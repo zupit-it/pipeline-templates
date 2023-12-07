@@ -32,11 +32,17 @@ on:
         required: false
         type: string
         default: "7"
+      SONAR_IMAGE_ENV_VARIABLES:
+        required: false
+        type: string
+        default: '{}'
 
 jobs:
   sonar-analyze:
     runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
-    container: ${{ inputs.SONAR_IMAGE }}
+    container:
+      image: ${{ inputs.SONAR_IMAGE }}
+      env: ${{ fromJson(inputs.SONAR_IMAGE_ENV_VARIABLES) }}
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
@@ -62,7 +68,7 @@ jobs:
           params=()
           [[ -n "${{ inputs.SONAR_EXCLUSIONS }}" ]] && params+=(/d:sonar.exclusions="${{ inputs.SONAR_EXCLUSIONS }}")
           [[ -n "${{ inputs.COVERAGE_EXCLUSIONS }}" ]] && params+=(/d:sonar.coverage.exclusions="${{ inputs.COVERAGE_EXCLUSIONS }}")
-          
+
           dotnet-sonarscanner begin \
             /k:"${{ inputs.SONAR_PROJECT_KEY }}" \
             /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
