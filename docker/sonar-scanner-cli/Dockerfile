@@ -1,6 +1,6 @@
 FROM ubuntu
 
-RUN apt update -y && apt install -y curl xz-utils clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev openjdk-11-jre wget unzip
+RUN apt update -y && apt install -y curl xz-utils clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev openjdk-11-jre wget unzip && apt clean -y
 
 WORKDIR /opt
 
@@ -23,6 +23,7 @@ ENV SONAR_ZIP_FILE "sonar-scanner-cli-${SONAR_VERSION}.zip"
 
 RUN wget -q "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/${SONAR_ZIP_FILE}"
 RUN unzip ${SONAR_ZIP_FILE}
+RUN rm -v ${SONAR_ZIP_FILE}
 RUN mv sonar-scanner-${SONAR_VERSION} /opt/sonar-scanner-cli
 
 RUN wget -O '/usr/bin/entrypoint.sh' 'https://raw.githubusercontent.com/SonarSource/sonar-scanner-cli-docker/master/5/bin/entrypoint.sh'
@@ -35,8 +36,3 @@ WORKDIR /usr/src
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
 
 CMD ["sonar-scanner"]
-
-
-
-
-
