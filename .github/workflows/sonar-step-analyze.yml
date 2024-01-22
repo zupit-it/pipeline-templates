@@ -29,6 +29,10 @@ on:
         required: false
         type: string
         default: ".coverage-reports/"
+      PRE_SCAN_COMMANDS:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   sonar-analyze:
@@ -47,6 +51,10 @@ jobs:
         with:
           name: ${{inputs.ARTIFACT_FILENAME}}
           path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
+
+      - name: Run PRE_SCAN_COMMANDS commands
+        if: ${{ inputs.PRE_SCAN_COMMANDS != '' }}
+        run: ${{ inputs.PRE_SCAN_COMMANDS }}
 
       - name: Run Sonar
         run: sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}

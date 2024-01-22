@@ -23,7 +23,6 @@ jobs:
         with:
           configFile: ${{ inputs.CONFIG_FILE }}
 
-
   lint-pr:
     name: Lint PR
     runs-on: ${{ fromJson(inputs.LABELS) }}
