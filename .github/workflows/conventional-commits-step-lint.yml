@@ -15,8 +15,6 @@ jobs:
   lint-commits:
     name: Lint Commits
     runs-on: ${{ fromJson(inputs.LABELS) }}
-    container:
-      image: alpine:3.17.3
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,7 +22,6 @@ jobs:
       - uses: wagoid/commitlint-github-action@v5
         with:
           configFile: ${{ inputs.CONFIG_FILE }}
-
 
   lint-pr:
     name: Lint PR
