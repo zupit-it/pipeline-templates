@@ -1720,6 +1720,19 @@ jobs:
         secrets: inherit
 ```
 
+If you want to analyze a Dart or Flutter project, you should use this workflow in the following way:
+
+```yaml
+    flutter-sonar-analyze:
+        uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-analyze.yml@1.12.0
+        with:
+            WORKING_DIRECTORY: '.'
+            DOWNLOAD_ARTIFACT: false
+            PRE_SCAN_COMMANDS: 'git config --global --add safe.directory /opt/flutter && mv .env.github .env && flutter pub get && flutter test --machine --coverage > tests.output'
+            SONAR_IMAGE: 'ghcr.io/zupit-it/pipeline-templates/flutter-sonar-scanner-cli:latest'
+        secrets: inherit
+```
+
 #### Sonar Analyze - .NET
 
 ###### Requirements
