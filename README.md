@@ -1021,6 +1021,7 @@ In addition, it is possible to specify these optional inputs:
 -   **REGISTRY_USER**: The registry url where to push the Docker image.
     By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
 -   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
+-   **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
 
 It then outputs this variable:
 
@@ -1406,6 +1407,7 @@ In addition, it is possible to specify these optional inputs:
 -   **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
 -   **REGISTRY_USER**: The registry url where to push the Docker image.
     By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
+-   **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
 
 It then outputs these variables:
 

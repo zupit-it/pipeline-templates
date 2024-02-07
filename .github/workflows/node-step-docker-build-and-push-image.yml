@@ -57,6 +57,10 @@ on:
       DIST_PATH:
         required: true
         type: string
+      CHECKOUT_REF:
+        required: false
+        type: string
+        default: ''
 
     outputs:
       DOCKER_IMAGE_NAME:
@@ -74,6 +78,11 @@ jobs:
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.CHECKOUT_REF }}
+
       - name: NodeJS Build
         uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.11.2
         with:
