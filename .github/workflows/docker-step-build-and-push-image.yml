@@ -30,6 +30,10 @@ on:
         required: false
         type: string
         default: ${{ github.actor }}
+      CHECKOUT_REF:
+        required: false
+        type: string
+        default: ''
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
@@ -47,6 +51,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.CHECKOUT_REF }}
 
       - name: Docker Build & Push
         id: docker
