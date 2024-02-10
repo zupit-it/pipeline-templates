@@ -10,25 +10,8 @@ on:
         required: true
         type: string
         default: .commitlintrc
-      RUN_LINT_COMMITS:
-        required: false
-        type: boolean
-        default: true
 
 jobs:
-  lint-commits:
-    name: Lint Commits
-    runs-on: ${{ fromJson(inputs.LABELS) }}
-    container: node:20-alpine
-    if: ${{ fromJson(inputs.RUN_LINT_COMMITS) }}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@v5
-        with:
-          configFile: ${{ inputs.CONFIG_FILE }}
-
   lint-pr:
     name: Lint PR
     runs-on: ${{ fromJson(inputs.LABELS) }}

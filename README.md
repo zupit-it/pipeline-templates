@@ -1643,7 +1643,6 @@ It requires these inputs:
 
 -   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
 -   **CONFIG_FILE**: the config file name (by default it is **.commitlintrc**).
--   **RUN_LINT_COMMITS**: optional boolean that determines whether "Lint commits" job is enabled, with a default value of **true**. When set to **true**, only "Lint PR" job will be executed. This behavior may be beneficial in repositories where pull request are merged using "squash and merge" strategy.
 
 This is an example to show how data should be formatted.
 
