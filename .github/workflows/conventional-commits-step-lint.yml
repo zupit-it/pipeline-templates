@@ -12,18 +12,6 @@ on:
         default: .commitlintrc
 
 jobs:
-  lint-commits:
-    name: Lint Commits
-    runs-on: ${{ fromJson(inputs.LABELS) }}
-    container: node:20-alpine
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@v5
-        with:
-          configFile: ${{ inputs.CONFIG_FILE }}
-
   lint-pr:
     name: Lint PR
     runs-on: ${{ fromJson(inputs.LABELS) }}
