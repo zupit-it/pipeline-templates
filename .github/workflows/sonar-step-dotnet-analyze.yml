@@ -63,7 +63,7 @@ jobs:
 
       - name: Install SonarSource for .NET
         run: |
-          dotnet tool update --tool-path /tmp/dotnet-tools dotnet-sonarscanner --global
+          dotnet tool update --tool-path /tmp/dotnet-tools dotnet-sonarscanner
           ln -s /tmp/dotnet-tools/dotnet-sonarscanner /usr/bin/dotnet-sonarscanner
 
       - name: Begin .NET SonarScanner
