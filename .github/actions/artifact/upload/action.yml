@@ -22,7 +22,7 @@ runs:
   steps:
     - name: Archive build
       id: archive
-      uses: zupit-it/pipeline-templates/.github/actions/artifact/create-archive@v1.13.0
+      uses: zupit-it/pipeline-templates/.github/actions/artifact/create-archive@v1.14.0
       with:
         SOURCE_FOLDER: ${{ inputs.SOURCE_FOLDER }}
         ARCHIVE_PATH: ${{ inputs.ARCHIVE_PATH }}
