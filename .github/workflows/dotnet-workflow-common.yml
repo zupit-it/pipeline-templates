@@ -9,17 +9,21 @@ on:
       DOTNET_IMAGE:
         required: true
         type: string
+      CONTAINER_CI_LABELS:
+        required: true
+        type: string
       DOTNET_IMAGE_ENV_VARIABLES:
         required: false
         type: string
         default: '{}'
-      CONTAINER_CI_LABELS:
-        required: true
-        type: string
       CSHARPIER_VERSION:
         required: false
         type: string
         default: ''
+      RUN_LINT:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   dotnet-common:
@@ -51,6 +55,7 @@ jobs:
 
       - name: Lint
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/lint@v1.14.0
+        if: ${{ inputs.RUN_LINT == 'true' }}
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
 

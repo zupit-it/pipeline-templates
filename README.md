@@ -1360,6 +1360,12 @@ It requires these inputs:
 -   **CONTAINER_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
 -   **DOTNET_IMAGE**: the .NET docker image (usually 'mcr.microsoft.com/dotnet/sdk') to use.
 
+In addition, it is possible to specify these optional inputs:
+-   **DOTNET_IMAGE_ENV_VARIABLES**: The environment variables to set when running the .NET docker image.
+-   **CSHARPIER_VERSION**: The version of the CSharpier tool to use. For the default value, see the `dotnet/format` action.
+-   **RUN_LINT**: Whatever or not the lint command should be executed. By default, it is **true**.
+
+
 This is an example to show how data should be formatted.
 
 ```yaml
