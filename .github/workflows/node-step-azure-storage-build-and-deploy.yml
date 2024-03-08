@@ -96,6 +96,11 @@ jobs:
         uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.14.1
         with:
           NAME_PREFIX: node-build
+      
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.CHECKOUT_REF }}
 
       - name: Build
         uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.14.1
