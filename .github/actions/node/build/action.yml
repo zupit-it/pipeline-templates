@@ -22,18 +22,10 @@ inputs:
     required: false
     type: string
     default: 'bash'
-  CHECKOUT_REF:
-    required: false
-    type: string
-    default: ''
 
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ inputs.CHECKOUT_REF }}
 
     - name: Setup Node.js ${{ inputs.NODE_VERSION }}
       uses: actions/setup-node@v3
