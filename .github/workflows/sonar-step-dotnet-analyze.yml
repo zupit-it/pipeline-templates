@@ -53,6 +53,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install .NET
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.15.0
