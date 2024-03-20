@@ -35,7 +35,7 @@ on:
       SONAR_IMAGE_ENV_VARIABLES:
         required: false
         type: string
-        default: '{}'
+        default: "{}"
       COVERAGE_FILES:
         required: false
         type: string
@@ -53,6 +53,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install .NET
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.15.0
@@ -67,7 +69,7 @@ jobs:
           ln -s /tmp/dotnet-tools/dotnet-sonarscanner /usr/bin/dotnet-sonarscanner
 
       - name: Begin .NET SonarScanner
-        shell: 'bash'
+        shell: "bash"
         run: |
           params=()
           [[ -n "${{ inputs.SONAR_EXCLUSIONS }}" ]] && params+=(/d:sonar.exclusions="${{ inputs.SONAR_EXCLUSIONS }}")
@@ -97,3 +99,14 @@ jobs:
       - name: End .NET SonarScanner
         run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        # Force to fail step after specific time.
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} #OPTIONAL
+
+      - name: "Example show SonarQube Quality Gate Status value"
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
