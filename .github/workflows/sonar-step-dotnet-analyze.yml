@@ -96,9 +96,6 @@ jobs:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           EXCLUDE_FILES: ${{ inputs.COVERAGE_EXCLUSIONS }}
 
-      - name: End .NET SonarScanner
-        run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@master
@@ -110,3 +107,6 @@ jobs:
 
       - name: "Example show SonarQube Quality Gate Status value"
         run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+
+      - name: End .NET SonarScanner
+        run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
