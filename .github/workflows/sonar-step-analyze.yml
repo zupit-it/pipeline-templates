@@ -59,6 +59,7 @@ jobs:
         with:
           args: >
             -Dsonar.verbose=true
+            -Dsonar.qualitygate.wait=true
 
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
