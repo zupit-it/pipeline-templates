@@ -53,9 +53,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install .NET
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.15.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.15.9
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
@@ -77,23 +79,22 @@ jobs:
 
           dotnet-sonarscanner begin \
             /k:"${{ inputs.SONAR_PROJECT_KEY }}" \
-            /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+            /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="${{ inputs.SONAR_HOST_URL }}" \
             /d:sonar.cs.vstest.reportsPaths=**/*.trx \
             "${params[@]}"
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.15.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.15.9
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
 
       - name: Run tests
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.15.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.15.9
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           EXCLUDE_FILES: ${{ inputs.COVERAGE_EXCLUSIONS }}
 
       - name: End .NET SonarScanner
-        run: dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
+        run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"

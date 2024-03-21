@@ -34,27 +34,39 @@ on:
         type: string
         default: ""
 
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
 jobs:
   sonar-analyze:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
-    container: ${{ inputs.SONAR_IMAGE }}
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Download coverage artifact
-        if: ${{ inputs.DOWNLOAD_ARTIFACT }}
-        uses: actions/download-artifact@v3
         with:
-          name: ${{inputs.ARTIFACT_FILENAME}}
-          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
+          fetch-depth: 0
 
-      - name: Run PRE_SCAN_COMMANDS commands
-        if: ${{ inputs.PRE_SCAN_COMMANDS != '' }}
-        run: ${{ inputs.PRE_SCAN_COMMANDS }}
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.qualitygate.wait=true
 
-      - name: Run Sonar
-        run: sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        # Force to fail step after specific time.
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: "Example show SonarQube Quality Gate Status value"
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
