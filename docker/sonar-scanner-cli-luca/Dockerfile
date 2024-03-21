@@ -1,5 +1,6 @@
 FROM ubuntu
 
+LABEL org.opencontainers.image.source=https://github.com/zupit-it/pipeline-templates
 RUN apt update -y && apt install -y curl xz-utils clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev openjdk-11-jre wget unzip jq && apt clean -y
 
 WORKDIR /opt
