@@ -42,25 +42,25 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Check code formatting
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.15.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/format@v1.15.4
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           CSHARPIER_VERSION: ${{ inputs.CSHARPIER_VERSION }}
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.15.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.15.4
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
 
       - name: Lint
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/lint@v1.15.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/lint@v1.15.4
         if: ${{ inputs.RUN_LINT == 'true' }}
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
 
       - name: Run tests
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.15.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.15.4
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           GENERATE_CODE_COVERAGE: false
