@@ -40,8 +40,8 @@ env:
 
 jobs:
   sonar-analyze:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
-    container: ${{ inputs.SONAR_IMAGE }}
+    runs-on: ubuntu-latest
+    # container: ${{ inputs.SONAR_IMAGE }}
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
@@ -58,7 +58,6 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
-            -Dsonar.verbose=true
             -Dsonar.qualitygate.wait=true
 
       - name: SonarQube Quality Gate check
