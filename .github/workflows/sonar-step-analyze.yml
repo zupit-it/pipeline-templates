@@ -12,7 +12,7 @@ on:
       SONAR_IMAGE:
         required: false
         type: string
-        default: "sonarsource/sonar-scanner-cli"
+        default: "sonarsource/sonar-scanner-cli-luca"
       SONAR_HOST_URL:
         required: false
         type: string
@@ -40,8 +40,8 @@ env:
 
 jobs:
   sonar-analyze:
-    runs-on: ubuntu-latest
-    # container: ${{ inputs.SONAR_IMAGE }}
+    runs-on: ${{ fromJson(inputs.LABELS) }}
+    container: ${{ inputs.SONAR_IMAGE }}
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
@@ -71,17 +71,3 @@ jobs:
 
       - name: "Example show SonarQube Quality Gate Status value"
         run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
-
-        # - name: Download coverage artifact
-      #   if: ${{ inputs.DOWNLOAD_ARTIFACT }}
-      #   uses: actions/download-artifact@v3
-      #   with:
-      #     name: ${{inputs.ARTIFACT_FILENAME}}
-      #     path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
-
-      # - name: Run PRE_SCAN_COMMANDS commands
-      #   if: ${{ inputs.PRE_SCAN_COMMANDS != '' }}
-      #   run: ${{ inputs.PRE_SCAN_COMMANDS }}
-
-      # - name: Run Sonar
-      #   run: sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }} -Dsonar.token=${{ secrets.SONAR_TOKEN }}
