@@ -113,6 +113,11 @@ jobs:
     needs: [ build-node-project ]
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.CHECKOUT_REF }}
+      
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
