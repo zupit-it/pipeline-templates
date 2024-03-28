@@ -3,9 +3,14 @@ name: Jira Issue Transition
 on:
   workflow_call:
     inputs:
-      LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_NATIVE_GROUP:
+        required: false
+        type: string
+        default: 'Native'
       STATUS:
         required: true
         type: string
@@ -15,7 +20,9 @@ on:
 
 jobs:
   move-jira-issue:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
 
     steps:
       - name: Setup

@@ -3,9 +3,14 @@ name: Docker build and push image
 on:
   workflow_call:
     inputs:
-      LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_NATIVE_GROUP:
+        required: false
+        type: string
+        default: 'Native'
       PYTHON_VERSION:
         required: true
         type: string
@@ -26,12 +31,14 @@ env: "${{secrets}}"
 
 jobs:
   build-and-deploy:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        
+
       - name: Setup Python ${{ inputs.PYTHON_VERSION }} Environment
         uses: actions/setup-python@v4
         with:
@@ -44,7 +51,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt --target=".python_packages/lib/site-packages"
           popd
-          
+
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
         with:

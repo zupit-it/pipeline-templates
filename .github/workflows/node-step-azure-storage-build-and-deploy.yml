@@ -3,9 +3,14 @@ name: Node build and deploy to Azure Storage
 on:
   workflow_call:
     inputs:
-      CONTAINER_CI_LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
       NODE_VERSION:
         required: true
         type: string
@@ -78,7 +83,9 @@ env: "${{secrets}}"
 
 jobs:
   build-node-project:
-    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.IMAGE }}
 
@@ -96,7 +103,7 @@ jobs:
         uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.15.12
         with:
           NAME_PREFIX: node-build
-      
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -119,7 +126,9 @@ jobs:
           ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 
   node-deploy-azure-storage:
-    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:

@@ -3,9 +3,17 @@ name: .NET build and deploy to Azure WebApp
 on:
   workflow_call:
     inputs:
-      CONTAINER_CI_LABELS:
+      DEPLOY_ON:
         required: true
         type: string
+      RUN_ON:
+        required: false
+        type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
       RELEASE_ENVIRONMENT:
         required: true
         type: string
@@ -40,7 +48,9 @@ env: "${{secrets}}"
 
 jobs:
   build:
-    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.DOTNET_IMAGE }}
 
@@ -79,7 +89,9 @@ jobs:
           ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 
   deploy:
-    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
+    runs-on:
+      labels: ${{ inputs.DEPLOY_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:

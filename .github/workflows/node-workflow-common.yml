@@ -26,12 +26,18 @@ on:
         type: number
         default: 30
       # Workflow inputs
-      NATIVE_CI_LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
-      CONTAINER_CI_LABELS:
-        required: true
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
         type: string
+        default: 'Container'
+      RUNNERS_NATIVE_GROUP:
+        required: false
+        type: string
+        default: 'Native'
       RUN:
         required: false
         type: boolean
@@ -46,7 +52,8 @@ jobs:
     uses:
       ./.github/workflows/node-step-format-lint-build.yml
     with:
-      CI_LABELS: ${{ inputs.CONTAINER_CI_LABELS }}
+      RUN_ON: ${{inputs.RUN_ON}}
+      RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       NODE_VERSION: ${{inputs.NODE_VERSION}}
       RUN: ${{inputs.RUN}}
@@ -58,7 +65,8 @@ jobs:
     uses:
       ./.github/workflows/node-step-test-cypress.yml
     with:
-      LABELS: ${{ inputs.CONTAINER_CI_LABELS }}
+      RUN_ON: ${{inputs.RUN_ON}}
+      RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}

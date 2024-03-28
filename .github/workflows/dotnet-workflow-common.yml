@@ -9,9 +9,14 @@ on:
       DOTNET_IMAGE:
         required: true
         type: string
-      CONTAINER_CI_LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
       DOTNET_IMAGE_ENV_VARIABLES:
         required: false
         type: string
@@ -28,7 +33,9 @@ on:
 jobs:
   dotnet-common:
     name: Run .NET build, check formatting and test
-    runs-on: ${{ fromJson(inputs.CONTAINER_CI_LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.DOTNET_IMAGE }}
       env: ${{ fromJson(inputs.DOTNET_IMAGE_ENV_VARIABLES) }}

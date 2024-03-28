@@ -3,9 +3,14 @@ name: Delete tagged images
 on:
   workflow_call:
     inputs:
-      LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_NATIVE_GROUP:
+        required: false
+        type: string
+        default: 'Native'
       IMAGE_NAME:
         required: true
         type: string
@@ -22,7 +27,9 @@ on:
 jobs:
   to-lowercase-repository-name:
     name: "Get repository name to lowercase"
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
 
     outputs:
       REPOSITORY_NAME: ${{ steps.string.outputs.lowercase }}
@@ -35,7 +42,9 @@ jobs:
 
   clean-untagged-images:
     name: "Delete untagged images ${{ needs.to-lowercase-repository-name.outputs.REPOSITORY_NAME }}/${{ inputs.IMAGE_NAME }}"
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
     needs: [to-lowercase-repository-name]
     steps:
       - name: "Delete untagged images ${{ needs.to-lowercase-repository-name.outputs.REPOSITORY_NAME }}*"
@@ -52,7 +61,9 @@ jobs:
 
   clean-staging-tagged-images:
     name: "Delete staging tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
     needs: [clean-untagged-images]
     steps:
       - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
@@ -69,7 +80,9 @@ jobs:
   clean-production-tagged-images:
     name: "Delete production tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
     needs: [clean-untagged-images]
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
     steps:
       - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
         uses: vlaurin/action-ghcr-prune@v0.4.0

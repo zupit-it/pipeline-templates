@@ -3,9 +3,18 @@ name: Run Django tests
 on:
   workflow_call:
     inputs:
-      LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
+      RUNNERS_NATIVE_GROUP:
+        required: false
+        type: string
+        default: 'Native'
       WORKING_DIRECTORY:
         required: true
         type: string
@@ -44,7 +53,9 @@ env: "${{secrets}}"
 jobs:
   django-tests:
     if: ${{ inputs.RUN }}
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container: ${{ inputs.PYTHON_IMAGE }}
 
     defaults:
@@ -89,7 +100,7 @@ jobs:
          coverage erase
          coverage run --source='.' manage.py test --noinput
          coverage xml -i -o coverage-reports/coverage-django.xml
-         coverage report --fail-under ${{ inputs.COVERAGE_THRESHOLD }} 
+         coverage report --fail-under ${{ inputs.COVERAGE_THRESHOLD }}
 
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3

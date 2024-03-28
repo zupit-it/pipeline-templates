@@ -3,9 +3,14 @@ name: Lint, check and build a Javascript app
 on:
   workflow_call:
     inputs:
-      CI_LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_NATIVE_GROUP:
+        required: false
+        type: string
+        default: 'Native'
       NODE_VERSION:
         required: true
         type: string
@@ -30,7 +35,9 @@ env: "${{secrets}}"
 jobs:
   lint-check-build:
     if: ${{ inputs.RUN }}
-    runs-on: ${{ fromJson(inputs.CI_LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
     container:
       image: ${{ inputs.IMAGE }}
     defaults:
