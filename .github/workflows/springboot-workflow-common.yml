@@ -3,12 +3,6 @@ name: Springboot common
 on:
   workflow_call:
     inputs:
-      NATIVE_CI_LABELS:
-        required: true
-        type: string
-      CONTAINER_CI_LABELS:
-        required: true
-        type: string
       WORKING_DIRECTORY:
         required: true
         type: string
@@ -43,7 +37,6 @@ jobs:
     uses:
       ./.github/workflows/springboot-step-lint-check.yml
     with:
-      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       JAVA_IMAGE: ${{inputs.JAVA_IMAGE}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
@@ -55,7 +48,6 @@ jobs:
     uses:
       ./.github/workflows/springboot-step-tests.yml
     with:
-      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       JAVA_IMAGE: ${{inputs.JAVA_IMAGE}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}

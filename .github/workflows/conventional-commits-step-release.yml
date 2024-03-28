@@ -3,14 +3,21 @@ name: Conventional Commits Release Step
 on:
   workflow_call:
     inputs:
-      LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_NATIVE_GROUP:
+        required: false
+        type: string
+        default: 'Native'
 
 jobs:
   release:
     name: release
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
     steps:
       - uses: actions/checkout@v3
         with:

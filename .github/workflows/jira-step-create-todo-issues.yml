@@ -3,9 +3,14 @@ name: Jira Create TODO Issues
 on:
   workflow_call:
     inputs:
-      LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_NATIVE_GROUP:
+        required: false
+        type: string
+        default: 'Native'
       PROJECT_KEY:
         required: true
         type: string
@@ -24,7 +29,9 @@ on:
 
 jobs:
   create-todo-jira-issue:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
 
     steps:
     - name: Login to Jira

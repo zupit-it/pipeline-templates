@@ -3,9 +3,14 @@ name: Docker build and push SpringBoot image to registry
 on:
   workflow_call:
     inputs:
-      LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
       JAVA_IMAGE:
         required: true
         type: string
@@ -41,7 +46,9 @@ env: "${{secrets}}"
 
 jobs:
   docker-build-and-push:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container: ${{ inputs.JAVA_IMAGE }}
 
     defaults:

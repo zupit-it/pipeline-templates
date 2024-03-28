@@ -19,12 +19,6 @@ on:
         type: string
         default: ""
       # Workflow inputs
-      NATIVE_CI_LABELS:
-        required: true
-        type: string
-      CONTAINER_CI_LABELS:
-        required: true
-        type: string
       RUN:
         required: false
         type: boolean
@@ -52,7 +46,6 @@ jobs:
     uses:
       ./.github/workflows/django-step-lint-check.yml
     with:
-      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
       RUN: ${{inputs.RUN}}
@@ -66,7 +59,6 @@ jobs:
     uses:
       ./.github/workflows/django-step-tests.yml
     with:
-      LABELS: ${{inputs.CONTAINER_CI_LABELS}}
       WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
