@@ -19,6 +19,14 @@ on:
         type: string
         default: ""
       # Workflow inputs
+      RUN_ON:
+        required: false
+        type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
       RUN:
         required: false
         type: boolean
@@ -46,6 +54,8 @@ jobs:
     uses:
       ./.github/workflows/django-step-lint-check.yml
     with:
+      RUN_ON: ${{inputs.RUN_ON}}
+      RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
       RUN: ${{inputs.RUN}}
@@ -59,6 +69,8 @@ jobs:
     uses:
       ./.github/workflows/django-step-tests.yml
     with:
+      RUN_ON: ${{inputs.RUN_ON}}
+      RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
