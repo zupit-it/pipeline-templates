@@ -124,8 +124,8 @@ In addition, it is possible to specify this optional input:
 -   **SHELL**: The shell type to use. By default, it is **bash**.
 -   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
 -   **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -916,9 +916,9 @@ In addition, it is possible to specify these optional inputs:
 -   **TIMEOUT**: Used for tests, if the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
--   **RUNNERS_NATIVE_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Native**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 
 This is an example to show how data should be formatted.
 
@@ -1061,8 +1061,8 @@ The input parameters of this workflow have the same name of the corresponding pa
 Also, these input parameters are optional:
 -   **IMAGE**: the docker image to use when running the node build. By default, it is **ubuntu:23.04**.
 -   **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.50.0**.
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1113,9 +1113,9 @@ It requires these inputs:
 
 In addition, it is possible to specify this optional input:
 
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
--   **RUNNERS_NATIVE_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Native**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 -   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _coverage-django.xml_ file. By default, it is **coverage-django.xml**.
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
@@ -1213,13 +1213,24 @@ It requires these inputs:
 In addition, it is possible to specify this optional input:
 
 -   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _jacoco reports_ file. By default, it is **target**.
--   **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
+-   **MAVEN_USER_HOME**: T    RUN_ON:
+      required: false
+      type: string
+      default: 'zupit-agents'
+    RUNNERS_NATIVE_GROUP:
+      required: false
+      type: string
+      default: 'Native'
+    RUNNERS_CONTAINER_GROUP:
+      required: false
+      type: string
+      default: 'Container'he path to Maven directory. By default, it is **./m2**.
 -   **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
 -   **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
--   **RUNNERS_NATIVE_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Native**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 
 This is an example to show how data should be formatted.
 
@@ -1306,8 +1317,8 @@ In addition, it is possible to specify this optional input:
 
 -   **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
 -   **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 It then outputs this variable:
 
@@ -1362,8 +1373,8 @@ In addition, it is possible to specify these optional inputs:
 -   **DOTNET_IMAGE_ENV_VARIABLES**: The environment variables to set when running the .NET docker image.
 -   **CSHARPIER_VERSION**: The version of the CSharpier tool to use. For the default value, see the `dotnet/format` action.
 -   **RUN_LINT**: Whatever or not the lint command should be executed. By default, it is **true**.
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 
 This is an example to show how data should be formatted.
@@ -1408,8 +1419,8 @@ It requires these inputs:
 
 In addition, it is possible to specify these optional inputs:
 
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_NATIVE_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Native**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 -   **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
 -   **REGISTRY_USER**: The registry url where to push the Docker image.
     By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
@@ -1463,7 +1474,7 @@ It requires these inputs:
 
 In addition, it is possible to specify this optional input:
 
--   **RUNNERS_NATIVE_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Native**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 
 
 This is an example to show how data should be formatted.
@@ -1507,8 +1518,8 @@ It requires these inputs:
 
 It also requires these secrets:
 
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_NATIVE_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Native**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 -   **RETENTION_POLICY_TOKEN**: A PAT with permissions to **read:packages** and **delete:packages**
 
 In addition, it is possible to specify these optional inputs:
@@ -1551,8 +1562,8 @@ It also requires these secrets:
 
 In addition, it is possible to specify this optional input:
 
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_NATIVE_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Native**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 
 
 This is an example to show how data should be formatted.
@@ -1659,8 +1670,8 @@ It requires these inputs:
 
 In addition, it is possible to specify this optional input:
 
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1683,8 +1694,8 @@ It requires these secrets:
 
 In addition, it is possible to specify this optional input:
 
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_NATIVE_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Native**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 
 
 This is an example to show how data should be formatted.
@@ -1726,8 +1737,8 @@ In addition, it is possible to specify these optional inputs:
 -   **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is **https://sonarqube.zupit.software**
 -   **DOWNLOAD_ARTIFACT**: Whether it should download an artifact or not to analyze. By default, it is **true**.
 -   **ARTIFACT_FILENAME**: The name of the artifact. By default, it is an empty string.
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1784,8 +1795,8 @@ In addition, it is possible to specify these optional inputs:
 -   **SONAR_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded from Sonarqube analysis. You can't use a `sonar-project.properties` file since it's [not supported](https://community.sonarsource.com/t/configure-net-core-analysis-with-configuration-file/41299/2) from SonarScanner for .NET.
 -   **COVERAGE_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded when computing tests code coverage ([docs](https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#source-files)). Since `dotnet test` expect absolute path for the exclusion list, you should provide this parameter in the form `**/my-path/*.cs` (always starting with `**/*`).
 -   **DOTNET_VERSION**: The .NET version to build the solution. By default, it is `7`.
--   **RUN_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: the _labels_ to select the correct _github-runner group_  that will execute this workflow. Default is **Container**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
