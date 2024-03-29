@@ -60,12 +60,20 @@ jobs:
           projectBaseDir: ${{ inputs.WORKING_DIRECTORY }}
           args: >
             -Dsonar.qualitygate.wait=true
+            
+      - name: Find report-task.txt file in repository root
+        run: |
+          echo "Searching for report-task.txt in the repository root..."
+          find . -name report-task.txt
+
 
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@master
         # Force to fail step after specific time.
         timeout-minutes: 5
+        with:
+          scanMetadataReportFile: ${{ inputs.WORKING_DIRECTORY }}/.scannerwork/report-task.txt
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
