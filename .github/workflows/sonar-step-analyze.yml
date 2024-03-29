@@ -12,7 +12,7 @@ on:
       SONAR_IMAGE:
         required: false
         type: string
-        default: "ghcr.io/zupit-it/pipeline-templates/flutter-sonar-scanner-cli:5.0.1"
+        default: "sonarsource/sonar-scanner-cli"
       SONAR_HOST_URL:
         required: false
         type: string
