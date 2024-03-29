@@ -56,8 +56,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          projectBaseDir: ${{ inputs.WORKING_DIRECTORY }}
         with:
+          projectBaseDir: ${{ inputs.WORKING_DIRECTORY }}
           args: >
             -Dsonar.qualitygate.wait=true
 
