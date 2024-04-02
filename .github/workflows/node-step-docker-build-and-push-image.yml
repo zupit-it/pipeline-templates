@@ -117,7 +117,7 @@ jobs:
   docker-build-and-push:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}\
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.DIND_IMAGE }}
 
