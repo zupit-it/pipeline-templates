@@ -3,13 +3,26 @@ name: Add Jira description to pr
 on:
   workflow_call:
     inputs:
-      LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
+      DIND_IMAGE:
+        required: false
+        type: string
+        default: 'docker:26.0.0-dind'
 
 jobs:
   jira-description:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container:
+      image: ${{ inputs.DIND_IMAGE }}
 
     steps:
       - uses: cakeinpanic/jira-description-action@v0.4.0

@@ -7,10 +7,14 @@ on:
         required: false
         type: string
         default: 'zupit-agents'
-      RUNNERS_NATIVE_GROUP:
+      RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Native'
+        default: 'Container'
+      DIND_IMAGE:
+        required: false
+        type: string
+        default: 'docker:26.0.0-dind'
       IMAGE_NAME:
         required: true
         type: string
@@ -29,7 +33,9 @@ jobs:
     name: "Get repository name to lowercase"
     runs-on:
       labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container:
+      image: ${{ inputs.DIND_IMAGE }}
 
     outputs:
       REPOSITORY_NAME: ${{ steps.string.outputs.lowercase }}
@@ -44,7 +50,9 @@ jobs:
     name: "Delete untagged images ${{ needs.to-lowercase-repository-name.outputs.REPOSITORY_NAME }}/${{ inputs.IMAGE_NAME }}"
     runs-on:
       labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container:
+      image: ${{ inputs.DIND_IMAGE }}
     needs: [to-lowercase-repository-name]
     steps:
       - name: "Delete untagged images ${{ needs.to-lowercase-repository-name.outputs.REPOSITORY_NAME }}*"
@@ -63,7 +71,9 @@ jobs:
     name: "Delete staging tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
     runs-on:
       labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container:
+      image: ${{ inputs.DIND_IMAGE }}
     needs: [clean-untagged-images]
     steps:
       - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
@@ -82,7 +92,9 @@ jobs:
     needs: [clean-untagged-images]
     runs-on:
       labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container:
+      image: ${{ inputs.DIND_IMAGE }}
     steps:
       - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
         uses: vlaurin/action-ghcr-prune@v0.4.0

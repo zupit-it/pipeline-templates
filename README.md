@@ -1002,9 +1002,6 @@ This workflow uses these composite actions:
 _This workflow uses a NodeJS Docker image, hence remember to use labels to match runners specific for Docker._
 
 It requires these inputs:
-
--   **NATIVE_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
--   **CONTAINER_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
 -   **NODE_VERSION**: The NodeJS version required to build the project.
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 -   **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
@@ -1017,6 +1014,8 @@ It requires these inputs:
 
 In addition, it is possible to specify these optional inputs:
 
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 -   **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
 -   **REGISTRY_USER**: The registry url where to push the Docker image.
     By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
@@ -1032,9 +1031,8 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     build-and-push-image:
-        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@v1.16.0
+        uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@v1.17.0
         with:
-            LABELS: "['pinga', 'pipeline', 'container']"
             NODE_VERSION: 16.17.0
             RELEASE_ENVIRONMENT: testing
             WORKING_DIRECTORY: frontend
@@ -1518,12 +1516,12 @@ It requires these inputs:
 
 It also requires these secrets:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 -   **RETENTION_POLICY_TOKEN**: A PAT with permissions to **read:packages** and **delete:packages**
 
 In addition, it is possible to specify these optional inputs:
 
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 -   **DRY_RUN**: Only for tagged images, it shows which ones will be deleted without deleting them. By default, it is **false**.
 
 This is an example to show how data should be formatted.
@@ -1531,7 +1529,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     clean-ionic-images:
-        uses: zupit-it/pipeline-templates/.github/workflows/docker-step-delete-images.yml@v1.16.0
+        uses: zupit-it/pipeline-templates/.github/workflows/docker-step-delete-images.yml@v1.17.0
         with:
             IMAGE_NAME: "ionic"
         secrets: inherit
@@ -1560,10 +1558,10 @@ It also requires these secrets:
 -   **JIRA_USER_EMAIL**: the JIRA user account email.
 -   **JIRA_API_TOKEN**: the token to login the Jira user account email.
 
-In addition, it is possible to specify this optional input:
+In addition, it is possible to specify this optional inputs:
 
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 
 This is an example to show how data should be formatted.
@@ -1571,7 +1569,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     jira-move-issue-to-developed:
-        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.16.0
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.17.0
         with:
             STATUS: Developed
             BRANCH_OR_COMMIT_TITLE: ${{ github.event.workflow_run.head_commit.message }}
@@ -1695,7 +1693,7 @@ It requires these secrets:
 In addition, it is possible to specify this optional input:
 
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 
 This is an example to show how data should be formatted.
@@ -1703,9 +1701,7 @@ This is an example to show how data should be formatted.
 ```yaml
 jobs:
     lint-pr:
-        uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-release.yml@v1.16.0
-        with:
-            LABELS: "['pinga', 'pipeline', 'native']"
+        uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-release.yml@v1.17.0
         secrets: inherit
 ```
 
