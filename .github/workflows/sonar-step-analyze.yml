@@ -17,27 +17,15 @@ on:
       SONAR_IMAGE:
         required: false
         type: string
-        default: "ghcr.io/zupit-it/pipeline-templates/flutter-sonar-scanner-cli:5.0.1"
+        default: "sonarsource/sonar-scanner-cli"
       SONAR_HOST_URL:
         required: false
         type: string
         default: "https://sonarqube.zupit.software"
-      DOWNLOAD_ARTIFACT:
+      CHECK_QUALITY_GATE:
         required: false
         type: boolean
-        default: true
-      ARTIFACT_FILENAME:
-        required: false
-        type: string
-        default: ""
-      ARTIFACT_PATH:
-        required: false
-        type: string
-        default: ".coverage-reports/"
-      PRE_SCAN_COMMANDS:
-        required: false
-        type: string
-        default: ""
+        default: false
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -64,17 +52,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
+          projectBaseDir: ${{ inputs.WORKING_DIRECTORY }}
           args: >
-            -Dsonar.qualitygate.wait=true
-
-      - name: SonarQube Quality Gate check
-        id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        # Force to fail step after specific time.
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: "Example show SonarQube Quality Gate Status value"
-        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+            -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
