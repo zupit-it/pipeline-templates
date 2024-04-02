@@ -15,6 +15,10 @@ on:
         required: false
         type: string
         default: 'Native'
+      DIND_IMAGE:
+        required: false
+        type: string
+        default: 'docker:26.0.0-dind'
       NODE_VERSION:
         required: true
         type: string
@@ -113,7 +117,9 @@ jobs:
   docker-build-and-push:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}\
+    container:
+      image: ${{ inputs.DIND_IMAGE }}
 
     outputs:
       DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
