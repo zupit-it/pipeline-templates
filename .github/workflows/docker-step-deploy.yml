@@ -55,5 +55,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} pull
-      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} down --remove-orphans
-      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} up -d --build
+      - run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} up --build --remove-orphans --force-recreate -d
