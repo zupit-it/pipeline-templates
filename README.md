@@ -124,6 +124,8 @@ In addition, it is possible to specify this optional input:
 -   **SHELL**: The shell type to use. By default, it is **bash**.
 -   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
 -   **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -132,7 +134,6 @@ jobs:
     build-and-push-image:
         uses: zupit-it/pipeline-templates/.github/workflows/node-step-docker-build-and-push-image.yml@v1.15.12
         with:
-            LABELS: "['pinga', 'pipeline', 'container']"
             NODE_VERSION: 16.17.0
             RELEASE_ENVIRONMENT: testing
             WORKING_DIRECTORY: frontend
@@ -903,8 +904,6 @@ It groups together these reusable workflows:
 
 It requires these inputs:
 
--   **NATIVE_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
--   **CONTAINER_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the NodeJS application.
 -   **NODE_VERSION**: The NodeJS Docker image where the runner execute all the commands.
 -   **CYPRESS_IMAGE**: The Cypress Docker image where the runner execute all the commands.
@@ -917,6 +916,9 @@ In addition, it is possible to specify these optional inputs:
 -   **TIMEOUT**: Used for tests, if the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 
 This is an example to show how data should be formatted.
 
@@ -925,8 +927,6 @@ jobs:
     node-common:
         uses: zupit-it/pipeline-templates/.github/workflows/node-workflow-common.yml@v1.15.12
         with:
-            NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
-            CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
             WORKING_DIRECTORY: frontend
             NODE_VERSION: 16.17.0
             CYPRESS_IMAGE: cypress/browsers:node16.17.0-chrome106
@@ -1059,8 +1059,10 @@ This workflow combines two main actions:
 The input parameters of this workflow have the same name of the corresponding parameters in child actions. Refer to them for more information.
 
 Also, these input parameters are optional:
-- **IMAGE**: the docker image to use when running the node build. By default, it is **ubuntu:23.04**.
-- **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.50.0**.
+-   **IMAGE**: the docker image to use when running the node build. By default, it is **ubuntu:23.04**.
+-   **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.50.0**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1069,7 +1071,6 @@ jobs:
     build-and-push-image:
         uses: zupit-it/pipeline-templates/.github/workflows/node-step-azure-storage-build-and-deploy.yml@v1.15.12
         with:
-            CONTAINER_CI_LABELS: "['my-team', 'pipeline', 'container']"
             WORKING_DIRECTORY: front-end
             NODE_VERSION: "16.17.0"
             RELEASE_ENVIRONMENT: testing
@@ -1106,14 +1107,15 @@ It groups together these reusable workflows:
 -   _django-step-tests.yml_
 
 It requires these inputs:
-
--   **NATIVE_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
--   **CONTAINER_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
+-   
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
 -   **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify this optional input:
 
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 -   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _coverage-django.xml_ file. By default, it is **coverage-django.xml**.
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
@@ -1131,8 +1133,6 @@ jobs:
         with:
             WORKING_DIRECTORY: backend
             PYTHON_IMAGE: python:3.8.2-slim-buster
-            NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
-            CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
             COVERAGE_ARTIFACT_NAME: coverage-django.xml
             SETUP_COMMANDS: "apt update && apt install -y gcc"
         secrets: inherit
@@ -1207,18 +1207,30 @@ It groups together these reusable workflows:
 
 It requires these inputs:
 
--   **NATIVE_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
--   **CONTAINER_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITH** docker. The format is a stringified JSON list of labels.
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
 -   **JAVA_IMAGE**: The Java Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify this optional input:
 
 -   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _jacoco reports_ file. By default, it is **target**.
--   **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
+-   **MAVEN_USER_HOME**: T    RUN_ON:
+      required: false
+      type: string
+      default: 'zupit-agents'
+    RUNNERS_NATIVE_GROUP:
+      required: false
+      type: string
+      default: 'Native'
+    RUNNERS_CONTAINER_GROUP:
+      required: false
+      type: string
+      default: 'Container'he path to Maven directory. By default, it is **./m2**.
 -   **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
 -   **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 
 This is an example to show how data should be formatted.
 
@@ -1227,8 +1239,6 @@ jobs:
     java-common:
         uses: zupit-it/pipeline-templates/.github/workflows/springboot-workflow-common.yml@v1.15.12
         with:
-            NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
-            CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
             WORKING_DIRECTORY: backend
             JAVA_IMAGE: openjdk:12
             USE_CI_POSTGRES: false
@@ -1296,7 +1306,6 @@ _This workflow uses a Java Docker image, hence remember to use labels to match r
 
 It requires these inputs:
 
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
 -   **JAVA_IMAGE**: The Java image required to build the project.
 -   **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
@@ -1308,6 +1317,8 @@ In addition, it is possible to specify this optional input:
 
 -   **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
 -   **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 It then outputs this variable:
 
@@ -1322,7 +1333,6 @@ jobs:
 
         uses: zupit-it/pipeline-templates/.github/workflows/springboot-step-docker-build-and-push-image.yml@v1.15.12
         with:
-            LABELS: "['pinga', 'pipeline', 'container']"
             JAVA_IMAGE: openjdk:12
             RELEASE_ENVIRONMENT: testing
             WORKING_DIRECTORY: backend
@@ -1357,13 +1367,14 @@ Check these actions requirements before using this workflow.
 It requires these inputs:
 
 -   **WORKING_DIRECTORY**: check actions used by this workflow for more information.
--   **CONTAINER_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute workflows **WITHOUT** docker. The format is a stringified JSON list of labels.
 -   **DOTNET_IMAGE**: the .NET docker image (usually 'mcr.microsoft.com/dotnet/sdk') to use.
 
 In addition, it is possible to specify these optional inputs:
 -   **DOTNET_IMAGE_ENV_VARIABLES**: The environment variables to set when running the .NET docker image.
 -   **CSHARPIER_VERSION**: The version of the CSharpier tool to use. For the default value, see the `dotnet/format` action.
 -   **RUN_LINT**: Whatever or not the lint command should be executed. By default, it is **true**.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 
 This is an example to show how data should be formatted.
@@ -1375,7 +1386,6 @@ jobs:
         with:
             WORKING_DIRECTORY: "backend"
             DOTNET_IMAGE: "'mcr.microsoft.com/dotnet/sdk:7.0"
-            CONTAINER_CI_LABELS: "['team', 'pipeline', 'container']"
 ```
 
 ---
@@ -1400,7 +1410,6 @@ This workflow uses this composite action:
 
 It requires these inputs:
 
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 -   **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
 -   **DOCKERFILE_PATH**: The path to the Dockerfile to build.
@@ -1410,6 +1419,8 @@ It requires these inputs:
 
 In addition, it is possible to specify these optional inputs:
 
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 -   **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
 -   **REGISTRY_USER**: The registry url where to push the Docker image.
     By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
@@ -1426,7 +1437,6 @@ jobs:
     build-and-push-image:
         uses: zupit-it/pipeline-templates/.github/workflows/docker-step-build-and-push-image.yml@v1.15.12
         with:
-            LABELS: "['pinga', 'pipeline', 'native']"
             RELEASE_ENVIRONMENT: testing
             WORKING_DIRECTORY: backend
             REGISTRY_URL: ghcr.io
@@ -1450,7 +1460,7 @@ This workflow requires a **docker-compose** file to start all services required 
 
 It requires these inputs:
 
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
+-   **DEPLOY_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow.
 -   **ENVIRONMENT**: The target environment that will show GitHub on the GitHub action page.
 -   **DEPLOY_URL**: The target environment url that will show GitHub on the GitHub action page.
 -   **REGISTRY_URL**: The registry url where to pull the Docker images.
@@ -1462,6 +1472,11 @@ It requires these inputs:
     You can retrieve dynamically the image name from the _docker build and push step_ by adding the step's name to the **needs** array of the workflow
     and using `${{ needs.{STEP_NAME}.outputs.DOCKER_IMAGE_NAME }}` where STEP_NAME is the step's name.
 
+In addition, it is possible to specify this optional input:
+
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
+
+
 This is an example to show how data should be formatted.
 
 ```yaml
@@ -1469,7 +1484,7 @@ jobs:
     deploy:
         uses: zupit-it/pipeline-templates/.github/workflows/docker-step-deploy.yml@v1.15.12
         with:
-            LABELS: "[ 'pinga', 'deploy', 'native', 'zupit-applications' ]"
+            DEPLOY_ON: 'sevensedie'
             ENVIRONMENT: testing
             DEPLOY_URL: https://workflows-example.testing.zupit.software
             REGISTRY_URL: ghcr.io
@@ -1498,12 +1513,13 @@ The images' tags must follow this naming convention:
 
 It requires these inputs:
 
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
 -   **IMAGE_NAME**: The image name to apply the retention policy.
 -   **KEEP_AT_LEAST**: The number of tagged version to maintain for both staging and production environments.
 
 It also requires these secrets:
 
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 -   **RETENTION_POLICY_TOKEN**: A PAT with permissions to **read:packages** and **delete:packages**
 
 In addition, it is possible to specify these optional inputs:
@@ -1517,7 +1533,6 @@ jobs:
     clean-ionic-images:
         uses: zupit-it/pipeline-templates/.github/workflows/docker-step-delete-images.yml@v1.15.12
         with:
-            LABELS: "['pinga', 'pipeline', 'native']"
             IMAGE_NAME: "ionic"
         secrets: inherit
 ```
@@ -1536,7 +1551,6 @@ jobs:
 
 It requires these inputs:
 
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
 -   **STATUS**: the final status of the Jira issue.
 -   **BRANCH_OR_COMMIT_TITLE**: the branch or commit title from where extract the Jira issue key.
 
@@ -1546,6 +1560,12 @@ It also requires these secrets:
 -   **JIRA_USER_EMAIL**: the JIRA user account email.
 -   **JIRA_API_TOKEN**: the token to login the Jira user account email.
 
+In addition, it is possible to specify this optional input:
+
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
+
+
 This is an example to show how data should be formatted.
 
 ```yaml
@@ -1553,7 +1573,6 @@ jobs:
     jira-move-issue-to-developed:
         uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.15.12
         with:
-            LABELS: "['pinga', 'pipeline', 'native']"
             STATUS: Developed
             BRANCH_OR_COMMIT_TITLE: ${{ github.event.workflow_run.head_commit.message }}
         secrets: inherit
@@ -1647,8 +1666,12 @@ jobs:
 
 It requires these inputs:
 
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
 -   **CONFIG_FILE**: the config file name (by default it is **.commitlintrc**).
+
+In addition, it is possible to specify this optional input:
+
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1657,7 +1680,6 @@ jobs:
     lint-pr:
         uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-lint.yml@v1.15.12
         with:
-            LABELS: "['pinga', 'pipeline', 'native']"
             CONFIG_FILE: .commitlintrc.json
         secrets: inherit
 ```
@@ -1666,13 +1688,15 @@ jobs:
 
 **conventional-commits-step-release.yml** is the workflow that automatically creates a new release based on the commit messages.
 
-It requires these inputs:
-
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
-
-It also requires these secrets:
+It requires these secrets:
 
 -   **RELEASE_TOKEN**: a personal access token with grants to create a release and to push new commits. (use the zupit bot)
+
+In addition, it is possible to specify this optional input:
+
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
+
 
 This is an example to show how data should be formatted.
 
@@ -1701,7 +1725,6 @@ This workflow requires a **sonar-project.properties** file inside the _working d
 
 It requires these inputs:
 
--   **LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels.
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 
 It also requires these secrets:
@@ -1714,6 +1737,8 @@ In addition, it is possible to specify these optional inputs:
 -   **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is **https://sonarqube.zupit.software**
 -   **DOWNLOAD_ARTIFACT**: Whether it should download an artifact or not to analyze. By default, it is **true**.
 -   **ARTIFACT_FILENAME**: The name of the artifact. By default, it is an empty string.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1724,7 +1749,6 @@ jobs:
         with:
             WORKING_DIRECTORY: frontend
             ARTIFACT_FILENAME: lcov.info
-            LABELS: "['pinga', 'pipeline', 'container']"
         secrets: inherit
 ```
 
@@ -1757,7 +1781,6 @@ Additional properties are provided by this workflow and the required ones are ex
 
 It requires these inputs:
 
--   **CONTAINER_CI_LABELS**: the _labels_ to select the correct _github-runner_ that will execute this workflow. The format is a stringified JSON list of labels. The runner MUST be _docker_ based.
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 -   **SONAR_PROJECT_KEY**: The SonarQube project key.
 
@@ -1772,6 +1795,8 @@ In addition, it is possible to specify these optional inputs:
 -   **SONAR_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded from Sonarqube analysis. You can't use a `sonar-project.properties` file since it's [not supported](https://community.sonarsource.com/t/configure-net-core-analysis-with-configuration-file/41299/2) from SonarScanner for .NET.
 -   **COVERAGE_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded when computing tests code coverage ([docs](https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#source-files)). Since `dotnet test` expect absolute path for the exclusion list, you should provide this parameter in the form `**/my-path/*.cs` (always starting with `**/*`).
 -   **DOTNET_VERSION**: The .NET version to build the solution. By default, it is `7`.
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1780,7 +1805,6 @@ jobs:
     sonar-analyze:
         uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-dotnet-analyze.yml@v1.15.12
         with:
-            CONTAINER_CI_LABELS: "['team', 'pipeline', 'container']"
             WORKING_DIRECTORY: "back-end"
             SONAR_PROJECT_KEY: "my-project-key"
         secrets: inherit

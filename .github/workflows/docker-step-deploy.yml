@@ -3,9 +3,13 @@ name: Deploy docker compose
 on:
   workflow_call:
     inputs:
-      LABELS:
+      DEPLOY_ON:
         required: true
         type: string
+      RUNNERS_NATIVE_GROUP:
+        required: false
+        type: string
+        default: 'Native'
       ENVIRONMENT:
         required: true
         type: string
@@ -33,7 +37,9 @@ env: "${{secrets}}"
 
 jobs:
   deploy:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.DEPLOY_ON }}
+      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
     env: ${{ fromJson(inputs.IMAGES) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
