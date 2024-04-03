@@ -21,7 +21,7 @@ on:
       SONAR_HOST_URL:
         required: false
         type: string
-        default: "https://sonarqube.zupit.software"
+        default: "https://sonarqube.zupit.softwarea"
       CHECK_QUALITY_GATE:
         required: false
         type: boolean
