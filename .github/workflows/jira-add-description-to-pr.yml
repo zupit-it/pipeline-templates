@@ -7,16 +7,22 @@ on:
         required: false
         type: string
         default: 'zupit-agents'
-      RUNNERS_NATIVE_GROUP:
+      RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Native'
+        default: 'Container'
+      DIND_IMAGE:
+        required: false
+        type: string
+        default: 'docker:26.0.0-dind'
 
 jobs:
   jira-description:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container:
+      image: ${{ inputs.DIND_IMAGE }}
 
     steps:
       - uses: cakeinpanic/jira-description-action@v0.4.0
