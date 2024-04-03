@@ -3,16 +3,21 @@ name: Sonar analyze with artifacts
 on:
   workflow_call:
     inputs:
-      LABELS:
-        required: true
+      RUN_ON:
+        required: false
         type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
       WORKING_DIRECTORY:
         required: true
         type: string
       SONAR_IMAGE:
         required: false
         type: string
-        default: "sonarsource/sonar-scanner-cli"
+        default: "ghcr.io/zupit-it/pipeline-templates/flutter-sonar-scanner-cli:5.0.1"
       SONAR_HOST_URL:
         required: false
         type: string
@@ -44,7 +49,9 @@ env:
 
 jobs:
   sonar-analyze:
-    runs-on: ${{ fromJson(inputs.LABELS) }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container: ${{ inputs.SONAR_IMAGE }}
     defaults:
       run:
