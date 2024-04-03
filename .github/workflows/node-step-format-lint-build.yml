@@ -7,7 +7,7 @@ on:
         required: false
         type: string
         default: 'zupit-agents'
-      RUNNERS_NATIVE_GROUP:
+      RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
         default: 'Native'
@@ -37,7 +37,7 @@ jobs:
     if: ${{ inputs.RUN }}
     runs-on:
       labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.IMAGE }}
     defaults:
