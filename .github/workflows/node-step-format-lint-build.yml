@@ -10,7 +10,7 @@ on:
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Native'
+        default: 'Container'
       NODE_VERSION:
         required: true
         type: string
