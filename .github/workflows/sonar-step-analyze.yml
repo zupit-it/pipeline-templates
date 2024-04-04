@@ -49,8 +49,8 @@ jobs:
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ inputs.SONAR_HOST_URL }}
         with:
+          host: ${{ inputs.SONAR_HOST_URL }}
           projectBaseDir: ${{ inputs.WORKING_DIRECTORY }}
           args: >
             -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
