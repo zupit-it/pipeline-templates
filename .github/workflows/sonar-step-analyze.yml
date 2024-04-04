@@ -18,6 +18,10 @@ on:
         required: false
         type: string
         default: "sonarsource/sonar-scanner-cli"
+      SONAR_HOST_URL:
+        required: false
+        type: string
+        default: "https://sonarqube.zupit.software"
       CHECK_QUALITY_GATE:
         required: false
         type: boolean
@@ -48,5 +52,5 @@ jobs:
           projectBaseDir: ${{ inputs.WORKING_DIRECTORY }}
           args: >
             -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
-            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+            -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }}
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
