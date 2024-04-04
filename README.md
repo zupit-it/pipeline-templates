@@ -1726,11 +1726,11 @@ It requires these inputs:
 It also requires these secrets:
 
 -   **SONAR_TOKEN**: The Sonarqube token.
+-   **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is on organization secrets: **https://sonarqube.zupit.software**
 
 In addition, it is possible to specify these optional inputs:
 
 -   **SONAR_IMAGE**: The Sonarqube docker image where the runner execute all commands. By default, it is **sonarsource/sonar-scanner-cli**.
--   **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is **https://sonarqube.zupit.software**
 -   **DOWNLOAD_ARTIFACT**: Whether it should download an artifact or not to analyze. By default, it is **true**.
 -   **ARTIFACT_FILENAME**: The name of the artifact. By default, it is an empty string.
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
@@ -1783,11 +1783,11 @@ It requires these inputs:
 It also requires these secrets:
 
 -   **SONAR_TOKEN**: The Sonarqube token.
+-   **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is on organization secrets: **https://sonarqube.zupit.software**
 
 In addition, it is possible to specify these optional inputs:
 
 -   **SONAR_IMAGE**: The SonarQube docker image where the runner execute all commands. By default, it is `sonarsource/sonar-scanner-cli`.
--   **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is `https://sonarqube.zupit.software`.
 -   **SONAR_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded from Sonarqube analysis. You can't use a `sonar-project.properties` file since it's [not supported](https://community.sonarsource.com/t/configure-net-core-analysis-with-configuration-file/41299/2) from SonarScanner for .NET.
 -   **COVERAGE_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded when computing tests code coverage ([docs](https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#source-files)). Since `dotnet test` expect absolute path for the exclusion list, you should provide this parameter in the form `**/my-path/*.cs` (always starting with `**/*`).
 -   **DOTNET_VERSION**: The .NET version to build the solution. By default, it is `7`.
