@@ -21,10 +21,6 @@ on:
         required: false
         type: string
         default: "sonarsource/sonar-scanner-cli"
-      SONAR_HOST_URL:
-        required: false
-        type: string
-        default: "https://sonarqube.zupit.software"
       SONAR_EXCLUSIONS:
         required: false
         type: string
@@ -87,7 +83,7 @@ jobs:
           dotnet-sonarscanner begin \
             /k:"${{ inputs.SONAR_PROJECT_KEY }}" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-            /d:sonar.host.url="${{ inputs.SONAR_HOST_URL }}" \
+            /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
             /d:sonar.cs.vstest.reportsPaths=**/*.trx \
             "${params[@]}"
 

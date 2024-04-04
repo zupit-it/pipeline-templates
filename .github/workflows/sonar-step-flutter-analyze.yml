@@ -18,10 +18,6 @@ on:
         required: false
         type: string
         default: "ghcr.io/zupit-it/pipeline-templates/flutter-sonar-scanner-cli:5.0.1"
-      SONAR_HOST_URL:
-        required: false
-        type: string
-        default: "https://sonarqube.zupit.software"
       DOWNLOAD_ARTIFACT:
         required: false
         type: boolean
@@ -72,4 +68,4 @@ jobs:
         run: ${{ inputs.PRE_SCAN_COMMANDS }}
 
       - name: Run Sonar
-        run: sonar-scanner -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
+        run: sonar-scanner -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
