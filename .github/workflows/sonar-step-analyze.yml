@@ -55,4 +55,4 @@ jobs:
           projectBaseDir: ${{ inputs.WORKING_DIRECTORY }}
           args: >
             -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
-            -Dsonar.host.url=${{ inputs.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
