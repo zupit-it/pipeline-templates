@@ -50,19 +50,24 @@ jobs:
           string: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}
         continue-on-error: true
 
-      - name: install Bash
-        run: (cd /tmp && apk update && apk add bash)
-
       - name: Check issue status
         id: check-status
-        shell: 'bash'
+        shell: 'sh'
         if: steps.find.outcome == 'success'
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
-          verified_states=("verified" "non compliant" "done" "billed" "to be billed")
-          output=$(jira view ${{ steps.find.outputs.issue }} --field status -e ${{ secrets.JIRA_BASE_URL }} --login ${{ secrets.JIRA_USER_EMAIL }} | sed -n 's/status: \(.*\)/\L\1/p')
-          [[ ${verified_states[*]} =~ ${output} ]] && is_verified=true || is_verified=false
+          verified_states="verified non\ compliant done billed to\ be\ billed"
+          output=$(jira view "${steps_find_outputs_issue}" --field status -e "${secrets_JIRA_BASE_URL}" --login "${secrets_JIRA_USER_EMAIL}" | sed -n 's/status: \(.*\)/\L\1/p')
+          is_verified=false
+          for state in $verified_states; do
+              case $output in
+                  *"$state"*)
+                      is_verified=true
+                      break
+                      ;;
+              esac
+          done
           echo "verified=$is_verified" >> "$GITHUB_OUTPUT"
 
       - name: Transition issue
