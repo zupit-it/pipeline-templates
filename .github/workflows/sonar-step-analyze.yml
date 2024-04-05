@@ -49,6 +49,9 @@ jobs:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
     steps:
+      - name: install Git LFS
+        run: (cd /tmp && apk update && apk add git-lfs git-lfs)
+
       - name: Checkout code
         uses: actions/checkout@v3
         with:
