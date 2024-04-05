@@ -100,7 +100,7 @@ jobs:
     steps:
       - name: Generate artifact name
         id: artifact-name
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.21.1
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.21.2
         with:
           NAME_PREFIX: node-build
 
@@ -110,7 +110,7 @@ jobs:
           ref: ${{ inputs.CHECKOUT_REF }}
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.21.1
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.21.2
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
@@ -120,7 +120,7 @@ jobs:
           CHECKOUT_REF: ${{ inputs.CHECKOUT_REF }}
 
       - name: Upload build artifact
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.21.1
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.21.2
         with:
           SOURCE_FOLDER: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
           ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
@@ -141,12 +141,12 @@ jobs:
     steps:
       - name: Download build artifact
         id: output-folder
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.21.1
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.21.2
         with:
           ARTIFACT_NAME: ${{ needs.build-node-project.outputs.ARTIFACT_NAME }}
 
       - name: Deploy to Azure Storage
-        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.21.1
+        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.21.2
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
           BINARIES_DIRECTORY: ''
