@@ -54,14 +54,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Sonar step analyze with artifacts
-        id: sonar
-        uses: zupit-it/pipeline-templates/.github/actions/sonar/analyze@v1.21.0
+      - name: Download coverage artifact
+        if: ${{ inputs.DOWNLOAD_ARTIFACT }}
+        uses: actions/download-artifact@v3
         with:
-          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
-          SONAR_IMAGE: ${{ inputs.SONAR_IMAGE }}
-          CHECK_QUALITY_GATE: ${{ inputs.CHECK_QUALITY_GATE }}
-          DOWNLOAD_ARTIFACT: ${{ inputs.DOWNLOAD_ARTIFACT }}
-          ARTIFACT_FILENAME: ${{ inputs.ARTIFACT_FILENAME }}
-          ARTIFACT_PATH: ${{ inputs.ARTIFACT_PATH }}
-        env: "${{secrets}}"
+          name: ${{inputs.ARTIFACT_FILENAME}}
+          path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          projectBaseDir: ${{ inputs.WORKING_DIRECTORY }}
+          args: >
+            -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
