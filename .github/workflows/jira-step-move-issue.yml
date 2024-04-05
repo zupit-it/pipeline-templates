@@ -52,7 +52,7 @@ jobs:
 
       - name: Check issue status
         id: check-status
-        shell: 'bash'
+        shell: 'sh'
         if: steps.find.outcome == 'success'
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
