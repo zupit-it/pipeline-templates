@@ -33,7 +33,7 @@ on:
       ARTIFACT_PATH:
         required: false
         type: string
-        default: ".coverage-reports/"
+        default: ".coverage-reports/"a
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
