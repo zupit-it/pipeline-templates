@@ -31,10 +31,10 @@ jobs:
       image: ${{ inputs.DIND_IMAGE }}
 
     steps:
-      - name: Setup
-        uses: atlassian/gajira-cli@v3
-        with:
-          version: 1.0.27
+#      - name: Setup
+#        uses: atlassian/gajira-cli@v3
+#        with:
+#          version: 1.0.27
 
       - name: Login to Jira
         uses: atlassian/gajira-login@master
