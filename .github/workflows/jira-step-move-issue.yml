@@ -60,7 +60,7 @@ jobs:
 
       - name: ls
         run: |
-          ls -la /tmp
+          /tmp/jira --version
 
       - name: Check issue status
         id: check-status
