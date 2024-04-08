@@ -1660,7 +1660,7 @@ jobs:
 
 It requires these secrets:
 
--  **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
+-   **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
 -   **JIRA_BASE_URL**: the JIRA url.
 -   **JIRA_USER_EMAIL**: the JIRA user account email.
 -   **JIRA_API_TOKEN**: the token to login the Jira user account email.
@@ -1691,7 +1691,7 @@ It requires these inputs:
 
 It requires these secrets:
 
--  **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
+-   **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
 -   **JIRA_BASE_URL**: the JIRA url.
 -   **JIRA_USER_EMAIL**: the JIRA user account email.
 -   **JIRA_API_TOKEN**: the token to login the Jira user account email.
