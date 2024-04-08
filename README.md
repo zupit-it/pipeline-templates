@@ -1653,6 +1653,68 @@ jobs:
             BRANCH_OR_COMMIT_TITLE: ${{ github.event.workflow_run.head_commit.message }}
         secrets: inherit
 ```
+#### Jira Add Description to PR
+
+###### Workflow
+**jira-add-description-to-pr.yml** is the workflow that adds the Jira issue description to the pull request description.
+
+It requires these secrets:
+
+-  **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
+-   **JIRA_BASE_URL**: the JIRA url.
+-   **JIRA_USER_EMAIL**: the JIRA user account email.
+-   **JIRA_API_TOKEN**: the token to login the Jira user account email.
+
+In addition, it is possible to specify this optional inputs:
+
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+-   **DIND_IMAGE**: Docker image to use. Default is docker:26.0.0-dind.
+
+This is an example to show how data should be formatted.
+```yaml
+jobs:
+  jira-description:
+    uses:
+      zupit-it/pipeline-templates/.github/workflows/jira-add-description-to-pr.yml@v1.21.4
+    secrets: inherit
+```
+
+#### Jira Create TODO Issues
+
+###### Workflow
+**jira-step-create-todo-issues.yml** is the workflow that creates Jira issues based on the TODO comments in the code.
+
+It requires these inputs:
+
+-   **PROJECT_KEY**: the Jira project key.
+
+It requires these secrets:
+
+-  **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
+-   **JIRA_BASE_URL**: the JIRA url.
+-   **JIRA_USER_EMAIL**: the JIRA user account email.
+-   **JIRA_API_TOKEN**: the token to login the Jira user account email.
+
+In addition, it is possible to specify this optional inputs:
+
+-   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+-   **DIND_IMAGE**: Docker image to use. Default is docker:26.0.0-dind.
+-   **ISSUE_TYPE**: The type of the issue to create. Default is Task.
+-   **ISSUE_DESCRIPTION**: The description of the issue to create. Default is "Created automatically via GitHub Actions".
+-   **LINK**: A link to put in the issue description. Default is an empty string.
+
+This is an example to show how data should be formatted.
+```yaml
+jobs:
+  jira-create-todo-issue:
+    uses: zupit-it/pipeline-templates/.github/workflows/jira-step-create-todo-issues.yml@v1.21.4
+    with:
+      PROJECT_KEY: DDSO
+      LINK: ${{ github.event.compare }}
+    secrets: inherit
+```
 
 ---
 
