@@ -31,11 +31,6 @@ jobs:
       image: ${{ inputs.DIND_IMAGE }}
 
     steps:
-      - name: Setup
-        uses: atlassian/gajira-cli@v3
-        with:
-          version: 1.0.27
-
       - name: Login to Jira
         uses: atlassian/gajira-login@master
         env:
@@ -50,6 +45,14 @@ jobs:
           string: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}
         continue-on-error: true
 
+      - name: Install bash
+        run: (cd /tmp && apk update && apk add bash curl)
+
+      - name: Download jira binary
+        run: |
+          curl -L -o /tmp/jira https://github.com/go-jira/jira/releases/download/v1.0.27/jira-linux-386
+          chmod +x /tmp/jira
+
       - name: Check issue status
         id: check-status
         shell: 'bash'
@@ -58,7 +61,7 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
           verified_states=("verified" "non compliant" "done" "billed" "to be billed")
-          output=$(jira view ${{ steps.find.outputs.issue }} --field status -e ${{ secrets.JIRA_BASE_URL }} --login ${{ secrets.JIRA_USER_EMAIL }} | sed -n 's/status: \(.*\)/\L\1/p')
+          output=$(/tmp/jira view ${{ steps.find.outputs.issue }} --field status -e ${{ secrets.JIRA_BASE_URL }} --login ${{ secrets.JIRA_USER_EMAIL }} | sed -n 's/status: \(.*\)/\L\1/p')
           [[ ${verified_states[*]} =~ ${output} ]] && is_verified=true || is_verified=false
           echo "verified=$is_verified" >> "$GITHUB_OUTPUT"
 
