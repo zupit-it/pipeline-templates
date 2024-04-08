@@ -60,7 +60,7 @@ jobs:
 
       - name: Inspect downloaded file
         run: |
-          cd /tmp && jira --version
+          cd /tmp && ./jira -h
 
       - name: Show Jira version
         run: bash -c "/tmp/jira --version"
