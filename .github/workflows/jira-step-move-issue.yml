@@ -58,13 +58,6 @@ jobs:
           curl -L -o /tmp/jira https://github.com/go-jira/jira/releases/download/v1.0.27/jira-linux-386
           chmod +x /tmp/jira
 
-      - name: Inspect downloaded file
-        run: |
-          cd /tmp && ./jira -h
-
-      - name: Show Jira version
-        run: bash -c "/tmp/jira --version"
-
       - name: Check issue status
         id: check-status
         shell: 'bash'
