@@ -45,10 +45,10 @@ jobs:
           string: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}
         continue-on-error: true
 
-      - name: install Bash
+      - name: Install bash
         run: (cd /tmp && apk update && apk add bash curl)
 
-      - name: Download go-jira binary
+      - name: Download jira binary
         run: |
           curl -L -o /tmp/jira https://github.com/go-jira/jira/releases/download/v1.0.27/jira-linux-386
           chmod +x /tmp/jira
