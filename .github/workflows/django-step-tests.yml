@@ -76,11 +76,11 @@ jobs:
       - name: Install prerequisites
         if: ${{ inputs.ENABLE_LFS == true }}
         run: apt-get update && apt-get install -y git-lfs
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ inputs.ENABLE_LFS == true }}
         with:
           lfs: 'true'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         if: ${{ inputs.ENABLE_LFS == false }}
       - run: git config --global --add safe.directory ${{ inputs.LFS_REPO_PATH }}
         if: ${{ inputs.ENABLE_LFS == true }}

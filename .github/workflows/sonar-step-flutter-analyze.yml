@@ -54,7 +54,7 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download coverage artifact
         if: ${{ inputs.DOWNLOAD_ARTIFACT }}
