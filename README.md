@@ -186,7 +186,7 @@ This is an example to show how data should be formatted.
 ```yaml
 steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Build & Push Docker
       id: docker
