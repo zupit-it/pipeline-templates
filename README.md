@@ -1639,28 +1639,17 @@ jobs:
 name: Jira Move to Developed
 
 on:
-    workflow_run:
-        workflows: [Main Workflow]
-        types:
-            - completed
+  push:
+    branches: [ "main", "release/*" ]
 
 jobs:
-    jira-move-issue-to-developed:
-        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.22.0
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
-        with:
-            LABELS: "['pinga', 'pipeline', 'native']"
-            STATUS: "Developed"
-            BRANCH_OR_COMMIT_TITLE: ${{ github.event.workflow_run.head_commit.message }}
-        secrets: inherit
+  jira-move-issue-to-developed:
+    uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.22.0
+    with:
+      STATUS: "Developed"
+      BRANCH_OR_COMMIT_TITLE: ${{ github.event.head_commit.message }}
+    secrets: inherit
 ```
-*Note:* If you need to move a card to the "Developed" status even when the workflow that triggers this action is cancelled, 
-modify the if condition as follows:
-```yaml
-if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'cancelled'}}
-```
-This adjustment ensures that the card is moved to "Developed" regardless of whether the triggering workflow was successful or cancelled. 
-This scenario might occur if you have enabled concurrency controls in the triggering workflow.
 
 ---
 
@@ -1899,4 +1888,4 @@ jobs:
     ...
 ```
 *Note:* When using concurrency with workflows that trigger others, ensure subsequent workflows account for potential cancellations of initiating workflows. 
-This may involve status checks or logic adjustments for such cases. For example, see the [Jira Move Issue](#jira-move-issue) workflow to "Developed" status.
+This may involve status checks or logic adjustments for such cases.
