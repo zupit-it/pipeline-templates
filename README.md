@@ -58,6 +58,7 @@ If you would like to get more details of these tasks, just look at this [doc](do
     9. [Others](#others)
         1. [Sonar Analyze](#sonar-analyze)
         2. [Sonar Analyze - .NET](#sonar-analyze---net)
+    10. [Concurrent workflow runs](#concurrent-workflow-runs)
 
 ## Composite Actions
 
@@ -1653,6 +1654,16 @@ jobs:
             BRANCH_OR_COMMIT_TITLE: ${{ github.event.workflow_run.head_commit.message }}
         secrets: inherit
 ```
+*Note:* If you need to move a card to the "Developed" status even when the workflow that triggers this action is cancelled, 
+modify the if condition as follows:
+```yaml
+if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'cancelled'}}
+```
+This adjustment ensures that the card is moved to "Developed" regardless of whether the triggering workflow was successful or cancelled. 
+This scenario might occur if you have enabled concurrency controls in the triggering workflow.
+
+---
+
 #### Jira Add Description to PR
 
 ###### Workflow
@@ -1867,3 +1878,25 @@ jobs:
             SONAR_PROJECT_KEY: "my-project-key"
         secrets: inherit
 ```
+
+---
+
+#### Concurrent Workflow Runs
+Use the concurrency feature to manage overlapping workflow runs, ensuring only the most recent commit in branches like main triggers a workflow. 
+This optimizes resource usage and keeps deployments current.
+
+##### Main Workflow Example with Concurrency
+```yaml
+on:
+  push:
+    branches: [ "main", "release/*" ]
+
+concurrency: 
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+    ...
+```
+*Note:* When using concurrency with workflows that trigger others, ensure subsequent workflows account for potential cancellations of initiating workflows. 
+This may involve status checks or logic adjustments for such cases. For example, see the [Jira Move Issue](#jira-move-issue) workflow to "Developed" status.
