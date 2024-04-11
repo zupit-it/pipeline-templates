@@ -58,6 +58,7 @@ If you would like to get more details of these tasks, just look at this [doc](do
     9. [Others](#others)
         1. [Sonar Analyze](#sonar-analyze)
         2. [Sonar Analyze - .NET](#sonar-analyze---net)
+    10. [Concurrent workflow runs](#concurrent-workflow-runs)
 
 ## Composite Actions
 
@@ -1638,21 +1639,20 @@ jobs:
 name: Jira Move to Developed
 
 on:
-    workflow_run:
-        workflows: [Main Workflow]
-        types:
-            - completed
+  push:
+    branches: [ "main", "release/*" ]
 
 jobs:
-    jira-move-issue-to-developed:
-        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.22.0
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
-        with:
-            LABELS: "['pinga', 'pipeline', 'native']"
-            STATUS: "Developed"
-            BRANCH_OR_COMMIT_TITLE: ${{ github.event.workflow_run.head_commit.message }}
-        secrets: inherit
+  jira-move-issue-to-developed:
+    uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.22.0
+    with:
+      STATUS: "Developed"
+      BRANCH_OR_COMMIT_TITLE: ${{ github.event.head_commit.message }}
+    secrets: inherit
 ```
+
+---
+
 #### Jira Add Description to PR
 
 ###### Workflow
@@ -1867,3 +1867,25 @@ jobs:
             SONAR_PROJECT_KEY: "my-project-key"
         secrets: inherit
 ```
+
+---
+
+#### Concurrent Workflow Runs
+Use the concurrency feature to manage overlapping workflow runs, ensuring only the most recent commit in branches like main triggers a workflow. 
+This optimizes resource usage and keeps deployments current.
+
+##### Main Workflow Example with Concurrency
+```yaml
+on:
+  push:
+    branches: [ "main", "release/*" ]
+
+concurrency: 
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+    ...
+```
+*Note:* When using concurrency with workflows that trigger others, ensure subsequent workflows account for potential cancellations of initiating workflows. 
+This may involve status checks or logic adjustments for such cases.
