@@ -34,10 +34,6 @@ on:
         required: false
         type: string
         default: 'Container'
-      RUNNERS_NATIVE_GROUP:
-        required: false
-        type: string
-        default: 'Native'
       RUN:
         required: false
         type: boolean

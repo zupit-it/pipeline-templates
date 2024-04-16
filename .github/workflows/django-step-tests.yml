@@ -11,10 +11,6 @@ on:
         required: false
         type: string
         default: 'Container'
-      RUNNERS_NATIVE_GROUP:
-        required: false
-        type: string
-        default: 'Native'
       WORKING_DIRECTORY:
         required: true
         type: string

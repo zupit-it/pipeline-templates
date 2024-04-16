@@ -849,10 +849,6 @@ In all the examples, we set _secrets: inherit_ to pass all secrets to the reusab
 In addition, we added for all _step_ workflows the input _LABELS_ as GitHub does not allow to set the _runs-on_ from the caller side, but only inside
 the reusable workflows. As we want to define the runners as late as possible, we decided to add this input variable.
 
-In the _workflow_ type, you will note that we defined 2 inputs for the labels: NATIVE_LABELS and CONTAINER_LABELS.
-We had to differentiate as GitHub runners might start to raise permissions errors due to Docker being run as root.
-To fix this problem, workflows using docker images must use different runners from workflows running commands directly on the host.
-
 ### Naming convention
 
 We've defined 2 different types of workflows:
@@ -919,7 +915,6 @@ In addition, it is possible to specify these optional inputs:
 -   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
--   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 
 This is an example to show how data should be formatted.
 
@@ -944,7 +939,7 @@ Here is an example of how to know if the code changed and based from that, run o
 ```yaml
 jobs:
     check-changes:
-        runs-on: [pinga, pipeline, native]
+        runs-on: [pinga, pipeline, container]
 
         outputs:
             backend: ${{ steps.changes.outputs.backend }}
@@ -966,8 +961,6 @@ jobs:
         with:
             WORKING_DIRECTORY: "frontend"
             NODE_VERSION: "14.11.0"
-            NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
-            CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
             ENABLE_TESTS: false
             RUN: ${{ needs.check-changes.outputs.frontend == 'true' }}
         secrets: inherit
@@ -1114,7 +1107,6 @@ In addition, it is possible to specify this optional input:
 
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
--   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 -   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _coverage-django.xml_ file. By default, it is **coverage-django.xml**.
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
@@ -1147,7 +1139,7 @@ Here is an example of how to know if the code changed and based from that, run o
 ```yaml
 jobs:
     check-changes:
-        runs-on: [pinga, pipeline, native]
+        runs-on: [pinga, pipeline, container]
 
         outputs:
             backend: ${{ steps.changes.outputs.backend }}
@@ -1169,8 +1161,6 @@ jobs:
         with:
             WORKING_DIRECTORY: "backend"
             PYTHON_IMAGE: "python:3.8.2-slim-buster"
-            NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
-            CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
             RUN: ${{ needs.check-changes.outputs.backend == 'true' }}
         secrets: inherit
 ```
@@ -1216,10 +1206,6 @@ In addition, it is possible to specify this optional input:
       required: false
       type: string
       default: 'zupit-agents'
-    RUNNERS_NATIVE_GROUP:
-      required: false
-      type: string
-      default: 'Native'
     RUNNERS_CONTAINER_GROUP:
       required: false
       type: string
@@ -1229,7 +1215,6 @@ In addition, it is possible to specify this optional input:
 -   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
--   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
 
 This is an example to show how data should be formatted.
 
@@ -1254,7 +1239,7 @@ Here is an example of how to know if the code changed and based from that, run o
 ```yaml
 jobs:
     check-changes:
-        runs-on: [pinga, pipeline, native]
+        runs-on: [pinga, pipeline, containers]
 
         outputs:
             backend: ${{ steps.changes.outputs.backend }}
@@ -1273,7 +1258,6 @@ jobs:
     java-common:
         uses: zupit-it/pipeline-templates/.github/workflows/springboot-workflow-common.yml@v1.22.4
         with:
-            NATIVE_CI_LABELS: "['pinga', 'pipeline', 'native']"
             CONTAINER_CI_LABELS: "['pinga', 'pipeline', 'container']"
             WORKING_DIRECTORY: backend
             JAVA_IMAGE: openjdk:12
@@ -1419,7 +1403,7 @@ It requires these inputs:
 In addition, it is possible to specify these optional inputs:
 
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 -   **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
 -   **REGISTRY_USER**: The registry url where to push the Docker image.
     By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
@@ -1473,7 +1457,7 @@ It requires these inputs:
 
 In addition, it is possible to specify this optional input:
 
--   **RUNNERS_NATIVE_GROUP**: The runners group used to execute this workflow. Default is **Native**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 
 This is an example to show how data should be formatted.
@@ -1603,7 +1587,6 @@ jobs:
     jira-move-issue-to-in-progress:
         uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.22.4
         with:
-            LABELS: "['pinga', 'pipeline', 'native']"
             STATUS: "In progress"
             BRANCH_OR_COMMIT_TITLE: ${{ github.head_ref }}
         secrets: inherit
@@ -1625,7 +1608,6 @@ jobs:
         if: ${{ !github.event.pull_request.draft }}
         uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.22.4
         with:
-            LABELS: "['pinga', 'pipeline', 'native']"
             STATUS: "Merge request"
             BRANCH_OR_COMMIT_TITLE: ${{ github.head_ref }}
         secrets: inherit

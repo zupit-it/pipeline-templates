@@ -44,9 +44,8 @@ This is an example to show how data should be formatted.
 jobs:
   node-lint-check-build:
     uses:
-      zupit-it/pipeline-templates/.github/workflows/node-step-format-lint-build.yml@v1.0.2
+      zupit-it/pipeline-templates/.github/workflows/node-step-format-lint-build.yml@v1.22.4
     with:
-      LABELS: "['pinga', 'pipeline', 'native']"
       WORKING_DIRECTORY: frontend
       NODE_VERSION: 14.11.0
     secrets: inherit
