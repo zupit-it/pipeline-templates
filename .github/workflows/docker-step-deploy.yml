@@ -6,10 +6,10 @@ on:
       DEPLOY_ON:
         required: true
         type: string
-      RUNNERS_NATIVE_GROUP:
+      RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Native'
+        default: 'Container'
       ENVIRONMENT:
         required: true
         type: string
@@ -45,7 +45,7 @@ jobs:
       labels:
         - deploy
         - ${{ inputs.DEPLOY_ON }}
-      group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     env: ${{ fromJson(inputs.IMAGES) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
