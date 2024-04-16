@@ -32,13 +32,17 @@ on:
       IMAGES:
         required: true
         type: string
+      DIND_IMAGE:
+        required: false
+        type: string
+        default: 'docker:26.0.0-dind'
 
 env: "${{secrets}}"
 
 jobs:
   deploy:
     runs-on:
-      labels: 
+      labels:
         - deploy
         - ${{ inputs.DEPLOY_ON }}
       group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
@@ -46,6 +50,8 @@ jobs:
     environment:
       name: ${{ inputs.ENVIRONMENT }}
       url: ${{ inputs.DEPLOY_URL }}
+    container:
+      image: ${{ inputs.DIND_IMAGE }}
 
     steps:
       - name: Checkout repository
