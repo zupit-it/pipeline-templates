@@ -38,7 +38,7 @@ env: "${{secrets}}"
 jobs:
   deploy:
     runs-on:
-      labels: ${{ inputs.DEPLOY_ON }}
+      labels: [deploy, ${{ inputs.DEPLOY_ON }}]
       group: ${{ inputs.RUNNERS_NATIVE_GROUP }}
     env: ${{ fromJson(inputs.IMAGES) }}
     environment:
