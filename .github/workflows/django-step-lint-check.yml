@@ -74,8 +74,6 @@ jobs:
           lfs: 'true'
       - uses: actions/checkout@v4
         if: ${{ inputs.ENABLE_LFS == false }}
-      - run: git config --global --add safe.directory /__w/mobygis-waterjade/mobygis-waterjade
-        if: ${{ inputs.ENABLE_LFS == true }}
       - name: Checkout LFS objects
         if: ${{ inputs.ENABLE_LFS == true }}
         run: git lfs pull
