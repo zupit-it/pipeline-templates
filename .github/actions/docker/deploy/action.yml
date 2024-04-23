@@ -14,6 +14,9 @@ inputs:
     required: false
     type: string
     default: ''
+  GITHUB_TOKEN:
+    required: true
+    type: string
 
 runs:
     using: composite
@@ -24,7 +27,7 @@ runs:
         with:
           registry: ${{ inputs.REGISTRY_URL }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ inputs.GITHUB_TOKEN }}
       - name: Pull docker images
         shell: 'bash'
         run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} pull

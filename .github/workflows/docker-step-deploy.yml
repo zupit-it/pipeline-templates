@@ -64,6 +64,7 @@ jobs:
           PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
           DOCKER_COMPOSE_PATH: ${{ inputs.DOCKER_COMPOSE_PATH }}
           DOCKER_COMPOSE_EXTRA_ARGS: ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-without-runner-group:
     if: ${{ inputs.RUNNERS_CONTAINER_GROUP == '' }}
@@ -88,3 +89,4 @@ jobs:
           PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
           DOCKER_COMPOSE_PATH: ${{ inputs.DOCKER_COMPOSE_PATH }}
           DOCKER_COMPOSE_EXTRA_ARGS: ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
