@@ -1454,10 +1454,7 @@ It requires these inputs:
     Docker compose file and as value the name of the images that will be downloaded from the registry.
     You can retrieve dynamically the image name from the _docker build and push step_ by adding the step's name to the **needs** array of the workflow
     and using `${{ needs.{STEP_NAME}.outputs.DOCKER_IMAGE_NAME }}` where STEP_NAME is the step's name.
-
-In addition, it is possible to specify this optional input:
-
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+-   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If the runner has no group, set it to **''**.
 
 
 This is an example to show how data should be formatted.
