@@ -29,10 +29,10 @@ runs:
           username: ${{ github.actor }}
           password: ${{ inputs.GITHUB_TOKEN }}
       - name: Pull docker images
-        shell: 'bash'
+        shell: 'sh'
         run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} pull
       - name: Run docker-compose up
-        shell: 'bash'
+        shell: 'sh'
         run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} up --build --remove-orphans --force-recreate -d
 
 
