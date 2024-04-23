@@ -69,7 +69,7 @@ jobs:
 
       - name: Docker Build & Push
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.22.6
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.22.7
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
