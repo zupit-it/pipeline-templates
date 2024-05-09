@@ -21,7 +21,7 @@ on:
         required: false
         type: string
         default: "lcov.info"
-      TIMEOUT:
+      TESTS_TIMEOUT:
         required: false
         type: number
         default: 30
@@ -66,7 +66,7 @@ jobs:
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
-      TIMEOUT: ${{ inputs.TIMEOUT }}
+      TESTS_TIMEOUT: ${{ inputs.TESTS_TIMEOUT }}
       RUN: ${{ inputs.RUN }}
       PROJECT: ${{ inputs.PROJECT }}
     secrets: inherit

@@ -911,7 +911,7 @@ In addition, it is possible to specify these optional inputs:
 -   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _lcov.info_ file. By default, it is **lcov.info**.
 -   **ENABLE_TESTS**: Whether it should skip or not the cypress tests workflow. By default, it is **true**.
 -   **TIMEOUT**: Used for tests, if the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
--   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
+-   **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
@@ -1108,7 +1108,7 @@ In addition, it is possible to specify this optional input:
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 -   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _coverage-django.xml_ file. By default, it is **coverage-django.xml**.
--   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
+-   **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
 -   **SETUP_COMMANDS**: Allow to execute commands before the download of the dependencies. Useful to install packages required for Python dependencies.
 -   **ENABLE_LFS**: To enable Git LFS support on checkout  
@@ -1212,7 +1212,7 @@ In addition, it is possible to specify this optional input:
       default: 'Container'he path to Maven directory. By default, it is **./m2**.
 -   **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
 -   **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
--   **RUN**: Whether to run all the inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
+-   **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 

@@ -24,7 +24,7 @@ on:
         required: false
         type: string
         default: "chrome"
-      TIMEOUT:
+      TESTS_TIMEOUT:
         required: false
         type: number
         default: 30
@@ -42,7 +42,7 @@ env: "${{secrets}}"
 jobs:
   cypress-run:
     if: ${{ inputs.RUN }}
-    timeout-minutes: ${{ inputs.TIMEOUT }}
+    timeout-minutes: ${{ inputs.TESTS_TIMEOUT }}
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
