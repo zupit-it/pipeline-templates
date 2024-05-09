@@ -3,9 +3,6 @@ name: .NET build and deploy to Azure WebApp
 on:
   workflow_call:
     inputs:
-      DEPLOY_ON:
-        required: true
-        type: string
       RUN_ON:
         required: false
         type: string
@@ -90,7 +87,7 @@ jobs:
 
   deploy:
     runs-on:
-      labels: ${{ inputs.DEPLOY_ON }}
+      labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
