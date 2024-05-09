@@ -11,10 +11,6 @@ on:
         required: false
         type: string
         default: 'Container'
-      CONFIG_FILE:
-        required: true
-        type: string
-        default: .commitlintrc
 
 jobs:
   lint-pr:
