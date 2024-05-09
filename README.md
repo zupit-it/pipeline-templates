@@ -1703,11 +1703,7 @@ jobs:
 
 **conventional-commits-step-lint.yml** is the workflow that lint the commit messages of a pull request.
 
-It requires these inputs:
-
--   **CONFIG_FILE**: the config file name (by default it is **.commitlintrc**).
-
-In addition, it is possible to specify this optional input:
+It is possible to specify this optional input:
 
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
