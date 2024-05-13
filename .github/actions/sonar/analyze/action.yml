@@ -33,10 +33,10 @@ runs:
 
     steps:
       - name: Download coverage artifact
-        if: ${{ inputs.DOWNLOAD_ARTIFACT }}
+        if: ${{ inputs.DOWNLOAD_ARTIFACT == 'true' }}
         uses: actions/download-artifact@v3
         with:
-          name: ${{inputs.ARTIFACT_FILENAME}}
+          name: ${{ inputs.ARTIFACT_FILENAME }}
           path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
 
       - name: SonarQube Scan
