@@ -53,6 +53,10 @@ jobs:
 #        cache: 'npm'
 #        cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
+    # Set NPM cache directory to a new clean directory to avoid sharing with other runners
+    - name: Set NPM cache directory
+      run: echo "NPM_CONFIG_CACHE=$(mktemp -d)" >> $GITHUB_ENV
+
     - name: Authenticate with private NPM package
       if: ${{ env.github_token }}
       run: echo "//npm.pkg.github.com/:_authToken=${{ env.github_token }}" > ~/.npmrc

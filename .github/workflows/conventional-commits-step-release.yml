@@ -33,6 +33,8 @@ jobs:
         with:
           cache: npm
           node-version: 16
+      - name: Set NPM cache directory
+        run: echo "NPM_CONFIG_CACHE=$(mktemp -d)" >> $GITHUB_ENV
       - run: npm ci --ignore-scripts
       - run: npx semantic-release
         env:

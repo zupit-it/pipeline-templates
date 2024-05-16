@@ -34,6 +34,10 @@ runs:
     #          cache: 'npm'
     #          cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
 
+    - name: Set NPM cache directory
+      shell: ${{ inputs.SHELL }}
+      run: echo "NPM_CONFIG_CACHE=$(mktemp -d)" >> $GITHUB_ENV
+
     - name: Authenticate with private NPM package
       shell: ${{ inputs.SHELL }}
       if: ${{ env.github_token }}
