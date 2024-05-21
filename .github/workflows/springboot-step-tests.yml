@@ -40,7 +40,11 @@ on:
         required: false
         type: boolean
         default: true
-
+      DATABASE:
+        required: false
+        type: string
+        description: 'Database to use: postgres or mysql'
+        default: 'postgres'
 
 env: "${{secrets}}"
 
@@ -57,12 +61,14 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     services:
-      postgres:
-        image: postgres
+      ${{ inputs.DATABASE }}:
+        image: ${{ inputs.DATABASE == 'postgres' && 'postgres' || 'mysql/mysql-server' }}
         env:
-          POSTGRES_USER: java-runner
-          POSTGRES_PASSWORD: java-runner
-          POSTGRES_DB: java
+          ${{ inputs.DATABASE == 'postgres' && 'POSTGRES_USER' || 'MYSQL_ROOT_USER' }}: java-runner
+          ${{ inputs.DATABASE == 'postgres' && 'POSTGRES_PASSWORD' || 'MYSQL_ROOT_PASSWORD' }}: java-runner
+          ${{ inputs.DATABASE == 'postgres' && 'POSTGRES_DB' || 'MYSQL_DATABASE' }}: java
+          ${{ inputs.DATABASE == 'mysql' && 'MYSQL_USER' }}: java-runner
+          ${{ inputs.DATABASE == 'mysql' && 'MYSQL_PASSWORD' }}: java-runner
 
     steps:
       - name: Checkout code

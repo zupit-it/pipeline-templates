@@ -29,6 +29,11 @@ on:
         required: false
         type: boolean
         default: true
+      DATABASE:
+        required: false
+        type: string
+        description: 'Database to use: postgres or mysql'
+        default: 'postgres'
 
 env: "${{secrets}}"
 
@@ -55,4 +60,5 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
       RUN: ${{ inputs.RUN }}
+      DATABASE: ${{ inputs.DATABASE }}
     secrets: inherit
