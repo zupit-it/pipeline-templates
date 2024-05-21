@@ -50,6 +50,7 @@ jobs:
     secrets: inherit
 
   springboot-tests:
+    if: ${{ inputs.DATABASE == 'postgres'}}
     uses:
       ./.github/workflows/springboot-step-tests.yml
     with:
@@ -60,5 +61,18 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
       RUN: ${{ inputs.RUN }}
-      DATABASE: ${{ inputs.DATABASE }}
+    secrets: inherit
+
+  springboot-tests-mysql:
+    if: ${{ inputs.DATABASE == 'mysql'}}
+    uses:
+      ./.github/workflows/springboot-step-tests-mysql.yml
+    with:
+      JAVA_IMAGE: ${{inputs.JAVA_IMAGE}}
+      WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
+      MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
+      EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
+      COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+      USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
+      RUN: ${{ inputs.RUN }}
     secrets: inherit
