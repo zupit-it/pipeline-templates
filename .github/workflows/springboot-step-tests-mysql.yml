@@ -28,10 +28,6 @@ on:
         required: false
         type: string
         default: ""
-      USE_CI_POSTGRES:
-        required: false
-        type: boolean
-        default: true
       SPRING_APPLICATION_JSON:
         required: false
         type: string
@@ -55,12 +51,13 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     services:
-      postgres:
-        image: postgres
+      mysql:
+        image: mysql
         env:
-          POSTGRES_USER: java-runner
-          POSTGRES_PASSWORD: java-runner
-          POSTGRES_DB: java
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test
 
     steps:
       - name: Checkout code
@@ -70,7 +67,11 @@ jobs:
           ./mvnw -ntp verify -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
           ./mvnw -ntp jacoco:report -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
         env:
-          SPRING_APPLICATION_JSON: ${{ inputs.USE_CI_POSTGRES && inputs.SPRING_APPLICATION_JSON || '{}' }}
+          SPRING_APPLICATION_JSON: ${{ inputs.SPRING_APPLICATION_JSON || '{}' }}
+          SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/test
+          SPRING_DATASOURCE_USERNAME: test
+          SPRING_DATASOURCE_PASSWORD: test
+
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
         with:
