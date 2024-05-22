@@ -14,10 +14,9 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
-      SONAR_IMAGE:
-        required: false
+      JAVA_IMAGE:
+        required: true
         type: string
-        default: "sonarsource/sonar-scanner-cli"
       CHECK_QUALITY_GATE:
         required: false
         type: boolean
@@ -34,6 +33,18 @@ on:
         required: false
         type: string
         default: ".coverage-reports/"
+      PRE_SCAN_COMMANDS:
+        required: false
+        type: string
+        default: ""
+      MAVEN_USER_HOME:
+        required: false
+        type: string
+        default: "./m2"
+      EXTRA_MAVEN_ARGS:
+        required: false
+        type: string
+        default: ""
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -64,4 +75,4 @@ jobs:
         run: ${{ inputs.PRE_SCAN_COMMANDS }}
 
       - name: Run Sonar
-        run: sonar-scanner -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
+        run: ./mvnw -ntp sonar -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
