@@ -55,7 +55,7 @@ jobs:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-    container: ${{ inputs.SONAR_IMAGE }}
+    container: ${{ inputs.JAVA_IMAGE }}
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
