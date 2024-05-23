@@ -71,4 +71,3 @@ jobs:
 
       - name: Build JIB Image and publish
         run: ./mvnw -ntp compile jib:build -P${{ inputs.RELEASE_ENVIRONMENT }} -Djib.to.image=${{ steps.meta.outputs.tags }} -Djib.to.auth.username=${{ github.actor }} -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }} -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
-
