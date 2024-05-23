@@ -50,6 +50,7 @@ jobs:
     container:
       image: ${{ inputs.SONAR_IMAGE }}
       env: ${{ fromJson(inputs.SONAR_IMAGE_ENV_VARIABLES) }}
+      options: --user root
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
