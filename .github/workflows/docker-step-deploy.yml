@@ -58,7 +58,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Deploy
-        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.22.17
+        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.22.18
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
@@ -83,7 +83,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Deploy
-        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.22.17
+        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.22.18
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
