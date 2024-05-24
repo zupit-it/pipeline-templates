@@ -20,7 +20,7 @@ on:
       SONAR_IMAGE:
         required: false
         type: string
-        default: "sonarsource/sonar-scanner-cli"
+        default: "sonarsource/sonar-scanner-cli:10.0.2.1398_5.0.1"
       SONAR_EXCLUSIONS:
         required: false
         type: string
