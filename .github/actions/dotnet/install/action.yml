@@ -24,12 +24,42 @@ runs:
         test -f global.json || echo $'{ "sdk": { "version": "${{ inputs.DOTNET_VERSION }}", "rollForward": "latestMajor" } }' > global.json
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
-    - name: Install .NET dependencies for Alpine
+    - name: Install Bash
       if: ${{ inputs.ALPINE_OS == 'true' }}
       shell: ${{ inputs.SHELL }}
       run: |
+          apk add bash
+
+    - name: Install .NET common dependencies for Alpine
+      if: ${{ inputs.ALPINE_OS == 'true' }}
+      shell: bash
+      run: |
+        # Dependencies: https://learn.microsoft.com/en-us/dotnet/core/install/linux-alpine
+        apk add bash libgcc libssl3 libstdc++ zlib
+
+    - name: Install .NET dependencies for Alpine
+      if: ${{ inputs.ALPINE_OS == 'true' }}
+      shell: bash
+      run: |
           # Dependencies: https://learn.microsoft.com/en-us/dotnet/core/install/linux-alpine
-          apk add bash icu-libs krb5-libs libgcc libintl libssl1.1 libstdc++ zlib
+          specified_major_version=3
+          specified_minor_version=18
+
+          # Extract the version from the file
+          version=$(cat /etc/alpine-release)
+
+          # Parse the major and minor versions from the extracted version
+          major_version=$(echo $version | cut -d. -f1)
+          minor_version=$(echo $version | cut -d. -f2)
+
+          # Dependencies for v3.18+
+          if [[ $major_version -eq $specified_major_version && $minor_version -ge $specified_minor_version ]]; then
+            echo "Alpine >= v3.18"
+            apk add ca-certificates-bundle 
+          else
+            echo "Alpine <= v3.17"
+            apk add icu-libs krb5-libs libintl
+          fi
 
     - name: Install Timezone package
       if: ${{ inputs.ALPINE_OS == 'true' }}
