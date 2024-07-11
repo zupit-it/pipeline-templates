@@ -1,6 +1,6 @@
 FROM ubuntu
 
-RUN apt update -y && apt install -y curl xz-utils clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev openjdk-11-jre wget unzip && apt clean -y
+RUN apt update -y && apt install -y curl xz-utils clang cmake git ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev openjdk-11-jre wget unzip libsqlite3-dev && apt clean -y
 
 WORKDIR /opt
 
@@ -26,7 +26,7 @@ RUN unzip ${SONAR_ZIP_FILE}
 RUN rm -v ${SONAR_ZIP_FILE}
 RUN mv sonar-scanner-${SONAR_VERSION} /opt/sonar-scanner-cli
 
-RUN wget -O '/usr/bin/entrypoint.sh' 'https://raw.githubusercontent.com/SonarSource/sonar-scanner-cli-docker/master/5/bin/entrypoint.sh'
+COPY entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
 
 RUN git config --global --add safe.directory /opt/flutter
