@@ -29,6 +29,10 @@ on:
         required: false
         type: boolean
         default: true
+      RUN_TESTS:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   dotnet-common:
@@ -68,6 +72,7 @@ jobs:
 
       - name: Run tests
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.22.20
+        if: ${{ inputs.RUN_TESTS == 'true' }}
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           GENERATE_CODE_COVERAGE: false
