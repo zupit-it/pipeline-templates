@@ -1,0 +1,76 @@
+name: Lint and check a Django app
+
+on:
+  workflow_call:
+    inputs:
+      RUN_ON:
+        required: false
+        type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      PYTHON_IMAGE:
+        required: true
+        type: string
+      RUN:
+        required: false
+        type: boolean
+        default: true
+      SETUP_COMMANDS:
+        required: false
+        type: string
+        default: ""
+      ENABLE_LFS:
+        required: false
+        type: boolean
+        default: false
+      # Workaround for https://github.com/actions/checkout/issues/1169
+      LFS_REPO_PATH:
+        required: false
+        type: string
+        default: ""
+
+env: "${{secrets}}"
+
+jobs:
+  python-linter:
+    if: ${{ inputs.RUN }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container: ${{ inputs.PYTHON_IMAGE }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    steps:
+      - name: Install prerequisites
+        if: ${{ inputs.ENABLE_LFS == true }}
+        run: apt-get update && apt-get install -y git-lfs
+      - name: Checkout code
+        uses: actions/checkout@v4
+        if: ${{ inputs.ENABLE_LFS == true }}
+        with:
+          lfs: 'true'
+      - uses: actions/checkout@v4
+        if: ${{ inputs.ENABLE_LFS == false }}
+      - name: Checkout LFS objects
+        if: ${{ inputs.ENABLE_LFS == true }}
+        run: git lfs pull
+      - name: Setup
+        run: ${{ inputs.SETUP_COMMANDS }}
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Copy env file
+        run: cp .env.github .env
+      - name: Lint with flake8
+        run: python -m flake8 .
+      - name: Lint with black
+        run: python -m black --check .
+

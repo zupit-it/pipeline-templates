@@ -1,0 +1,53 @@
+name: Django common
+
+on:
+  workflow_call:
+    inputs:
+      # Projects inputs
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      PYTHON_IMAGE:
+        required: true
+        type: string
+      SETUP_COMMANDS:
+        required: false
+        type: string
+        default: ""
+      # Workflow inputs
+      RUN_ON:
+        required: false
+        type: string
+        default: 'zupit-agents'
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: 'Container'
+      RUN:
+        required: false
+        type: boolean
+        default: true
+      ENABLE_LFS:
+        required: false
+        type: boolean
+        default: false
+      # Workaround for https://github.com/actions/checkout/issues/1169
+      LFS_REPO_PATH:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  django-lint-check:
+    uses:
+      ./.github/workflows/python-step-lint-check.yml
+    with:
+      RUN_ON: ${{inputs.RUN_ON}}
+      RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
+      WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
+      PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
+      RUN: ${{inputs.RUN}}
+      SETUP_COMMANDS: ${{inputs.SETUP_COMMANDS}}
+      ENABLE_LFS: ${{inputs.ENABLE_LFS}}
+      LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
+    secrets: inherit
