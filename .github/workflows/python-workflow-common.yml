@@ -1,4 +1,4 @@
-name: Django common
+name: Python common
 
 on:
   workflow_call:

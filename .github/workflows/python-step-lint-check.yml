@@ -1,4 +1,4 @@
-name: Lint and check a Django app
+name: Lint and check a Python app
 
 on:
   workflow_call:
