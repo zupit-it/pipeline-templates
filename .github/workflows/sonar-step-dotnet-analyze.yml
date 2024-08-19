@@ -69,7 +69,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install .NET
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.23.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.23.1
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
@@ -98,13 +98,13 @@ jobs:
             "${params[@]}"
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.23.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.23.1
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
 
       - name: Run tests
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.23.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.23.1
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           EXCLUDE_FILES: ${{ inputs.COVERAGE_EXCLUSIONS }}
