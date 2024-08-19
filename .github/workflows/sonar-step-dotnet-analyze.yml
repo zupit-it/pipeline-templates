@@ -45,6 +45,10 @@ on:
         required: false
         type: boolean
         default: false
+      REPORTS_PATH:
+        required: false
+        type: string
+        default: "**/*.trx"
 
 jobs:
   sonar-analyze:
@@ -89,7 +93,7 @@ jobs:
             /k:"${{ inputs.SONAR_PROJECT_KEY }}" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" \
-            /d:sonar.cs.vstest.reportsPaths=**/*.trx \
+            /d:sonar.cs.vstest.reportsPaths=${{inputs.REPORTS_PATH}} \
             /d:sonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }} \
             "${params[@]}"
 
