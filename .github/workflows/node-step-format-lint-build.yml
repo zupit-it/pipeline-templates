@@ -55,7 +55,7 @@ jobs:
 
     # Set NPM cache directory to a new clean directory to avoid sharing with other runners
     - name: Set NPM cache directory
-      run: echo "NPM_CONFIG_CACHE=$(mktemp -d)" >> $GITHUB_ENV
+      run: echo "NPM_CONFIG_CACHE=~/.npm$(npm -v)" >> $GITHUB_ENV
 
     - name: Authenticate with private NPM package
       if: ${{ env.github_token }}
