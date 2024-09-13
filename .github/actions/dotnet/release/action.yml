@@ -22,14 +22,14 @@ runs:
   using: composite
   steps:
     - name: Build
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.23.1
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.23.2
       with:
         WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
         BUILD_CONFIG: ${{ inputs.BUILD_CONFIG }}
         SHELL: ${{ inputs.SHELL }}
 
     - name: Publish
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/publish@v1.23.1
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/publish@v1.23.2
       with:
         WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
         PROJECT: ${{ inputs.PROJECT }}
