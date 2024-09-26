@@ -22,7 +22,7 @@
     "semantic-release": "^21.0.3"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write .",
     "semantic-release": "semantic-release"
   },
   "repository": {
@@ -34,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/zupit-it/pipeline-templates/issues"
   },
-  "homepage": "https://github.com/zupit-it/pipeline-templates#readme"
+  "homepage": "https://github.com/zupit-it/pipeline-templates#readme",
+  "dependencies": {
+    "prettier": "^3.3.3"
+  }
 }
