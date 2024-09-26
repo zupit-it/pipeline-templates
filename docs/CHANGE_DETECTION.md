@@ -4,15 +4,15 @@
 
 _Reusable workflows might have different parameters. Refer to the specific workflows input variables and steps_
 
-### dotnet-workflow-common.yml
+### Generic approach
 
-Configure parameters.
+Add the parameters `CHECK_` parameters configuration to the workflow.
 
 -   `CHECK_WORKDIR_CHANGES`: General toggle for the feature. When off it ignores workdir changes detection and always runs the next jobs
 
--   `CHECK_CUSTOM_DIR`: Specifies a custom DIR to check (use as override dir when the dir is differnt from from the `WORKING_DIRECTORY`)
+-   `CHECK_CUSTOM_DIR`: Specifies a custom DIR to check (use as override dir when the dir to check is differnt from the `WORKING_DIRECTORY`)
 
--   `CHECK_CHANGES_BY_JOBS`: String array that specifies the job id where this dir check is ran. Default is `'all'`. (ex: `dotnet-common`)
+-   `CHECK_CHANGES_BY_JOBS`: String array that specifies the job id where this dir check is ran. Default is `'all'`. (ex: `"['dotnet-common']"`)
 
 ## To implement and use them on custom/local workflows:
 
