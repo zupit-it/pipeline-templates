@@ -154,5 +154,5 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ always()}}
     steps:
-      - name: Jobs succeeded.
+      - name: "Jobs: sonar-analyze didn't fail."
         run: if [ "${{ needs.sonar-analyze.result }}" == "failure" ]; then exit 1; fi

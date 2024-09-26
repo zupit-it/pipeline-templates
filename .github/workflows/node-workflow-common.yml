@@ -112,5 +112,5 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ always()}}
     steps:
-      - name: Jobs succeeded.
+      - name: "Jobs: lint-check-build, cypress-run didn't fail."
         run: if [ "${{ needs.lint-check-build.result }}" == "failure" || "${{ needs.cypress-run.result }}" == "failure" ]; then exit 1; fi
