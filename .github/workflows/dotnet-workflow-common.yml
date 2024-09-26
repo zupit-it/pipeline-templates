@@ -113,3 +113,11 @@ jobs:
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           GENERATE_CODE_COVERAGE: false
+
+  jobs-succeded:
+    needs: dotnet-common
+    runs-on: ubuntu-latest
+    if: ${{ always()}}
+    steps:
+      - name: Jobs succeeded.
+        run: if [ "${{ needs.dotnet-common.result }}" == "failure" ]; then exit 1; fi
