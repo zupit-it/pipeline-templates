@@ -94,7 +94,7 @@ jobs:
 
   cypress-run:
     needs: workdir-has-changes
-    if: ${{ inputs.ENABLE_TESTS && !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))) }}
+    if: ${{ inputs.ENABLE_TESTS && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))) }}
     uses: ./.github/workflows/node-step-test-cypress.yml
     with:
       RUN_ON: ${{inputs.RUN_ON}}
@@ -113,4 +113,4 @@ jobs:
     if: ${{ always()}}
     steps:
       - name: "Jobs: lint-check-build, cypress-run didn't fail."
-        run: if [ "${{ needs.lint-check-build.result }}" == "failure" || "${{ needs.cypress-run.result }}" == "failure" ]; then exit 1; fi
+        run: if [[ "${{ needs.lint-check-build.result }}" == "failure" || "${{ needs.cypress-run.result }}" == "failure" ]]; then exit 1; fi
