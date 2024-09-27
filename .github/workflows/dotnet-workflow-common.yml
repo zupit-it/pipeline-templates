@@ -68,7 +68,7 @@ jobs:
         with:
           filters: |
             changes-detected:
-              - ${{ env.CHECK_DIR }}
+              - "${{ env.CHECK_DIR }}/**"
 
   dotnet-common:
     needs: workdir-has-changes

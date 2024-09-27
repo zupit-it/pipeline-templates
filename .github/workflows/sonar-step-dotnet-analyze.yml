@@ -84,7 +84,7 @@ jobs:
         with:
           filters: |
             changes-detected:
-              - ${{ env.CHECK_DIR }}
+              - "${{ env.CHECK_DIR }}/**"
 
   sonar-analyze:
     needs: workdir-has-changes

@@ -77,7 +77,7 @@ jobs:
         with:
           filters: |
             changes-detected:
-              - ${{ env.CHECK_DIR }}
+              - "${{ env.CHECK_DIR }}/**"
 
   lint-check-build:
     needs: workdir-has-changes
