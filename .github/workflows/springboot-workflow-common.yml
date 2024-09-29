@@ -32,15 +32,49 @@ on:
       DATABASE:
         required: false
         type: string
-        description: 'Database to use: postgres or mysql'
-        default: 'postgres'
+        description: "Database to use: postgres or mysql"
+        default: "postgres"
+      CHECK_WORKDIR_CHANGES:
+        required: true
+        type: boolean
+        default: false
+      CHECK_CUSTOM_DIR:
+        required: false
+        type: string
+        default: ""
+      CHECK_CHANGES_BY_JOBS:
+        required: false
+        type: string
+        default: "all"
 
-env: "${{secrets}}"
+env:
+  CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
 
 jobs:
+  workdir-has-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changes-detected: ${{ steps.filter.outputs.changes-detected }}
+    steps:
+      - name: Set CHECK_DIR to custom directory if provided
+        if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
+        run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
+      - name: Set default CHECK_DIR
+        if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
+        run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changes-detected:
+              - "${{ env.CHECK_DIR }}/**"
+
   springboot-lint-check:
-    uses:
-      ./.github/workflows/springboot-step-lint-check.yml
+    needs: workdir-has-changes
+    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
+    uses: ./.github/workflows/springboot-step-lint-check.yml
     with:
       JAVA_IMAGE: ${{inputs.JAVA_IMAGE}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
@@ -50,9 +84,9 @@ jobs:
     secrets: inherit
 
   springboot-tests:
-    if: ${{ inputs.DATABASE == 'postgres'}}
-    uses:
-      ./.github/workflows/springboot-step-tests.yml
+    needs: workdir-has-changes
+    if: ${{ inputs.DATABASE == 'postgres' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
+    uses: ./.github/workflows/springboot-step-tests.yml
     with:
       JAVA_IMAGE: ${{inputs.JAVA_IMAGE}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
@@ -64,9 +98,9 @@ jobs:
     secrets: inherit
 
   springboot-tests-mysql:
-    if: ${{ inputs.DATABASE == 'mysql'}}
-    uses:
-      ./.github/workflows/springboot-step-tests-mysql.yml
+    needs: workdir-has-changes
+    if: ${{ inputs.DATABASE == 'mysql' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
+    uses: ./.github/workflows/springboot-step-tests-mysql.yml
     with:
       JAVA_IMAGE: ${{inputs.JAVA_IMAGE}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
@@ -75,3 +109,11 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       RUN: ${{ inputs.RUN }}
     secrets: inherit
+
+  jobs-succeded:
+    needs: ["springboot-lint-check", "springboot-tests", "springboot-tests-mysql"]
+    runs-on: ubuntu-latest
+    if: ${{ always()}}
+    steps:
+      - name: "Jobs: springboot-lint-check, springboot-tests, springboot-tests-mysql didn't fail."
+        run: if [[ "${{ needs.springboot-lint-check.result }}" == "failure" || "${{ needs.springboot-tests.result }}" == "failure" || "${{ needs.springboot-tests-mysql.result }}" == "failure" ]]; then exit 1; fi

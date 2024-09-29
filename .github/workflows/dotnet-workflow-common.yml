@@ -12,19 +12,19 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       DOTNET_IMAGE_ENV_VARIABLES:
         required: false
         type: string
-        default: '{}'
+        default: "{}"
       CSHARPIER_VERSION:
         required: false
         type: string
-        default: ''
+        default: ""
       RUN_LINT:
         required: false
         type: boolean
@@ -33,10 +33,47 @@ on:
         required: false
         type: boolean
         default: true
+      CHECK_WORKDIR_CHANGES:
+        required: true
+        type: boolean
+        default: false
+      CHECK_CUSTOM_DIR:
+        required: false
+        type: string
+        default: ""
+      CHECK_CHANGES_BY_JOBS:
+        required: false
+        type: string
+        default: "all"
+
+env:
+  CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
 
 jobs:
+  workdir-has-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changes-detected: ${{ steps.filter.outputs.changes-detected }}
+    steps:
+      - name: Set CHECK_DIR to custom directory if provided
+        if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
+        run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
+      - name: Set default CHECK_DIR
+        if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
+        run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changes-detected:
+              - "${{ env.CHECK_DIR }}/**"
+
   dotnet-common:
+    needs: workdir-has-changes
     name: Run .NET build, check formatting and test
+    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
@@ -76,3 +113,11 @@ jobs:
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           GENERATE_CODE_COVERAGE: false
+
+  jobs-succeded:
+    needs: dotnet-common
+    runs-on: ubuntu-latest
+    if: ${{ always()}}
+    steps:
+      - name: "Jobs: dotnet-common didn't fail."
+        run: if [ "${{ needs.dotnet-common.result }}" == "failure" ]; then exit 1; fi
