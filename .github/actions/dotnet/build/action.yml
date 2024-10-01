@@ -15,19 +15,21 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: List NuGet cache size
-      run: |
-        du -h ~/.nuget/packages | sort -hr | head -n 20
+    - name: Create folder if not exist
+      shell: bash
+      run: mkdir -p ~/.nuget/packages-carbon
+    - name: List NuGet carbon cache size
+      shell: bash
+      run: du -h ~/.nuget/packages-carbon | sort -hr | head -n 20
     - name: Restore NuGet packages cache
       uses: actions/cache@v3
       with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: ${{ runner.os }}-nuget-
         # path: ~/.nuget/packages
-        # key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        # key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         # restore-keys: ${{ runner.os }}-nuget-
-        # retention-days: 30
+        path: ~/.nuget/packages-carbon
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
       shell: ${{ inputs.SHELL }}

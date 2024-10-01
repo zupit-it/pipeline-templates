@@ -6,11 +6,11 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       NODE_VERSION:
         required: true
         type: string
@@ -30,7 +30,7 @@ on:
         type: string
         default: "ubuntu:23.04"
 
-env: "${{secrets}}"
+env: "${{ secrets }}"
 
 jobs:
   lint-check-build:
@@ -45,40 +45,35 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ inputs.NODE_VERSION }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ inputs.NODE_VERSION }}
-#        cache: 'npm'
-#        cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: ${{ inputs.WORKING_DIRECTORY }}
 
-    # Set NPM cache directory to a new clean directory to avoid sharing with other runners
-    - name: Set NPM cache directory
-      run: echo "NPM_CONFIG_CACHE=~/.npm$(npm -v)" >> $GITHUB_ENV
+      - name: Ensure necessary packages are installed
+        run: |
+          apt-get update
+          apt-get install -y unzip git
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+        shell: bash
 
-    - name: Authenticate with private NPM package
-      if: ${{ env.github_token }}
-      run: echo "//npm.pkg.github.com/:_authToken=${{ env.github_token }}" > ~/.npmrc
+        # Workaround for git not working in two separate folders
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - run: npm ci
+      - name: Use bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: v1.1.29
 
-    # GENERIC
-    - run: npm run ci:format:check
-      if:  ${{ inputs.PROJECT == '' }}
+      - name: Install Dependencies
+        env:
+          BUN_AUTH_TOKEN: ${{ env.github_token }}
+        run: bun install --frozen-lockfile
 
-    - run: npm run ci:lint
-      if:  ${{ inputs.PROJECT == '' }}
-
-    - run: npm run ci:build
-      if:  ${{ inputs.PROJECT == '' }}
-
-    # PROJECT SPECIFIC
-    - run: npm run ${{ inputs.PROJECT }}:ci:format:check
-      if:  ${{ inputs.PROJECT != '' }}
-
-    - run: npm run ${{ inputs.PROJECT }}:ci:lint
-      if:  ${{ inputs.PROJECT != '' }}
-
-    - run: npm run ${{ inputs.PROJECT }}:ci:build
-      if:  ${{ inputs.PROJECT != '' }}
+        shell: bash
+      - name: Run affected lint and build
+        run: bun nx affected -t build --base=origin/main --head=HEAD --verbose
