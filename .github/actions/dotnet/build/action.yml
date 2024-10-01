@@ -10,17 +10,24 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
 
 runs:
   using: composite
   steps:
+    - name: List NuGet cache size
+      run: |
+        du -h ~/.nuget/packages | sort -hr | head -n 20
     - name: Restore NuGet packages cache
       uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: ${{ runner.os }}-nuget-
+        # path: ~/.nuget/packages
+        # key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        # restore-keys: ${{ runner.os }}-nuget-
+        # retention-days: 30
 
     - name: Restore dependencies
       shell: ${{ inputs.SHELL }}
