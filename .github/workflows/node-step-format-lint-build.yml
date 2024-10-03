@@ -75,7 +75,5 @@ jobs:
         run: bun install --no-cache
         shell: bash
 
-      - uses: nrwl/nx-set-shas@v4
-
       - name: Run affected lint and build
-        run: bun nx affected -t build
+        run: bun nx build jeko --configuration=production
