@@ -72,8 +72,10 @@ jobs:
       - name: Install Dependencies
         env:
           BUN_AUTH_TOKEN: ${{ env.github_token }}
-        run: bun install --frozen-lockfile
-
+        run: bun install --no-cache
         shell: bash
+
+      - uses: nrwl/nx-set-shas@v4
+
       - name: Run affected lint and build
-        run: bun nx affected -t build --base=origin/main --head=HEAD --verbose
+        run: bun nx affected -t build
