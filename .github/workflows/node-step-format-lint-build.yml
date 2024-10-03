@@ -65,7 +65,7 @@ jobs:
           fetch-depth: 0
 
       - name: Use bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: v1.1.29
 
