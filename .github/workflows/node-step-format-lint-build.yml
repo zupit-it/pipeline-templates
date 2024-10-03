@@ -72,8 +72,8 @@ jobs:
       - name: Install Dependencies
         env:
           BUN_AUTH_TOKEN: ${{ env.github_token }}
-        run: bun install --no-cache
+        run: bun install --frozen-lockfile
         shell: bash
 
       - name: Run affected lint and build
-        run: bun nx build jeko --configuration=production
+        run: bun nx affected -t lint build --base=origin/main --head=HEAD --verbose
