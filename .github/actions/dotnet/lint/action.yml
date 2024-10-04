@@ -9,17 +9,14 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
 
 runs:
   using: composite
   steps:
-    - name: .NET lint style
+    - name: .NET lint
       shell: ${{ inputs.SHELL }}
-      run: dotnet format style --verify-no-changes
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
-
-    - name: .NET lint analyzers
-      shell: ${{ inputs.SHELL }}
-      run: dotnet format analyzers --verify-no-changes
-      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+      run: |
+        dotnet format style --verify-no-changes
+        dotnet format analyzers --verify-no-changes

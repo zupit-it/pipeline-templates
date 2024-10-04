@@ -18,25 +18,17 @@ runs:
     - name: Create folder if not exist
       shell: bash
       run: mkdir -p ~/.nuget/packages-carbon
-    - name: List NuGet carbon cache size
-      shell: bash
-      run: du -h ~/.nuget/packages-carbon | sort -hr | head -n 20
+
     - name: Restore NuGet packages cache
       uses: actions/cache@v3
       with:
-        # path: ~/.nuget/packages
-        # key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        # restore-keys: ${{ runner.os }}-nuget-
         path: ~/.nuget/packages-carbon
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
         restore-keys: ${{ runner.os }}-nuget-
 
-    - name: Restore dependencies
+    - name: Restore and build
       shell: ${{ inputs.SHELL }}
-      run: dotnet restore --locked-mode
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
-
-    - name: Build
-      shell: ${{ inputs.SHELL }}
-      run: dotnet build --no-restore --configuration ${{ inputs.BUILD_CONFIG }}
-      working-directory: ${{ inputs.WORKING_DIRECTORY }}
+      run: |
+        dotnet restore --locked-mode
+        dotnet build --no-restore --configuration ${{ inputs.BUILD_CONFIG }}

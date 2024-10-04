@@ -30,7 +30,7 @@ on:
         type: string
         default: "ubuntu:23.04"
 
-env: "${{ secrets }}"
+env: "${{secrets}}"
 
 jobs:
   lint-check-build:
@@ -45,34 +45,29 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: '**/*/package-lock.json'
+          cache: "npm"
+          cache-dependency-path: "**/*/package-lock.json"
 
-      - name: Install git
-        run: |
-          apt-get update && apt-get install -y git
+      - name: Authenticate with private NPM package
+        if: ${{ env.github_token }}
+        run: echo "//npm.pkg.github.com/:_authToken=${{ env.github_token }}" > ~/.npmrc
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          path: ${{ github.workspace }}
-
-      - name: Install Dependencies
-        env:
-          NODE_AUTH_TOKEN: ${{ env.github_token }}
+      - name: Install dependencies
         run: npm ci
-        shell: bash
 
-      - name: Run affected lint and build
-        run: npx nx affected -t lint build --base=origin/main --head=HEAD
+      - name: Run CI tasks
+        run: |
+          if [ "${{ inputs.PROJECT }}" == "" ]; then
+            npm run ci:format:check & npm run ci:lint & npm run ci:build
+          else
+            npm run ${{ inputs.PROJECT }}:ci:format:check & npm run ${{ inputs.PROJECT }}:ci:lint & npm run ${{ inputs.PROJECT }}:ci:build
+          fi
+        shell: bash

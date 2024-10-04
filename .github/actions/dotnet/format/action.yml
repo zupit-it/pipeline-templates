@@ -7,21 +7,30 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
   CSHARPIER_VERSION:
     required: false
     type: string
-    default: ''
+    default: ""
 
 runs:
   using: composite
   steps:
-    - name: Install code formatter
+    - name: Setup CSharpier
+      uses: actions/cache@v3
+      id: csharpier-cache
+      with:
+        path: /tmp/dotnet-tools
+        key: ${{ runner.os }}-csharpier-${{ inputs.CSHARPIER_VERSION || 'latest' }}
+
+    - name: Install CSharpier
+      if: steps.csharpier-cache.outputs.cache-hit != 'true'
       shell: ${{ inputs.SHELL }}
-      run: dotnet tool update --tool-path /tmp/dotnet-tools csharpier ${{ inputs.CSHARPIER_VERSION != '' && format('--version {0}', inputs.CSHARPIER_VERSION) || '' }}
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
+      run: |
+        dotnet tool update --tool-path /tmp/dotnet-tools csharpier ${{ inputs.CSHARPIER_VERSION != '' && format('--version {0}', inputs.CSHARPIER_VERSION) || '' }}
 
     - name: Check code formatting
       shell: ${{ inputs.SHELL }}
-      run: /tmp/dotnet-tools/dotnet-csharpier . --check
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
+      run: /tmp/dotnet-tools/dotnet-csharpier . --check

@@ -6,11 +6,11 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       NODE_VERSION:
         required: true
         type: string
@@ -61,7 +61,7 @@ on:
       ENV_VARIABLES:
         required: false
         type: string
-        default: '{}'
+        default: "{}"
       PROJECT:
         required: false
         type: string
@@ -77,7 +77,7 @@ on:
       CHECKOUT_REF:
         required: false
         type: string
-        default: ''
+        default: ""
 
 env: "${{secrets}}"
 
@@ -137,7 +137,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
-    needs: [ build-node-project ]
+    needs: [build-node-project]
     steps:
       - name: Download build artifact
         id: output-folder
@@ -149,7 +149,7 @@ jobs:
         uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.23.2
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
-          BINARIES_DIRECTORY: ''
+          BINARIES_DIRECTORY: ""
           AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
           STORAGE_ACCOUNT_NAME: ${{ inputs.STORAGE_ACCOUNT_NAME }}
           CDN_PROFILE_NAME: ${{ inputs.CDN_PROFILE_NAME }}
@@ -159,3 +159,14 @@ jobs:
           FD_ENDPOINT_NAME: ${{ inputs.FD_ENDPOINT_NAME }}
           FD_DOMAIN_NAME: ${{ inputs.FD_DOMAIN_NAME }}
           FD_PROFILE_NAME: ${{ inputs.FD_PROFILE_NAME }}
+
+      - name: Notify Slack on failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          payload: |
+            {
+              "text": "⚠️ PROJECT: `${{ inputs.PROJECT }}` @ `${{ inputs.RELEASE_ENVIRONMENT }}`. `node-deploy-azure-storage` job has failed. Please check the logs for more information. Direct access link to github action: ${{ github.run_url }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
