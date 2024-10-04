@@ -63,8 +63,16 @@ jobs:
         run: npm ci
         shell: bash
 
+      # Workaround for git not working in two separate folders
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Install git
-        run: apt-get update && apt-get install -y git
+        run: |
+          apt-get update && apt-get install -y git
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Run affected lint and build
         run: npx nx affected -t lint build --base=origin/main --head=HEAD
