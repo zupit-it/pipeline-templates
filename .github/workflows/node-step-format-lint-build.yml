@@ -63,5 +63,8 @@ jobs:
         run: npm ci
         shell: bash
 
+      - name: Install git
+        run: apt-get update && apt-get install -y git
+
       - name: Run affected lint and build
         run: npx nx affected -t lint build --base=origin/main --head=HEAD
