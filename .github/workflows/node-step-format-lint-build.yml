@@ -50,6 +50,7 @@ jobs:
         with:
           fetch-depth: 0
 
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -57,22 +58,21 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/*/package-lock.json'
 
+      - name: Install git
+        run: |
+          apt-get update && apt-get install -y git
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: ${{ github.workspace }}
+
       - name: Install Dependencies
         env:
           NODE_AUTH_TOKEN: ${{ env.github_token }}
         run: npm ci
         shell: bash
-
-      # Workaround for git not working in two separate folders
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install git
-        run: |
-          apt-get update && apt-get install -y git
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Run affected lint and build
         run: npx nx affected -t lint build --base=origin/main --head=HEAD
