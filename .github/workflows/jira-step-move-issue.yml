@@ -6,21 +6,26 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       DIND_IMAGE:
         required: false
         type: string
-        default: 'docker:26.0.0-dind'
+        default: "docker:26.0.0-dind"
       STATUS:
         required: true
         type: string
       BRANCH_OR_COMMIT_TITLE:
         required: true
         type: string
+
+env:
+  JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+  JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+  JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
 jobs:
   move-jira-issue:
@@ -31,55 +36,75 @@ jobs:
       image: ${{ inputs.DIND_IMAGE }}
 
     steps:
-      - name: Login to Jira
-        uses: atlassian/gajira-login@master
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-
-      - name: Find issue key
-        id: find
-        uses: atlassian/gajira-find-issue-key@master
-        with:
-          string: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}
-        continue-on-error: true
-
-      - name: Install bash
-        run: (cd /tmp && apk update && apk add bash curl)
-
-      - name: Download jira binary
+      - name: Setup environment
         run: |
-          curl -L -o /tmp/jira https://github.com/go-jira/jira/releases/download/v1.0.27/jira-linux-386
-          chmod +x /tmp/jira
+          apk add --no-cache bash curl
+          curl -L -o /usr/local/bin/jira https://github.com/go-jira/jira/releases/download/v1.0.27/jira-linux-386
+          chmod +x /usr/local/bin/jira
 
-      - name: Check issue status
-        id: check-status
-        shell: 'bash'
-        if: steps.find.outcome == 'success'
-        env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      - name: Debug - Environment and Inputs
         run: |
-          verified_states=("verified" "non compliant" "done" "billed" "to be billed")
-          output=$(/tmp/jira view ${{ steps.find.outputs.issue }} --field status -e ${{ secrets.JIRA_BASE_URL }} --login ${{ secrets.JIRA_USER_EMAIL }} | sed -n 's/status: \(.*\)/\L\1/p')
-          [[ ${verified_states[*]} =~ ${output} ]] && is_verified=true || is_verified=false
-          echo "verified=$is_verified" >> "$GITHUB_OUTPUT"
+          echo "Debug: Environment and Inputs"
+          echo "RUN_ON: ${{ inputs.RUN_ON }}"
+          echo "RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}"
+          echo "DIND_IMAGE: ${{ inputs.DIND_IMAGE }}"
+          echo "STATUS: ${{ inputs.STATUS }}"
+          echo "BRANCH_OR_COMMIT_TITLE: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}"
+          echo "JIRA_BASE_URL: ${JIRA_BASE_URL:-Not Set}"
+          echo "JIRA_USER_EMAIL: ${JIRA_USER_EMAIL:-Not Set}"
+          echo "JIRA_API_TOKEN: ${JIRA_API_TOKEN:+Set but not shown}"
+
+      - name: Find issue key and check status
+        id: issue
+        run: |
+          echo "Debug: Searching for Jira issue key in '${{ inputs.BRANCH_OR_COMMIT_TITLE }}'"
+          issue_key=$(echo "${{ inputs.BRANCH_OR_COMMIT_TITLE }}" | grep -o '[A-Z]\+-[0-9]\+' | head -n1)
+          if [ -n "$issue_key" ]; then
+            echo "key=$issue_key" >> $GITHUB_OUTPUT
+            echo "Debug: Found issue key: $issue_key"
+            echo "Debug: Checking issue status"
+            status=$(jira view $issue_key --field status -e $JIRA_BASE_URL --login $JIRA_USER_EMAIL | sed -n 's/status: \(.*\)/\L\1/p')
+            echo "Debug: Current issue status: $status"
+            if [[ "verified non compliant done billed to be billed" == *"$status"* ]]; then
+              echo "verified=true" >> $GITHUB_OUTPUT
+              echo "Debug: Issue is in a verified state"
+            else
+              echo "verified=false" >> $GITHUB_OUTPUT
+              echo "Debug: Issue is not in a verified state"
+            fi
+          else
+            echo "Debug: No issue key found"
+          fi
+
+      - name: Debug - Issue Information
+        run: |
+          echo "Debug: Issue Information"
+          echo "Issue Key: ${{ steps.issue.outputs.key }}"
+          echo "Is Verified: ${{ steps.issue.outputs.verified }}"
 
       - name: Transition issue
+        if: steps.issue.outputs.key && steps.issue.outputs.verified == 'false'
         uses: atlassian/gajira-transition@master
-        if: steps.find.outcome == 'success' && steps.check-status.outputs.verified != 'true'
         with:
-          issue: ${{ steps.find.outputs.issue }}
+          issue: ${{ steps.issue.outputs.key }}
           transition: ${{ inputs.STATUS }}
 
-      - name: Show issue key found message
-        if: steps.find.outcome == 'success'
-        run: echo "### Found JIRA issue key '${{ steps.find.outputs.issue }}'" >> $GITHUB_STEP_SUMMARY
+      - name: Debug - Transition Result
+        if: steps.issue.outputs.key && steps.issue.outputs.verified == 'false'
+        run: |
+          echo "Debug: Transition Result"
+          echo "Attempted to transition issue ${{ steps.issue.outputs.key }} to status '${{ inputs.STATUS }}'"
+          echo "Note: Actual transition success cannot be verified in this step"
 
-      - name: Show no issue moved because of verified state
-        if: steps.find.outcome == 'success' && steps.check-status.outputs.verified == 'true'
-        run: echo "### JIRA issue not moved because its state is 'Verified'" >> $GITHUB_STEP_SUMMARY
-
-      - name: Show no issue key found message
-        if: steps.find.outcome != 'success'
-        run: echo "### No JIRA issue key found in '${{ inputs.BRANCH_OR_COMMIT_TITLE }}'" >> $GITHUB_STEP_SUMMARY
+      - name: Update GitHub step summary
+        run: |
+          if [ -n "${{ steps.issue.outputs.key }}" ]; then
+            echo "### Found JIRA issue key '${{ steps.issue.outputs.key }}'" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ steps.issue.outputs.verified }}" == "true" ]; then
+              echo "### JIRA issue not moved because its state is 'Verified'" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "### Attempted to transition JIRA issue to '${{ inputs.STATUS }}'" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "### No JIRA issue key found in '${{ inputs.BRANCH_OR_COMMIT_TITLE }}'" >> $GITHUB_STEP_SUMMARY
+          fi
