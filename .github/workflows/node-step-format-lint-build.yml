@@ -6,11 +6,11 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       NODE_VERSION:
         required: true
         type: string
@@ -45,40 +45,39 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ inputs.NODE_VERSION }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ inputs.NODE_VERSION }}
-#        cache: 'npm'
-#        cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/package-lock.json
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    # Set NPM cache directory to a new clean directory to avoid sharing with other runners
-    - name: Set NPM cache directory
-      run: echo "NPM_CONFIG_CACHE=~/.npm$(npm -v)" >> $GITHUB_ENV
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: "**/*/package-lock.json"
 
-    - name: Authenticate with private NPM package
-      if: ${{ env.github_token }}
-      run: echo "//npm.pkg.github.com/:_authToken=${{ env.github_token }}" > ~/.npmrc
+      - name: Authenticate with private NPM package
+        if: ${{ env.github_token }}
+        run: echo "//npm.pkg.github.com/:_authToken=${{ env.github_token }}" > ~/.npmrc
 
-    - run: npm ci
+      - run: npm ci
 
-    # GENERIC
-    - run: npm run ci:format:check
-      if:  ${{ inputs.PROJECT == '' }}
+      # GENERIC
+      - run: npm run ci:format:check
+        if:  ${{ inputs.PROJECT == '' }}
 
-    - run: npm run ci:lint
-      if:  ${{ inputs.PROJECT == '' }}
+      - run: npm run ci:lint
+        if:  ${{ inputs.PROJECT == '' }}
 
-    - run: npm run ci:build
-      if:  ${{ inputs.PROJECT == '' }}
+      - run: npm run ci:build
+        if:  ${{ inputs.PROJECT == '' }}
 
-    # PROJECT SPECIFIC
-    - run: npm run ${{ inputs.PROJECT }}:ci:format:check
-      if:  ${{ inputs.PROJECT != '' }}
+      # PROJECT SPECIFIC
+      - run: npm run ${{ inputs.PROJECT }}:ci:format:check
+        if:  ${{ inputs.PROJECT != '' }}
 
-    - run: npm run ${{ inputs.PROJECT }}:ci:lint
-      if:  ${{ inputs.PROJECT != '' }}
+      - run: npm run ${{ inputs.PROJECT }}:ci:lint
+        if:  ${{ inputs.PROJECT != '' }}
 
-    - run: npm run ${{ inputs.PROJECT }}:ci:build
-      if:  ${{ inputs.PROJECT != '' }}
+      - run: npm run ${{ inputs.PROJECT }}:ci:build
+        if:  ${{ inputs.PROJECT != '' }}
