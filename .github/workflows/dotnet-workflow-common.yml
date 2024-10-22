@@ -96,7 +96,7 @@ jobs:
           CSHARPIER_VERSION: ${{ inputs.CSHARPIER_VERSION }}
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.23.2
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
