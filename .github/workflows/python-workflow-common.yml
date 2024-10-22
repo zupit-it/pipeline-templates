@@ -18,11 +18,11 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       RUN:
         required: false
         type: boolean
@@ -36,11 +36,47 @@ on:
         required: false
         type: string
         default: ""
+      CHECK_WORKDIR_CHANGES:
+        required: true
+        type: boolean
+        default: false
+      CHECK_CUSTOM_DIR:
+        required: false
+        type: string
+        default: ""
+      CHECK_CHANGES_BY_JOBS:
+        required: false
+        type: string
+        default: "all"
+
+env:
+  CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
 
 jobs:
+  workdir-has-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changes-detected: ${{ steps.filter.outputs.changes-detected }}
+    steps:
+      - name: Set CHECK_DIR to custom directory if provided
+        if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
+        run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
+      - name: Set default CHECK_DIR
+        if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
+        run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changes-detected:
+              - "${{ env.CHECK_DIR }}/**"
+
   django-lint-check:
-    uses:
-      ./.github/workflows/python-step-lint-check.yml
+    needs: workdir-has-changes
+    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
+    uses: ./.github/workflows/python-step-lint-check.yml
     with:
       RUN_ON: ${{inputs.RUN_ON}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
@@ -51,3 +87,11 @@ jobs:
       ENABLE_LFS: ${{inputs.ENABLE_LFS}}
       LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
     secrets: inherit
+
+  jobs-succeded:
+    needs: ["django-lint-check"]
+    runs-on: ubuntu-latest
+    if: ${{ always()}}
+    steps:
+      - name: "Jobs: django-lint-check didn't fail."
+        run: if [[ "${{ needs.django-lint-check.result }}" == "failure" ]]; then exit 1; fi
