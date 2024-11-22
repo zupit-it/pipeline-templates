@@ -34,7 +34,7 @@ inputs:
         required: false
         type: string
         default: "all"
-        description: "JSON array of job IDs to run change detection for. Default 'all' runs for all jobs"
+        description: "JSON array of job IDs to run change detection for. The default 'all' runs for all jobs"
 ```
 
 ### 2. Set Up Environment Variables
