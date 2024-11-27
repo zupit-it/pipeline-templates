@@ -22,7 +22,7 @@ runs:
   using: composite
   steps:
     - name: Build
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.23.2
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@fix-dotnet-cache
       with:
         WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
         BUILD_CONFIG: ${{ inputs.BUILD_CONFIG }}
