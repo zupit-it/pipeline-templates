@@ -19,7 +19,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles(format('{0}/**/packages.lock.json', inputs.WORKING_DIRECTORY)) }}
+        key: ${{ runner.os }}-nuget-${{ github.run_id }}-${{ github.run_attempt }} # Temporary fix: ${{ hashFiles(format('{0}/**/packages.lock.json', inputs.WORKING_DIRECTORY)) }}
         restore-keys: ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
