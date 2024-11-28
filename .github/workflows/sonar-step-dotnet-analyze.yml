@@ -110,7 +110,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install .NET
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.25.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@ZCH-126/caching
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}

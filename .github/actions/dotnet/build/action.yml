@@ -19,16 +19,23 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Create folder if not exist
-      shell: bash
-      run: mkdir -p ~/.nuget/packages${{ inputs.CACHE_SUFFIX }}
+    # - name: Restore NuGet packages cache
+    #   uses: actions/cache@v4
+    #   with:
+    #     path: ~/.nuget/packages
+    #     key: ${{ runner.os }}-nuget-${{ github.run_id }}-${{ github.run_attempt }} # Temporary fix: ${{ hashFiles(format('{0}/**/packages.lock.json', inputs.WORKING_DIRECTORY)) }}
+    #     restore-keys: ${{ runner.os }}-nuget-
+    # - name: Create folder if not exist
+    #   shell: bash
+    #   run: mkdir -p ~/.nuget/packages${{ inputs.CACHE_SUFFIX }}
 
-    - name: Restore NuGet packages cache
-      uses: actions/cache@v3
-      with:
-        path: ~/.nuget/packages${{ inputs.CACHE_SUFFIX }}
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-        restore-keys: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+    # - name: Restore NuGet packages cache
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: ~/.nuget/packages${{ inputs.CACHE_SUFFIX }}
+    #     # key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+    #     key: ${{ runner.os }}-nuget-${{ github.run_id }}-${{ github.run_attempt }} # Temporary fix: ${{ hashFiles(format('{0}/**/packages.lock.json', inputs.WORKING_DIRECTORY)) }}
+    #     restore-keys: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
 
     - name: Restore dependencies
       shell: ${{ inputs.SHELL }}
