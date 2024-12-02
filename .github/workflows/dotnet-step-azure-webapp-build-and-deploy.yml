@@ -72,7 +72,7 @@ jobs:
           NAME_PREFIX: dotnet-build
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@vfix-dotnet-cache
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@fix-dotnet-cache
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Release"
