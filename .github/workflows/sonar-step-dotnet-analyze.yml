@@ -61,6 +61,10 @@ on:
         required: false
         type: string
         default: "all"
+      CACHE_SUFFIX:
+        required: false
+        type: string
+        default: ""
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -102,11 +106,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Install .NET
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.24.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@ZCH-126/caching
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
@@ -135,10 +137,11 @@ jobs:
             "${params[@]}"
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.24.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@ZCH-126/caching
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
+          CACHE_SUFFIX: ${{ inputs.CACHE_SUFFIX }}
 
       - name: Run tests
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.24.0
