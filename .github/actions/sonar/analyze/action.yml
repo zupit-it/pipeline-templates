@@ -39,6 +39,9 @@ runs:
           name: ${{ inputs.ARTIFACT_FILENAME }}
           path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
 
+      - name: Workaround for containerized environments
+        run: echo "SONAR_USER_HOME=$HOME/.sonar" >> $GITHUB_ENV
+
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
         env:
