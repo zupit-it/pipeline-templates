@@ -28,7 +28,7 @@ runs:
         ARCHIVE_PATH: ${{ inputs.ARCHIVE_PATH }}
 
     - name: Upload build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.ARTIFACT_NAME }}
         path: ${{ steps.archive.outputs.ARCHIVE_PATH }}

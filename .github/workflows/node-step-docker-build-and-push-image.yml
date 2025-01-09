@@ -104,7 +104,7 @@ jobs:
         run: tar czvf dist.tar.gz ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
           path: dist.tar.gz
@@ -131,7 +131,7 @@ jobs:
           ref: ${{ inputs.CHECKOUT_REF }}
 
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
           path: .
