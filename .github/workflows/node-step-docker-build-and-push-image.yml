@@ -92,7 +92,7 @@ jobs:
           ref: ${{ inputs.CHECKOUT_REF }}
 
       - name: NodeJS Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@upload-download-artifact-v4
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.24.1
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
@@ -109,9 +109,6 @@ jobs:
           name: ${{ inputs.ARTIFACT_NAME }}
           path: dist.tar.gz
           retention-days: 1
-
-      - name: Try to fail
-        run: exit 1
 
   docker-build-and-push:
     runs-on:
@@ -144,7 +141,7 @@ jobs:
 
       - name: Docker Build & Push
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@upload-download-artifact-v4
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.24.1
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
