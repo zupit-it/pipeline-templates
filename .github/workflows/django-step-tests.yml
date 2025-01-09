@@ -99,7 +99,7 @@ jobs:
          coverage report --fail-under ${{ inputs.COVERAGE_THRESHOLD }}
 
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
           path: ${{ inputs.WORKING_DIRECTORY }}/coverage-reports/coverage-django.xml
