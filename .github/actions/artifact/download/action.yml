@@ -29,7 +29,7 @@ runs:
         path: ${{ inputs.OUTPUT_FOLDER }}
 
     - name: Unpack
-      uses: zupit-it/pipeline-templates/.github/actions/artifact/extract-archive@v1.24.1
+      uses: zupit-it/pipeline-templates/.github/actions/artifact/extract-archive@upload-download-artifact-v4
       with:
         ARCHIVE_PATH: ${{ inputs.OUTPUT_FOLDER }}/${{ inputs.ARCHIVE_NAME }}
         OUTPUT_FOLDER: ${{ inputs.OUTPUT_FOLDER }}
