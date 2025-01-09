@@ -110,6 +110,9 @@ jobs:
           path: dist.tar.gz
           retention-days: 1
 
+      - name: Try to fail
+        run: exit 1
+
   docker-build-and-push:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
