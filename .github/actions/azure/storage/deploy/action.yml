@@ -52,6 +52,18 @@ runs:
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
+    - name: Install azcopy
+      shell: 'bash'
+      run: |
+        # Download and install azcopy
+        wget https://aka.ms/downloadazcopy-v10-linux -O azcopy.tar.gz
+        tar -xf azcopy.tar.gz
+        cp ./azcopy_linux_amd64_*/azcopy /usr/local/bin/
+        chmod +x /usr/local/bin/azcopy
+        rm -rf azcopy.tar.gz azcopy_linux_amd64_*
+        # Verify installation
+        azcopy --version
+
     - name: Deploy to Azure Storage
       shell: 'bash'
       run: |
