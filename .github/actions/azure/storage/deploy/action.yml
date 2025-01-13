@@ -53,39 +53,54 @@ runs:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
     - name: Install azcopy
-      shell: 'bash'
+      shell: bash
       run: |
-        # Download and install azcopy
-        wget https://aka.ms/downloadazcopy-v10-linux -O azcopy.tar.gz
-        tar -xf azcopy.tar.gz
-        cp ./azcopy_linux_amd64_*/azcopy /usr/local/bin/
-        chmod +x /usr/local/bin/azcopy
-        rm -rf azcopy.tar.gz azcopy_linux_amd64_*
-        # Verify installation
-        azcopy --version
+        mkdir -p ${GITHUB_WORKSPACE}/azcopy
+        cd ${GITHUB_WORKSPACE}/azcopy
+        wget https://azcopyvnext-awgzd8g7aagqhzhe.b02.azurefd.net/release20211027/azcopy_linux_amd64_10.13.0.tar.gz
+        tar -xzf azcopy_linux_amd64_10.13.0.tar.gz --strip-components=1
+        chmod +x azcopy
+        echo "${GITHUB_WORKSPACE}/azcopy" >> $GITHUB_PATH
+        mkdir -p ${RUNNER_TEMP}/bin
+        ln -sf ${GITHUB_WORKSPACE}/azcopy/azcopy ${RUNNER_TEMP}/bin/azcopy
+        echo "${RUNNER_TEMP}/bin" >> $GITHUB_PATH
+        rm azcopy_linux_amd64_10.13.0.tar.gz
+        ${RUNNER_TEMP}/bin/azcopy --version
 
     - name: Deploy to Azure Storage
-      shell: 'bash'
+      shell: bash
       run: |
-        az storage blob sync --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} -c '$web' -s ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
+        # Calculate 30 minutes from now in seconds since epoch
+        FUTURE_EPOCH=$(($(date +%s) + 1800))
+        # Convert to desired format using BusyBox date
+        END_DATE=$(date -u -d @${FUTURE_EPOCH} '+%Y-%m-%dT%H:%MZ')
+
+        SAS_TOKEN=$(az storage container generate-sas \
+          --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} \
+          --name '$web' \
+          --permissions acdlrw \
+          --expiry $END_DATE \
+          -o tsv)
+
+        ${RUNNER_TEMP}/bin/azcopy sync "${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}" "https://${{ inputs.STORAGE_ACCOUNT_NAME }}.blob.core.windows.net/\$web?$SAS_TOKEN"
 
     - name: Purge CDN endpoint
-      shell: 'bash'
+      shell: bash
       if: ${{ inputs.CDN_RG_NAME != '' }}
       run: |
-        az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
+        az cdn endpoint purge --content-paths "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
 
     - name: Purge Azure Front Door endpoint
-      shell: 'bash'
+      shell: "bash"
       if: ${{ inputs.FD_RG_NAME != '' }}
       run: |
         az afd endpoint purge --content-paths  "/*" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" --domains "${{ inputs.FD_DOMAIN_NAME }}" --profile-name "${{ inputs.FD_PROFILE_NAME }}"
 
     - name: Azure logout
-      shell: 'bash'
+      shell: "bash"
       if: always()
       continue-on-error: true
       run: |
-          az logout
-          az cache purge
-          az account clear
+        az logout
+        az cache purge
+        az account clear
