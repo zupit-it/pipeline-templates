@@ -73,7 +73,7 @@ on:
       AZURE_CLI_IMAGE:
         required: false
         type: string
-        default: "mcr.microsoft.com/azure-cli:2.50.0"
+        default: "mcr.microsoft.com/azure-cli:2.68.0"
       CHECKOUT_REF:
         required: false
         type: string
