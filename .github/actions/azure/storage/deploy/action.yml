@@ -55,6 +55,7 @@ runs:
     - name: Azure Copy install
       shell: 'bash'
       run: |
+        cat /etc/os-release
         tdnf install -y azcopy
         # This is required because an azure-cli cdn bug. It will be fixed in the next release 2 feb 2025: https://github.com/Azure/azure-cli/issues/30635#issuecomment-2586265325
 
