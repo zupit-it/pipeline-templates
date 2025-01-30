@@ -145,6 +145,11 @@ jobs:
         with:
           ARTIFACT_NAME: ${{ needs.build-node-project.outputs.ARTIFACT_NAME }}
 
+      - name: Azure Copy install
+        run: |
+          tdnf install -y azcopy tar
+          # This is required because an azure-cli cdn bug. It will be fixed in the next release 2 feb 2025: https://github.com/Azure/azure-cli/issues/30635#issuecomment-2586265325
+
       - name: Deploy to Azure Storage
         uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@fix-azure-storage-deploy
         with:
