@@ -32,13 +32,6 @@ runs:
         nslookup azure.microsoft.com
         curl -I https://aka.ms/azcopyv10
 
-    - name: Deploy to Azure App Service
-      uses: Azure/webapps-deploy@v2.2.11
-      with:
-        app-name: ${{ inputs.WEBAPP_NAME }}
-        slot-name: ${{ inputs.WEBAPP_SLOT }}
-        package:  ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
-
     - name: Azure logout
       shell: 'bash'
       if: always()
