@@ -22,15 +22,16 @@ runs:
   using: composite
   steps:
     - name: Azure login
-      uses: azure/login@v2
+      uses: azure/login@v1
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
-    - name: Check connectivity
-      shell: 'bash'
-      run: |
-        nslookup azure.microsoft.com
-        curl -I https://aka.ms/azcopyv10
+    - name: Deploy to Azure App Service
+      uses: Azure/webapps-deploy@v2.2.5
+      with:
+        app-name: ${{ inputs.WEBAPP_NAME }}
+        slot-name: ${{ inputs.WEBAPP_SLOT }}
+        package:  ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
 
     - name: Azure logout
       shell: 'bash'

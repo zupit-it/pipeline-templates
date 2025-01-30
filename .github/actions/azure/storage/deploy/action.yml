@@ -52,6 +52,13 @@ runs:
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
+    - name: Check connectivity
+      shell: 'bash'
+      run: |
+        nslookup azure.microsoft.com
+        curl -I https://aka.ms/azcopyv10
+        az --version
+
     - name: Deploy to Azure Storage
       shell: 'bash'
       run: |
