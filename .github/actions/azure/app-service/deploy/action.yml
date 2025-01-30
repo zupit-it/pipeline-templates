@@ -26,6 +26,11 @@ runs:
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
+    - name: Check connectivity
+      run: |
+        nslookup azure.microsoft.com
+        curl -I https://aka.ms/azcopyv10
+
     - name: Deploy to Azure App Service
       uses: Azure/webapps-deploy@v2.2.11
       with:
