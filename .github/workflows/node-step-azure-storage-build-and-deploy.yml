@@ -146,7 +146,7 @@ jobs:
           ARTIFACT_NAME: ${{ needs.build-node-project.outputs.ARTIFACT_NAME }}
 
       - name: Deploy to Azure Storage
-        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.25.0
+        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@fix-azure-storage-deploy
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
           BINARIES_DIRECTORY: ''
