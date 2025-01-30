@@ -48,16 +48,15 @@ runs:
   using: composite
   steps:
     - name: Azure login
-      uses: azure/login@v2
+      uses: azure/login@v1
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
-    - name: Check connectivity
+    - name: Azure Copy install
       shell: 'bash'
       run: |
-        nslookup azure.microsoft.com
-        curl -I https://aka.ms/azcopyv10
-        az --version
+        tdnf install -y azcopy
+        # This is required because an azure-cli cdn bug. It will be fixed in the next release 2 feb 2025: https://github.com/Azure/azure-cli/issues/30635#issuecomment-2586265325
 
     - name: Deploy to Azure Storage
       shell: 'bash'
