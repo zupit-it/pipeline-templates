@@ -27,7 +27,7 @@ runs:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
     - name: Deploy to Azure App Service
-      uses: Azure/webapps-deploy@v2.2.5
+      uses: Azure/webapps-deploy@v2.2.11
       with:
         app-name: ${{ inputs.WEBAPP_NAME }}
         slot-name: ${{ inputs.WEBAPP_SLOT }}
