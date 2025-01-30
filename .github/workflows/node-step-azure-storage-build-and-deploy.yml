@@ -133,6 +133,8 @@ jobs:
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:
       image: ${{ inputs.AZURE_CLI_IMAGE }}
+      env:
+         GNUPGHOME: /root/.gnupg
 
     defaults:
       run:
@@ -142,15 +144,7 @@ jobs:
       - name: Azure Copy install
         run: |
           # This is required because an azure-cli cdn bug. It will be fixed in the next release 2 feb 2025: https://github.com/Azure/azure-cli/issues/30635#issuecomment-2586265325
-          tdnf install -y tar
-          curl -L https://aka.ms/downloadazcopy-v10-linux -o downloadazcopy-v10-linux
-          tar -xvf downloadazcopy-v10-linux
-          rm -f /usr/bin/azcopy
-          cp ./azcopy_linux_amd64_*/azcopy /usr/bin/
-          chmod 755 /usr/bin/azcopy
-          rm -f downloadazcopy-v10-linux
-          rm -rf ./azcopy_linux_amd64_*/
-
+          tdnf install -y azcopy tar
 
       - name: Download build artifact
         id: output-folder
