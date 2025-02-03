@@ -54,7 +54,9 @@ Add this job to check for directory changes:
 ```yaml
 jobs:
     workdir-has-changes:
-        runs-on: ubuntu-latest
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
         outputs:
             changes-detected: ${{ steps.filter.outputs.changes-detected }}
         steps:
@@ -83,7 +85,9 @@ jobs:
     your-job-name:
         needs: workdir-has-changes
         if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
-        runs-on: ubuntu-latest
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
         steps:
             # Your job steps here
 ```
@@ -96,7 +100,9 @@ Add this job to validate the overall workflow status:
 jobs:
     jobs-succeded:
         needs: ["your-job-name"] # List all jobs that need validation
-        runs-on: ubuntu-latest
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
         if: ${{ always() }}
         steps:
             - name: "Check if jobs succeeded"
@@ -138,7 +144,9 @@ jobs:
     main-job:
         needs: workdir-has-changes
         if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
-        runs-on: ubuntu-latest
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
         steps:
             - run: echo "Main job running"
 

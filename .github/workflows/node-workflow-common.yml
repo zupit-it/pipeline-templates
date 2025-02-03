@@ -60,7 +60,9 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on: ubuntu-latest
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
@@ -109,7 +111,9 @@ jobs:
 
   jobs-succeded:
     needs: ["lint-check-build", "cypress-run"]
-    runs-on: ubuntu-latest
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     if: ${{ always()}}
     steps:
       - name: "Jobs: lint-check-build, cypress-run didn't fail."
