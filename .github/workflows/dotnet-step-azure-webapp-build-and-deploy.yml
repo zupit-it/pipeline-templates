@@ -6,11 +6,11 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       RELEASE_ENVIRONMENT:
         required: true
         type: string
@@ -26,20 +26,19 @@ on:
       CHECKOUT_REF:
         required: false
         type: string
-        default: ''
+        default: ""
       ENV_VARIABLES:
         required: false
         type: string
-        default: '{}'
+        default: "{}"
       DOTNET_IMAGE:
         required: false
         type: string
-        default: 'mcr.microsoft.com/dotnet/sdk:7.0'
+        default: "mcr.microsoft.com/dotnet/sdk:7.0"
       AZURE_CLI_IMAGE:
         required: false
         type: string
         default: "mcr.microsoft.com/azure-cli:2.50.0"
-
 
 env: "${{secrets}}"
 
@@ -72,7 +71,7 @@ jobs:
           NAME_PREFIX: dotnet-build
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.25.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@ZCH-126/caching
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Release"
@@ -94,7 +93,7 @@ jobs:
     container:
       image: ${{ inputs.AZURE_CLI_IMAGE }}
 
-    needs: [ build ]
+    needs: [build]
     steps:
       - name: Download build artifact
         id: output-folder
@@ -106,6 +105,6 @@ jobs:
         uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.25.0
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
-          BINARIES_DIRECTORY: ''
+          BINARIES_DIRECTORY: ""
           AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
           WEBAPP_NAME: ${{ inputs.WEBAPP_NAME }}

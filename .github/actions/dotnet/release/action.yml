@@ -16,13 +16,13 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
 
 runs:
   using: composite
   steps:
     - name: Build
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.25.0
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@ZCH-126/caching
       with:
         WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
         BUILD_CONFIG: ${{ inputs.BUILD_CONFIG }}
