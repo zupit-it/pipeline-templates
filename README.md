@@ -333,6 +333,7 @@ steps:
 #### .NET Action - Lint
 
 This action:
+
 -   run the `dotnet format` command on the `WORKING_DIRECTORY`.
 
 ###### Requirements
@@ -572,11 +573,13 @@ This action:
 **.github/actions/azure/storage/deploy** is the action that deploys a static web-app to an Azure Storage Account. It also cleans the cache of the Azure CDN or Azure Front-door if specified.
 
 It requires these inputs:
+
 -   **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
 -   **BINARIES_DIRECTORY**: The folder containing binaries to publish to the Storage Account.
 -   **STORAGE_ACCOUNT_NAME**: The name of the Storage Account.
 
 In addition, it is possible to specify this optional input:
+
 -   **CDN_PROFILE_NAME**: Name of the Azure CDN profile name. Required if `CDN_RG_NAME` is specified.
 -   **CDN_ENDPOINT_NAME**: Name of the Azure CDN endpoint name. It must be a child of the `CDN_PROFILE_NAME` CDN profile. Required if `CDN_RG_NAME` is specified.
 -   **CDN_RG_NAME**: Resource group name where the Azure CDN profile is hold.
@@ -588,17 +591,20 @@ In addition, it is possible to specify this optional input:
 If no Front-door or CDN is specified, the action will only upload the files to the Storage Account.
 
 If you want to purge the CDN cache, you must specify:
+
 -   **CDN_PROFILE_NAME**
 -   **CDN_ENDPOINT_NAME**
 -   **CDN_RG_NAME**
 
 If you want to purge the Front-door cache, you must specify:
--  **FD_ENDPOINT_NAME**
--  **FD_DOMAIN_NAME**
--  **FD_PROFILE_NAME**
--  **FD_RG_NAME**
+
+-   **FD_ENDPOINT_NAME**
+-   **FD_DOMAIN_NAME**
+-   **FD_PROFILE_NAME**
+-   **FD_RG_NAME**
 
 It also requires these secrets:
+
 -   **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
 
 This is an example to show how data should be formatted.
@@ -665,21 +671,25 @@ steps:
 #### Artifact Action - Generate name
 
 This action:
-- generates a unique name for an artifact using the specified prefix
+
+-   generates a unique name for an artifact using the specified prefix
 
 The generated artifact name is in the format `prefix-<random-string>`.
 
 ###### Requirements
-- Bash
+
+-   Bash
 
 ###### Action
 
 **.github/actions/artifact/generate-name** is the action that generates a unique name for an artifact using the specified prefix. This is useful when you have multiple artifacts to upload on the same workflow, and you want to avoid name collisions.
 
 It requires these inputs:
+
 -   **NAME_PREFIX**: The prefix to use when generating the artifact name.
 
 It then outputs this variable:
+
 -   **ARTIFACT_NAME**: The generated artifact name.
 
 This is an example to show how to use this action with the support of the **Generate artifact name** action.
@@ -709,20 +719,24 @@ This is an example to show how to use this action with the support of the **Gene
 #### Artifact Action - Download
 
 This action:
-- downloads an archived artifact.
-- extracts the artifact in the specified directory.
+
+-   downloads an archived artifact.
+-   extracts the artifact in the specified directory.
 
 ###### Requirements
-- See the requirements of [Artifact Action - Extract archive](#artifact-action---extract-archive).
+
+-   See the requirements of [Artifact Action - Extract archive](#artifact-action---extract-archive).
 
 ###### Action
 
 **.github/actions/artifact/download** is the action that downloads an artifact and extracts the archive it holds in the specified directory.
 
 It requires these inputs:
+
 -   **ARTIFACT_NAME**: The artifact's name. Usually, it is the name generated using the action **artifact/generate-name**.
 
 In addition, it is possible to specify this optional input:
+
 -   **OUTPUT_FOLDER**: The folder where the artifact will be extracted. By default, it is **/tmp**.
 -   **ARCHIVE_NAME**: The name of the archive hold in the artifact. By default, it is **dist.tar.gz**.
 
@@ -739,22 +753,26 @@ steps:
 #### Artifact Action - Upload
 
 This action:
-- creates an archive containing the files in the specified folder and uploads it as an artifact.
+
+-   creates an archive containing the files in the specified folder and uploads it as an artifact.
 
 ###### Requirements
-- See the requirements of [Artifact Action - Create archive](#artifact-action---create-archive).
+
+-   See the requirements of [Artifact Action - Create archive](#artifact-action---create-archive).
 
 ###### Action
 
 **.github/actions/artifact/upload** is the action that creates an archive containing the files in the specified folder and uploads it as an artifact.
 
 It requires these inputs:
-- **SOURCE_FOLDER**: The folder containing the files to archive and upload.
-- **ARTIFACT_NAME**: The name of the artifact to create.
+
+-   **SOURCE_FOLDER**: The folder containing the files to archive and upload.
+-   **ARTIFACT_NAME**: The name of the artifact to create.
 
 In addition, it is possible to specify this optional input:
-- **ARCHIVE_PATH**: The path to the archive to create. By default, it is **/tmp/dist.tar.gz**.
-- **RETENTION_DAYS**: The number of days to keep the artifact. By default, it is **1**.
+
+-   **ARCHIVE_PATH**: The path to the archive to create. By default, it is **/tmp/dist.tar.gz**.
+-   **RETENTION_DAYS**: The number of days to keep the artifact. By default, it is **1**.
 
 This is an example to show how to use this action with the support of the **Generate artifact name** action.
 
@@ -783,29 +801,34 @@ This is an example to show how to use this action with the support of the **Gene
 #### Artifact Action - Create archive
 
 This action:
-- creates an archive containing the files in the specified folder.
+
+-   creates an archive containing the files in the specified folder.
 
 ###### Requirements
-- Bash
-- OS: Linux or Windows 10 Build 17063 and more recent. The action is based on the `tar` command.
+
+-   Bash
+-   OS: Linux or Windows 10 Build 17063 and more recent. The action is based on the `tar` command.
 
 ###### Action
 
 **.github/actions/artifact/create-archive** is the action that creates an archive containing the files in the specified folder.
 
 It requires these inputs:
-  - **SOURCE_FOLDER**: The folder containing the files to archive.
+
+-   **SOURCE_FOLDER**: The folder containing the files to archive.
 
 In addition, it is possible to specify this optional input:
-  - **ARCHIVE_PATH**: The path to the archive to create. By default, it is **/tmp/dist.tar.gz**.
 
+-   **ARCHIVE_PATH**: The path to the archive to create. By default, it is **/tmp/dist.tar.gz**.
 
 It then outputs this variable:
-- **ARCHIVE_PATH**: The path to the archive created.
+
+-   **ARCHIVE_PATH**: The path to the archive created.
 
 You may want to use the [Artifact Action - Upload](#artifact-action---upload) instead of this action, as it creates an archive and uploads it as an artifact.
 
 This is an example to show how data should be formatted.
+
 ```yaml
     - name: Create archive
       uses: zupit-it/pipeline-templates/.github/actions/artifact/create-archive@v1.25.0
@@ -817,23 +840,27 @@ This is an example to show how data should be formatted.
 #### Artifact Action - Extract archive
 
 This action:
-- extracts an archive in the specified directory.
+
+-   extracts an archive in the specified directory.
 
 ###### Requirements
-- Bash
-- OS: Linux or Windows 10 Build 17063 and more recent. The action is based on the `tar` command.
+
+-   Bash
+-   OS: Linux or Windows 10 Build 17063 and more recent. The action is based on the `tar` command.
 
 ###### Action
 
 **.github/actions/artifact/extract-archive** is the action that extracts an archive in the specified directory.
 
 It requires these inputs:
-- **ARCHIVE_PATH**: The path to the archive to extract.
-- **OUTPUT_FOLDER**: The folder where the archive will be extracted.
+
+-   **ARCHIVE_PATH**: The path to the archive to extract.
+-   **OUTPUT_FOLDER**: The folder where the archive will be extracted.
 
 You may want to use the [Artifact Action - Download](#artifact-action---download) instead of this action, as it downloads an archived artifact and extracts it in the specified directory.
 
 This is an example to show how data should be formatted.
+
 ```yaml
     - name: Extract archive
       uses: zupit-it/pipeline-templates/.github/actions/artifact/extract-archive@v1.25.0
@@ -996,6 +1023,7 @@ This workflow uses these composite actions:
 _This workflow uses a NodeJS Docker image, hence remember to use labels to match runners specific for Docker._
 
 It requires these inputs:
+
 -   **NODE_VERSION**: The NodeJS version required to build the project.
 -   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 -   **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
@@ -1051,6 +1079,7 @@ This workflow combines two main actions:
 The input parameters of this workflow have the same name of the corresponding parameters in child actions. Refer to them for more information.
 
 Also, these input parameters are optional:
+
 -   **IMAGE**: the docker image to use when running the node build. By default, it is **ubuntu:23.04**.
 -   **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.50.0**.
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
@@ -1099,8 +1128,9 @@ It groups together these reusable workflows:
 -   _django-step-tests.yml_
 
 It requires these inputs:
--   
-- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
+
+-
+-   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
 -   **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify this optional input:
@@ -1111,8 +1141,8 @@ In addition, it is possible to specify this optional input:
 -   **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 -   **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
 -   **SETUP_COMMANDS**: Allow to execute commands before the download of the dependencies. Useful to install packages required for Python dependencies.
--   **ENABLE_LFS**: To enable Git LFS support on checkout  
--   **LFS_REPO_PATH**: Required when ENABLE_LFS is true. Workaround for https://github.com/actions/checkout/issues/1169. Set to "/__w/repo-name/repo-name" 
+-   **ENABLE_LFS**: To enable Git LFS support on checkout
+-   **LFS_REPO_PATH**: Required when ENABLE_LFS is true. Workaround for https://github.com/actions/checkout/issues/1169. Set to "/\_\_w/repo-name/repo-name"
 -   **COVERAGE_THRESHOLD**: The minimal code coverage for this project. If the coverage is lower than this value, the workflow will fail. By default, it is **50**.
 
 This is an example to show how data should be formatted.
@@ -1202,14 +1232,14 @@ It requires these inputs:
 In addition, it is possible to specify this optional input:
 
 -   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _jacoco reports_ file. By default, it is **target**.
--   **MAVEN_USER_HOME**: T    RUN_ON:
-      required: false
-      type: string
-      default: 'zupit-agents'
+-   **MAVEN_USER_HOME**: T RUN_ON:
+    required: false
+    type: string
+    default: 'zupit-agents'
     RUNNERS_CONTAINER_GROUP:
-      required: false
-      type: string
-      default: 'Container'he path to Maven directory. By default, it is **./m2**.
+    required: false
+    type: string
+    default: 'Container'he path to Maven directory. By default, it is **./m2**.
 -   **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
 -   **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
 -   **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
@@ -1353,12 +1383,12 @@ It requires these inputs:
 -   **DOTNET_IMAGE**: the .NET docker image (usually 'mcr.microsoft.com/dotnet/sdk') to use.
 
 In addition, it is possible to specify these optional inputs:
+
 -   **DOTNET_IMAGE_ENV_VARIABLES**: The environment variables to set when running the .NET docker image.
 -   **CSHARPIER_VERSION**: The version of the CSharpier tool to use. For the default value, see the `dotnet/format` action.
 -   **RUN_LINT**: Whatever or not the lint command should be executed. By default, it is **true**.
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
-
 
 This is an example to show how data should be formatted.
 
@@ -1456,7 +1486,6 @@ It requires these inputs:
     and using `${{ needs.{STEP_NAME}.outputs.DOCKER_IMAGE_NAME }}` where STEP_NAME is the step's name.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If the runner has no group, set it to **''**.
 
-
 This is an example to show how data should be formatted.
 
 ```yaml
@@ -1464,7 +1493,7 @@ jobs:
     deploy:
         uses: zupit-it/pipeline-templates/.github/workflows/docker-step-deploy.yml@v1.25.0
         with:
-            DEPLOY_ON: 'sevensedie'
+            DEPLOY_ON: "sevensedie"
             ENVIRONMENT: testing
             DEPLOY_URL: https://workflows-example.testing.zupit.software
             REGISTRY_URL: ghcr.io
@@ -1545,7 +1574,6 @@ In addition, it is possible to specify this optional inputs:
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
-
 This is an example to show how data should be formatted.
 
 ```yaml
@@ -1618,8 +1646,8 @@ jobs:
 name: Jira Move to Developed
 
 on:
-  push:
-    branches: [ "main", "release/*" ]
+    push:
+        branches: ["main", "release/*"]
 
 jobs:
   jira-move-issue-to-developed:
@@ -1635,6 +1663,7 @@ jobs:
 #### Jira Add Description to PR
 
 ###### Workflow
+
 **jira-add-description-to-pr.yml** is the workflow that adds the Jira issue description to the pull request description.
 
 It requires these secrets:
@@ -1651,17 +1680,18 @@ In addition, it is possible to specify this optional inputs:
 -   **DIND_IMAGE**: Docker image to use. Default is docker:26.0.0-dind.
 
 This is an example to show how data should be formatted.
+
 ```yaml
 jobs:
-  jira-description:
-    uses:
-      zupit-it/pipeline-templates/.github/workflows/jira-add-description-to-pr.yml@v1.21.4
-    secrets: inherit
+    jira-description:
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-add-description-to-pr.yml@v1.21.4
+        secrets: inherit
 ```
 
 #### Jira Create TODO Issues
 
 ###### Workflow
+
 **jira-step-create-todo-issues.yml** is the workflow that creates Jira issues based on the TODO comments in the code.
 
 It requires these inputs:
@@ -1685,14 +1715,15 @@ In addition, it is possible to specify this optional inputs:
 -   **LINK**: A link to put in the issue description. Default is an empty string.
 
 This is an example to show how data should be formatted.
+
 ```yaml
 jobs:
-  jira-create-todo-issue:
-    uses: zupit-it/pipeline-templates/.github/workflows/jira-step-create-todo-issues.yml@v1.21.4
-    with:
-      PROJECT_KEY: DDSO
-      LINK: ${{ github.event.compare }}
-    secrets: inherit
+    jira-create-todo-issue:
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-create-todo-issues.yml@v1.21.4
+        with:
+            PROJECT_KEY: DDSO
+            LINK: ${{ github.event.compare }}
+        secrets: inherit
 ```
 
 ---
@@ -1731,7 +1762,6 @@ In addition, it is possible to specify this optional input:
 
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
-
 
 This is an example to show how data should be formatted.
 
@@ -1788,14 +1818,14 @@ jobs:
 If you want to analyze a Dart or Flutter project, you should use this workflow in the following way:
 
 ```yaml
-    flutter-sonar-analyze:
-        uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-analyze.yml@1.12.0
-        with:
-            WORKING_DIRECTORY: '.'
-            DOWNLOAD_ARTIFACT: false
-            PRE_SCAN_COMMANDS: 'git config --global --add safe.directory /opt/flutter && mv .env.github .env && flutter pub get && flutter test --machine --coverage > tests.output'
-            SONAR_IMAGE: 'ghcr.io/zupit-it/pipeline-templates/flutter-sonar-scanner-cli:latest'
-        secrets: inherit
+flutter-sonar-analyze:
+    uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-analyze.yml@1.12.0
+    with:
+        WORKING_DIRECTORY: "."
+        DOWNLOAD_ARTIFACT: false
+        PRE_SCAN_COMMANDS: "git config --global --add safe.directory /opt/flutter && mv .env.github .env && flutter pub get && flutter test --machine --coverage > tests.output"
+        SONAR_IMAGE: "ghcr.io/zupit-it/pipeline-templates/flutter-sonar-scanner-cli:latest"
+    secrets: inherit
 ```
 
 #### Sonar Analyze - .NET
@@ -1846,21 +1876,23 @@ jobs:
 ---
 
 #### Concurrent Workflow Runs
-Use the concurrency feature to manage overlapping workflow runs, ensuring only the most recent commit in branches like main triggers a workflow. 
+
+Use the concurrency feature to manage overlapping workflow runs, ensuring only the most recent commit in branches like main triggers a workflow.
 This optimizes resource usage and keeps deployments current.
 
 ##### Main Workflow Example with Concurrency
+
 ```yaml
 on:
-  push:
-    branches: [ "main", "release/*" ]
+    push:
+        branches: ["main", "release/*"]
 
-concurrency: 
-  group: ${{ github.ref }}
-  cancel-in-progress: true
+concurrency:
+    group: ${{ github.ref }}
+    cancel-in-progress: true
 
-jobs:
-    ...
+jobs: ...
 ```
-*Note:* When using concurrency with workflows that trigger others, ensure subsequent workflows account for potential cancellations of initiating workflows. 
+
+_Note:_ When using concurrency with workflows that trigger others, ensure subsequent workflows account for potential cancellations of initiating workflows.
 This may involve status checks or logic adjustments for such cases.
