@@ -1052,7 +1052,7 @@ The input parameters of this workflow have the same name of the corresponding pa
 
 Also, these input parameters are optional:
 -   **IMAGE**: the docker image to use when running the node build. By default, it is **ubuntu:23.04**.
--   **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.50.0**.
+-   **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.69.0**.
 -   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
 -   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 

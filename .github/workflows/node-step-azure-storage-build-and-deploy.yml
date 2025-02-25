@@ -139,6 +139,9 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
     needs: [ build-node-project ]
     steps:
+      - name: Installing tar package
+        run: |
+          tdnf install -y tar
       - name: Download build artifact
         id: output-folder
         uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.25.0
