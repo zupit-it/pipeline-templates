@@ -146,7 +146,7 @@ jobs:
     needs: [ build-node-project ]
     steps:
       - name: Installing tar package with tdnf
-        if: ${{ inputs.TDNF_PACKAGE_MANAGER_INSTALL_TAR == 'true' }}
+        if: ${{ inputs.TDNF_PACKAGE_MANAGER_INSTALL_TAR == true }}
         run: |
           tdnf install -y tar
 
