@@ -39,6 +39,10 @@ on:
         required: false
         type: string
         default: "mcr.microsoft.com/azure-cli:2.69.0"
+      TDNF_PACKAGE_MANAGER_INSTALL_TAR:
+        required: false
+        type: boolean
+        default: true
 
 
 env: "${{secrets}}"
@@ -93,12 +97,16 @@ jobs:
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:
       image: ${{ inputs.AZURE_CLI_IMAGE }}
+      env:
+         GNUPGHOME: /root/.gnupg
 
     needs: [ build ]
     steps:
-      - name: Installing tar package
+      - name: Installing tar package with tdnf
+        if: ${{ inputs.TDNF_PACKAGE_MANAGER_INSTALL_TAR == 'true' }}
         run: |
           tdnf install -y tar
+
       - name: Download build artifact
         id: output-folder
         uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.25.0
