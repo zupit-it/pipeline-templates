@@ -10,8 +10,8 @@ jobs:
   release-npm:
     name: Release
     runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+      labels: 'zupit-agents'
+      group: 'Container'
     steps:
       - uses: actions/checkout@v4
         with:
