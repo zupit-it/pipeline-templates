@@ -146,7 +146,7 @@ jobs:
           CACHE_SUFFIX: ${{ inputs.CACHE_SUFFIX }}
 
       - name: Run tests
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.25.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.25.1
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           EXCLUDE_FILES: ${{ inputs.COVERAGE_EXCLUSIONS }}
