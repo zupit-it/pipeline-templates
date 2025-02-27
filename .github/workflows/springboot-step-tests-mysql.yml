@@ -42,6 +42,7 @@ on:
 env: "${{secrets}}"
 
 jobs:
+  secrets: inherit
   springboot-run-tests:
     if: ${{ inputs.RUN }}
     runs-on:
@@ -121,3 +122,4 @@ jobs:
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.xml
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.class
           retention-days: 1
+          
