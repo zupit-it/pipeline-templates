@@ -71,6 +71,9 @@ jobs:
         with:
           path: "${{inputs.MAVEN_USER_HOME}}/settings.xml"
           servers: ${{ inputs.MAVEN_SETTINGS }}
+
+      - name: check settings
+        run: cat ./m2/settings.xml
           
       - name: Run tests
         run: |
