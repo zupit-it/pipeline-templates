@@ -73,7 +73,7 @@ jobs:
           servers: |
               [{
                   "id": "sonatype-nexus-snapshots",
-                  "username": "gitlab+deploy-token-123",
+                  "username": "gitlab+deploy-token-7453751",
                   "password": "${{ secrets.MAVEN_SETTINGS }}"
               }]
 
