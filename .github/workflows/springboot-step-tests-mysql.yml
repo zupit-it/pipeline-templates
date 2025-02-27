@@ -82,6 +82,10 @@ jobs:
           cat ./m2/settings.xml
 
           echo $MAVEN_PASSWORD
+          echo asdasd
+          env
+          echo asdasd
+          echo ${{ inputs.MAVEN_SETTINGS }}
 
           if [[ -n "${{ secrets.MAVEN_PASSWORD }}" ]]; then
             echo "MAVEN_PASSWORD secret exists"
