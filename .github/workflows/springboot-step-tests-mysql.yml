@@ -70,7 +70,12 @@ jobs:
         uses: s4u/maven-settings-action@v3.1.0
         with:
           path: "${{inputs.MAVEN_USER_HOME}}/settings.xml"
-          servers: ${{ inputs.MAVEN_SETTINGS }}
+          servers: |
+              [{
+                  "id": "sonatype-nexus-snapshots",
+                  "username": "gitlab+deploy-token-123",
+                  "password": "${{ secrets.GITLAB_MAVEN_DEPLOY_PASSWORD }}"
+              }]
 
       - name: Check settings and first password
         run: |
