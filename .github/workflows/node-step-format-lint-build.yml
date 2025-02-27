@@ -45,6 +45,8 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     steps:
+    - name: Check user
+      run: whoami
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ inputs.NODE_VERSION }}
       uses: actions/setup-node@v3

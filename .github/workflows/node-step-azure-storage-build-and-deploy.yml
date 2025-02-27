@@ -102,6 +102,8 @@ jobs:
 
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     steps:
+      - name: Check user
+        run: whoami
       - name: Generate artifact name
         id: artifact-name
         uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.25.1
