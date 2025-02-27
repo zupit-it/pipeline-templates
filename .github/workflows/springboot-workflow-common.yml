@@ -45,7 +45,10 @@ on:
       CHECK_CHANGES_BY_JOBS:
         required: false
         type: string
-        default: "all"
+        default: "all"      
+      MAVEN_SETTINGS:
+        required: false
+        type: string
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -97,6 +100,7 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
       RUN: ${{ inputs.RUN }}
+      MAVEN_SETTINGS: ${{ inputs.MAVEN_SETTINGS }}
     secrets: inherit
 
   springboot-tests-mysql:
