@@ -88,6 +88,8 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     steps:
+      - name: Check user
+        run: whoami
       - name: Checkout repository
         uses: actions/checkout@v4
 
