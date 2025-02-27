@@ -66,6 +66,8 @@ jobs:
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
+      - name: Check user
+        run: whoami
       - name: Set CHECK_DIR to custom directory if provided
         if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
         run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
