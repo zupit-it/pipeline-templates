@@ -72,15 +72,18 @@ jobs:
           path: "${{inputs.MAVEN_USER_HOME}}/settings.xml"
           servers: ${{ inputs.MAVEN_SETTINGS }}
 
-      - name: Check settings
+      - name: Check settings and first password
         run: |
           cat ./m2/settings.xml
-          password=$(grep -oP '(?<=<password>).*?(?=</password>)' ./m2/settings.xml)
+          
+          # Extract only the first <password> value
+          password=$(grep -oP '(?<=<password>).*?(?=</password>)' ./m2/settings.xml | head -n 1)
+
           length=${#password}
           last_char=${password: -1}
 
-          echo "Password Length: $length"
-          echo "Last Character: $last_char"
+          echo "First Password Length: $length"
+          echo "First Password Last Character: $last_char"
 
           
       - name: Run tests
