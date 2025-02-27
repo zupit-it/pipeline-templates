@@ -39,6 +39,10 @@ on:
         required: false
         type: boolean
         default: true
+      MAVEN_SETTINGS:
+        required: false
+        type: string
+        
 
 env: "${{secrets}}"
 
@@ -65,6 +69,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set maven settings
+        uses: s4u/maven-settings-action@v3.1.0
+        with:
+          servers: ${{ inputs.MAVEN_SETTINGS }}
+
       - name: Run tests
         run: |
           ./mvnw -ntp verify -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
