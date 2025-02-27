@@ -61,9 +61,7 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ubuntu-latest
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
