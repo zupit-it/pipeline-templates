@@ -74,7 +74,7 @@ jobs:
               [{
                   "id": "sonatype-nexus-snapshots",
                   "username": "gitlab+deploy-token-123",
-                  "password": "${{ secrets.GITLAB_MAVEN_DEPLOY_PASSWORD }}"
+                  "password": "${{ secrets.MAVEN_SETTINGS }}"
               }]
 
       - name: Check settings and first password
