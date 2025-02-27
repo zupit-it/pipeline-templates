@@ -88,8 +88,8 @@ jobs:
           
       - name: Run tests
         run: |
-          ./mvnw -ntp verify X --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
-          ./mvnw -ntp jacoco:report -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
+          ./mvnw -ntp verify -X --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
+          ./mvnw -ntp jacoco:report -X --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
         env:
           SPRING_APPLICATION_JSON: ${{ inputs.SPRING_APPLICATION_JSON || '{}' }}
           SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/test
