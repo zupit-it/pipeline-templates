@@ -39,10 +39,13 @@ on:
         required: false
         type: boolean
         default: true
-      MAVEN_SETTINGS:
+      MAVEN_SERVER_USERNAME:
         required: false
         type: string
-        
+      MAVEN_SERVER_ID:
+        required: false
+        type: string
+
 
 env: "${{secrets}}"
 
@@ -70,10 +73,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set maven settings
-        uses: s4u/maven-settings-action@v3.1.0
+      - name: Set Maven settings
+        uses: zupit-it/pipeline-templates/.github/actions/maven/settings@1.26.0
         with:
-          servers: ${{ inputs.MAVEN_SETTINGS }}
+          MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
+          MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
+          MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
+          MAVEN_SERVER_PASSWORD: ${{ secrets.CI_MAVEN_SERVER_PASSWORD }}
+
 
       - name: Run tests
         run: |
