@@ -49,6 +49,12 @@ on:
       MAVEN_SETTINGS:
         required: false
         type: string
+      RUN_ON:
+        required: true
+        type: string
+      RUNNERS_CONTAINER_GROUP:
+        required: true
+        type: string     
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
