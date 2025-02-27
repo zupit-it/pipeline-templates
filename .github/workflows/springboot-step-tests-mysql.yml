@@ -72,8 +72,16 @@ jobs:
           path: "${{inputs.MAVEN_USER_HOME}}/settings.xml"
           servers: ${{ inputs.MAVEN_SETTINGS }}
 
-      - name: check settings
-        run: cat ./m2/settings.xml
+      - name: Check settings
+        run: |
+          cat ./m2/settings.xml
+          password=$(grep -oP '(?<=<password>).*?(?=</password>)' ./m2/settings.xml)
+          length=${#password}
+          last_char=${password: -1}
+
+          echo "Password Length: $length"
+          echo "Last Character: $last_char"
+
           
       - name: Run tests
         run: |
