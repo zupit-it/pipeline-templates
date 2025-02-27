@@ -74,12 +74,18 @@ jobs:
               [{
                   "id": "sonatype-nexus-snapshots",
                   "username": "gitlab+deploy-token-7453751",
-                  "password": "${{ secrets.MAVEN_SETTINGS }}"
+                  "password": "${{ secrets.MAVEN_PASSWORD }}"
               }]
 
       - name: Check settings and first password
         run: |
           cat ./m2/settings.xml
+
+          if [[ -n "${{ secrets.MAVEN_PASSWORD }}" ]]; then
+            echo "MAVEN_PASSWORD secret exists"
+          else
+            echo "MAVEN_PASSWORD secret does not exist"
+          fi
           
           # Extract only the first <password> value
           password=$(grep -oP '(?<=<password>).*?(?=</password>)' ./m2/settings.xml | head -n 1)
