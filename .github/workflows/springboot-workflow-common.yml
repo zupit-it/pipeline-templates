@@ -56,7 +56,9 @@ on:
         required: true
         type: string
 
-    secrets: inherit
+    secrets:
+      GITLAB_MAVEN_DEPLOY_PASSWORD:
+        required: false
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
