@@ -10,6 +10,9 @@ inputs:
   MAVEN_SERVER_USERNAME:
     description: "Maven server username"
     required: false
+  MAVEN_SERVER_PASSWORD:
+    description: "Maven server password"
+    required: false
 runs:
   using: "composite"
   steps:
@@ -21,5 +24,5 @@ runs:
         servers: |
           [{ "id": "${{ inputs.MAVEN_SERVER_ID }}",
               "username": "${{ inputs.MAVEN_SERVER_USERNAME }}",
-              "password": "${{ secrets.CI_MAVEN_SERVER_PASSWORD }}"
+              "password": "${{ inputs.MAVEN_SERVER_PASSWORD }}"
           }]

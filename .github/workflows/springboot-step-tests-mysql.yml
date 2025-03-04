@@ -75,7 +75,7 @@ jobs:
           MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
           MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
           MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
-
+          MAVEN_SERVER_PASSWORD: ${{ secrets.CI_MAVEN_SERVER_PASSWORD }}
 
       - name: Run tests
         run: |
