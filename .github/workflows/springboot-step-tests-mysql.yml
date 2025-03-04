@@ -35,7 +35,10 @@ on:
         required: false
         type: boolean
         default: true
-      MAVEN_SETTINGS:
+      MAVEN_SERVER_ID:
+        required: false
+        type: string
+      MAVEN_SERVER_USERNAME:
         required: false
         type: string
 
@@ -71,15 +74,15 @@ jobs:
         with:
           path: "${{inputs.MAVEN_USER_HOME}}/settings.xml"
           servers: |
-              [{ "id": "gitlab-maven",
-                  "username": "gitlab+deploy-token-7453751",
-                  "password": "${{ secrets.CI_GITLAB_REGISTRY_TOKEN }}"
+              [{ "id": "${{ inputs.MAVEN_SERVER_ID }},
+                  "username": "${{ inputs.MAVEN_SERVER_USERNAME }}",
+                  "password": "${{ secrets.CI_MAVEN_SERVER_PASSWORD }}"
               }]
 
       - name: Check settings and first password
         run: |
 
-          echo "CI_GITLAB_REGISTRY_TOKEN: $CI_GITLAB_REGISTRY_TOKEN"
+          echo "CI_MAVEN_SERVER_PASSWORD: $CI_MAVEN_SERVER_PASSWORD"
 
 
 
@@ -88,10 +91,10 @@ jobs:
 
           echo MAVEN SETTINGS ${{ inputs.MAVEN_SETTINGS }}
 
-          if [[ -n "${{ secrets.CI_GITLAB_REGISTRY_TOKEN }}" ]]; then
-            echo "CI_GITLAB_REGISTRY_TOKEN secret exists"
+          if [[ -n "${{ secrets.CI_MAVEN_SERVER_PASSWORD }}" ]]; then
+            echo "CI_MAVEN_SERVER_PASSWORD secret exists"
           else
-            echo "CI_GITLAB_REGISTRY_TOKEN secret does not exist"
+            echo "CI_MAVEN_SERVER_PASSWORD secret does not exist"
           fi
 
           # Extract only the first <password> value

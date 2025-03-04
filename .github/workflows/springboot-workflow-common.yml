@@ -46,7 +46,10 @@ on:
         required: false
         type: string
         default: "all"
-      MAVEN_SETTINGS:
+      MAVEN_SERVER_USERNAME:
+        required: false
+        type: string
+      MAVEN_SERVER_ID:
         required: false
         type: string
       RUN_ON:
@@ -65,21 +68,9 @@ jobs:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
-      - name: debug secrets
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_GITLAB_REGISTRY_TOKEN }}
-        run: |
-          echo "GITHUB TOKEN: $GITHUB_TOKEN"
-          echo "CI_GITLAB_REGISTRY_TOKEN: ${{ secrets.CI_GITLAB_REGISTRY_TOKEN }}"
-          if [[ -n "${{ secrets.CI_GITLAB_REGISTRY_TOKEN }}" ]]; then
-            echo "GITLAB_MAVEN_DEPLOY_PASSWORD secret exists"
-          else
-            echo "GITLAB_MAVEN_DEPLOY_PASSWORD secret does not exist"
-          fi
       - name: Set CHECK_DIR to custom directory if provided
         if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
         run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
@@ -116,7 +107,8 @@ jobs:
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
-      MAVEN_SETTINGS: ${{ inputs.MAVEN_SETTINGS }}
+      MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
+      MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
       RUN: ${{ inputs.RUN }}
@@ -131,7 +123,8 @@ jobs:
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
-      MAVEN_SETTINGS: ${{ inputs.MAVEN_SETTINGS }}
+      MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
+      MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       RUN: ${{ inputs.RUN }}
     secrets: inherit
