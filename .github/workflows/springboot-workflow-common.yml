@@ -45,7 +45,7 @@ on:
       CHECK_CHANGES_BY_JOBS:
         required: false
         type: string
-        default: "all"      
+        default: "all"
       MAVEN_SETTINGS:
         required: false
         type: string
@@ -54,7 +54,9 @@ on:
         type: string
       RUNNERS_CONTAINER_GROUP:
         required: true
-        type: string     
+        type: string
+
+    secrets: inherit
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
