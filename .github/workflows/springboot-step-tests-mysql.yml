@@ -80,7 +80,7 @@ jobs:
       - name: Check settings and first password
         run: |
 
-          echo "CI_GITLAB_REGISTRY_TOKEN: $CI_GITLAB_REGISTRY_TOKEN
+          echo "CI_GITLAB_REGISTRY_TOKEN: $CI_GITLAB_REGISTRY_TOKEN"
 
 
 
