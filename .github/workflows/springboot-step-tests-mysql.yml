@@ -69,16 +69,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set maven settings
-        uses: s4u/maven-settings-action@v3.1.0
-        if: ${{ inputs.MAVEN_SERVER_ID != '' }}
+      - name: Set Maven settings
+        uses: ./.github/actions/maven/settings
         with:
-          path: "${{inputs.MAVEN_USER_HOME}}/settings.xml"
-          servers: |
-              [{ "id": "${{ inputs.MAVEN_SERVER_ID }}",
-                  "username": "${{ inputs.MAVEN_SERVER_USERNAME }}",
-                  "password": "${{ secrets.CI_MAVEN_SERVER_PASSWORD }}"
-              }]
+          MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
+          MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
+          MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
+
+
       - name: Run tests
         run: |
           ./mvnw -ntp verify --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
