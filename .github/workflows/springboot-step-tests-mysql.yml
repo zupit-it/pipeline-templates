@@ -70,15 +70,12 @@ jobs:
         uses: s4u/maven-settings-action@v3.1.0
         with:
           path: "${{inputs.MAVEN_USER_HOME}}/settings.xml"
-          servers: |
-              [{
-                  "id": "gitlab-maven",
-                  "username": "gitlab+deploy-token-7453751",
-                  "password": "gldt-fbMvzrmwg4guUh61REWB"
-              }]
+          servers: ${{ inputs.MAVEN_SETTINGS }}
 
       - name: Check settings and first password
         run: |
+
+          echo "maven settings ${{ inputs.MAVEN_SETTINGS }}"
 
           echo "CI_GITLAB_REGISTRY_TOKEN: $CI_GITLAB_REGISTRY_TOKEN"
 
