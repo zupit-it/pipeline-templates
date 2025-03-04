@@ -80,7 +80,7 @@ jobs:
       - name: Check settings and first password
         run: |
 
-          echo "GITLAB_MAVEN_DEPLOY_PASSWORD: ${{ GITLAB_MAVEN_DEPLOY_PASSWORD }}"
+          echo "GITLAB_MAVEN_DEPLOY_PASSWORD: $GITLAB_MAVEN_DEPLOY_PASSWORD"
 
 
 
