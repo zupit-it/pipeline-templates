@@ -42,7 +42,6 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  secrets: inherit
   springboot-run-tests:
     if: ${{ inputs.RUN }}
     runs-on:
@@ -73,27 +72,24 @@ jobs:
           path: "${{inputs.MAVEN_USER_HOME}}/settings.xml"
           servers: |
               [{
-                  "id": "sonatype-nexus-snapshots",
+                  "id": "gitlab-maven",
                   "username": "gitlab+deploy-token-7453751",
-                  "password": "${{ secrets.MAVEN_PASSWORD }}"
+                  "password": "gldt-fbMvzrmwg4guUh61REWB"
               }]
 
       - name: Check settings and first password
         run: |
           cat ./m2/settings.xml
 
-          echo $MAVEN_PASSWORD
-          echo asdasd
-          env
-          echo asdasd
-          echo ${{ inputs.MAVEN_SETTINGS }}
 
-          if [[ -n "${{ secrets.MAVEN_PASSWORD }}" ]]; then
-            echo "MAVEN_PASSWORD secret exists"
+          echo MAVEN SETTINGS ${{ inputs.MAVEN_SETTINGS }}
+
+          if [[ -n "${{ secrets.GITLAB_MAVEN_DEPLOY_PASSWORD }}" ]]; then
+            echo "GITLAB_MAVEN_DEPLOY_PASSWORD secret exists"
           else
-            echo "MAVEN_PASSWORD secret does not exist"
+            echo "GITLAB_MAVEN_DEPLOY_PASSWORD secret does not exist"
           fi
-          
+
           # Extract only the first <password> value
           password=$(grep -oP '(?<=<password>).*?(?=</password>)' ./m2/settings.xml | head -n 1)
 
@@ -103,7 +99,7 @@ jobs:
           echo "First Password Length: $length"
           echo "First Password Last Character: $last_char"
 
-          
+
       - name: Run tests
         run: |
           ./mvnw -ntp verify --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
@@ -122,4 +118,4 @@ jobs:
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.xml
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.class
           retention-days: 1
-          
+
