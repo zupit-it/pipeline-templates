@@ -80,7 +80,7 @@ jobs:
       - name: Check settings and first password
         run: |
 
-          echo "GITLAB_MAVEN_DEPLOY_PASSWORD: $GITLAB_MAVEN_DEPLOY_PASSWORD"
+          echo "CI_GITLAB_REGISTRY_TOKEN: $CI_GITLAB_REGISTRY_TOKEN
 
 
 
@@ -89,10 +89,10 @@ jobs:
 
           echo MAVEN SETTINGS ${{ inputs.MAVEN_SETTINGS }}
 
-          if [[ -n "${{ secrets.GITLAB_MAVEN_DEPLOY_PASSWORD }}" ]]; then
-            echo "GITLAB_MAVEN_DEPLOY_PASSWORD secret exists"
+          if [[ -n "${{ secrets.CI_GITLAB_REGISTRY_TOKEN }}" ]]; then
+            echo "CI_GITLAB_REGISTRY_TOKEN secret exists"
           else
-            echo "GITLAB_MAVEN_DEPLOY_PASSWORD secret does not exist"
+            echo "CI_GITLAB_REGISTRY_TOKEN secret does not exist"
           fi
 
           # Extract only the first <password> value
