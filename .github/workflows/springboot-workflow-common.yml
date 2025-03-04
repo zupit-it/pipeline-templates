@@ -56,9 +56,6 @@ on:
         required: true
         type: string
 
-    secrets:
-      GITLAB_MAVEN_DEPLOY_PASSWORD:
-        required: false
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -71,11 +68,11 @@ jobs:
     steps:
       - name: debug secrets
         env:
-          GITHUB_TOKEN: ${{ secrets.GITLAB_MAVEN_DEPLOY_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.CI_GITLAB_REGISTRY_TOKEN }}
         run: |
           echo "GITHUB TOKEN: $GITHUB_TOKEN"
-          echo "GITLAB_MAVEN_DEPLOY_PASSWORD: ${{ secrets.GITLAB_MAVEN_DEPLOY_PASSWORD }}"
-          if [[ -n "${{ secrets.GITLAB_MAVEN_DEPLOY_PASSWORD }}" ]]; then
+          echo "CI_GITLAB_REGISTRY_TOKEN: ${{ secrets.CI_GITLAB_REGISTRY_TOKEN }}"
+          if [[ -n "${{ secrets.CI_GITLAB_REGISTRY_TOKEN }}" ]]; then
             echo "GITLAB_MAVEN_DEPLOY_PASSWORD secret exists"
           else
             echo "GITLAB_MAVEN_DEPLOY_PASSWORD secret does not exist"
