@@ -91,6 +91,9 @@ jobs:
           echo provbbbbbbbbbbbb
           whoami
           echo ${{ inputs.WORKING_DIRECTORY }}
+          pwd
+          ll
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
