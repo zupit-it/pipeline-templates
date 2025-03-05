@@ -39,6 +39,13 @@ on:
         required: false
         type: boolean
         default: true
+      MAVEN_SERVER_USERNAME:
+        required: false
+        type: string
+      MAVEN_SERVER_ID:
+        required: false
+        type: string
+
 
 env: "${{secrets}}"
 
@@ -65,6 +72,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set Maven settings
+        uses: zupit-it/pipeline-templates/.github/actions/maven/settings@v1.26.0
+        with:
+          MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
+          MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
+          MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
+          MAVEN_SERVER_PASSWORD: ${{ secrets.CI_MAVEN_SERVER_PASSWORD }}
+
+
       - name: Run tests
         run: |
           ./mvnw -ntp verify -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}

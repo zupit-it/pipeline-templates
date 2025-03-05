@@ -46,6 +46,19 @@ on:
         required: false
         type: string
         default: "all"
+      MAVEN_SERVER_USERNAME:
+        required: false
+        type: string
+      MAVEN_SERVER_ID:
+        required: false
+        type: string
+      RUN_ON:
+        required: true
+        type: string
+      RUNNERS_CONTAINER_GROUP:
+        required: true
+        type: string
+
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -94,6 +107,8 @@ jobs:
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
+      MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
+      MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
       RUN: ${{ inputs.RUN }}
@@ -108,6 +123,8 @@ jobs:
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
+      MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
+      MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       RUN: ${{ inputs.RUN }}
     secrets: inherit

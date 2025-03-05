@@ -57,6 +57,13 @@ on:
         required: false
         type: string
         default: "all"
+      MAVEN_SERVER_ID:
+        required: false
+        type: string
+      MAVEN_SERVER_USERNAME:
+        required: false
+        type: string
+
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -100,6 +107,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set Maven settings
+        uses: zupit-it/pipeline-templates/.github/actions/maven/settings@v1.26.0
+        with:
+          MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
+          MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
+          MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
+          MAVEN_SERVER_PASSWORD: ${{ secrets.CI_MAVEN_SERVER_PASSWORD }}
+
+
       - name: Download coverage artifact
         if: ${{ inputs.DOWNLOAD_ARTIFACT }}
         uses: actions/download-artifact@v4
@@ -112,7 +128,7 @@ jobs:
         run: ${{ inputs.PRE_SCAN_COMMANDS }}
 
       - name: Run Sonar
-        run: ./mvnw -ntp initialize sonar:sonar -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
+        run: ./mvnw -ntp initialize sonar:sonar --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
 
   jobs-succeded:
     needs: ["sonar-analyze"]
