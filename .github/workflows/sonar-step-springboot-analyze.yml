@@ -73,7 +73,7 @@ env:
 jobs:
   workdir-has-changes:
     runs-on:
-      labels: ${{ inputs.RUN_ON }}
+      labels: 'test-clean'
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -97,7 +97,7 @@ jobs:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
     runs-on:
-      labels: ${{ inputs.RUN_ON }}
+      labels: 'test-clean'
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container: ${{ inputs.JAVA_IMAGE }}
     defaults:
@@ -133,7 +133,7 @@ jobs:
   jobs-succeded:
     needs: ["sonar-analyze"]
     runs-on:
-      labels: ${{ inputs.RUN_ON }}
+      labels: 'test-clean'
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     if: ${{ always()}}
     steps:
