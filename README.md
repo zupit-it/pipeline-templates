@@ -877,7 +877,7 @@ This action configures Maven settings for your build environment by generating a
 
 ```yaml
 - name: Set Maven settings
-  uses: zupit-it/pipeline-templates/.github/actions/maven/settings@chore/maven-settings
+  uses: zupit-it/pipeline-templates/.github/actions/maven/settings@v1.26.0
   with:
       MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
       MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
