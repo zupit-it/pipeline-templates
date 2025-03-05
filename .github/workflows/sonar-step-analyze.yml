@@ -81,7 +81,6 @@ jobs:
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.SONAR_IMAGE }}
-      options: --user root
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
