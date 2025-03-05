@@ -85,6 +85,11 @@ jobs:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
     steps:
+      - name: whoami
+        run: |
+          echo provbbbbbbbbbbbb
+          whoami
+          echo ${{ inputs.WORKING_DIRECTORY }}
       - name: Checkout code
         uses: actions/checkout@v4
         with:
