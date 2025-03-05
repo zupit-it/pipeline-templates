@@ -45,8 +45,18 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
     steps:
+      - name: print debug info about folder and runner BEFORE
+        run: |
+          echo "pwd is $(pwd)"
+          echo "ls -la is $(ls -la)"
+          echo "whoami is $(whoami)"
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: print debug info about folder and runner AFTER
+        run: |
+          echo "pwd is $(pwd)"
+          echo "ls -la is $(ls -la)"
+          echo "whoami is $(whoami)"
       - name: Check code is linted correctly
         run: ./mvnw -ntp spotless:check -Dmaven.repo.local=${{inputs.MAVEN_USER_HOME}} ${{inputs.EXTRA_MAVEN_ARGS}}
       - name: Check code is styled correctly
