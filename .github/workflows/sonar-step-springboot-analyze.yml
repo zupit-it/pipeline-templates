@@ -81,7 +81,9 @@ jobs:
       - name: Whoami
         run: |
             echo provaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-            whoami
+            echo "pwd is $(pwd)"
+            echo "ls -la is $(ls -la)"
+            echo "whoami is $(whoami)"
             echo ${{ inputs.WORKING_DIRECTORY }}
       - name: Set CHECK_DIR to custom directory if provided
         if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}

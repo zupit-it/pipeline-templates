@@ -71,6 +71,11 @@ jobs:
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
+      - name: print debug info about folder and runner
+        run: |
+          echo "pwd is $(pwd)"
+          echo "ls -la is $(ls -la)"
+          echo "whoami is $(whoami)"
       - name: Set CHECK_DIR to custom directory if provided
         if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
         run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV

@@ -89,10 +89,9 @@ jobs:
       - name: whoami
         run: |
           echo provbbbbbbbbbbbb
-          whoami
-          echo ${{ inputs.WORKING_DIRECTORY }}
-          pwd
-          ll
+          echo "pwd is $(pwd)"
+          echo "ls -la is $(ls -la)"
+          echo "whoami is $(whoami)"
 
       - name: Checkout code
         uses: actions/checkout@v4
