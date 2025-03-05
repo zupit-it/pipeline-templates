@@ -81,6 +81,7 @@ jobs:
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.SONAR_IMAGE }}
+      options: --user github-runner
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
