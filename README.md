@@ -32,6 +32,8 @@ If you would like to get more details of these tasks, just look at this [doc](do
         3. [Upload](#artifact-action---upload)
         4. [Create archive](#artifact-action---create-archive)
         5. [Extract archive](#artifact-action---extract-archive)
+    8. [Maven](#maven-action)
+        1. [Settings](#maven-action---settings)
 2. [Reusable Workflows](#reusable-workflows)
     1. [Naming Convention](#naming-convention)
     2. [NodeJS](#nodejs---backend--frontend)
@@ -840,6 +842,47 @@ This is an example to show how data should be formatted.
       with:
           ARCHIVE_PATH: /tmp/my-archive.tar.gz
           OUTPUT_FOLDER: my-output-folder
+```
+
+### Maven Action
+
+#### Maven Action - Setttings
+
+
+This action configures Maven settings for your build environment by generating a `settings.xml` file with the specified server credentials (if provided). It leverages the [s4u/maven-settings-action](https://github.com/s4u/maven-settings-action) to create a proper Maven configuration.
+
+**Requirements**
+
+- **MAVEN_USER_HOME** (required): Specifies the Maven user home directory where the `settings.xml` file will be created.
+- Optionally, provide:
+    - **MAVEN_SERVER_ID**: The Maven server ID.
+    - **MAVEN_SERVER_USERNAME**: The username for the Maven server.
+    - **MAVEN_SERVER_PASSWORD**: The password for the Maven server.
+- This action is typically used in workflows that execute Maven builds (for example, Sonar analysis or SpringBoot tests).
+
+**Action Details**
+
+**`.github/actions/maven/settings`** is a composite action that:
+- Checks if a Maven server ID is provided.
+- Creates the `settings.xml` file at the location `${MAVEN_USER_HOME}/settings.xml` with the provided server credentials.
+
+**Inputs**
+
+- **MAVEN_USER_HOME**: _Required_. The Maven user home directory.
+- **MAVEN_SERVER_ID**: _Optional_. The Maven server ID.
+- **MAVEN_SERVER_USERNAME**: _Optional_. The Maven server username.
+- **MAVEN_SERVER_PASSWORD**: _Optional_. The Maven server password.
+
+**Example Usage**
+
+```yaml
+- name: Set Maven settings
+  uses: zupit-it/pipeline-templates/.github/actions/maven/settings@1.26.0
+  with:
+      MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
+      MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
+      MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
+      MAVEN_SERVER_PASSWORD: ${{ secrets.CI_MAVEN_SERVER_PASSWORD }}
 ```
 
 ## Reusable Workflows
