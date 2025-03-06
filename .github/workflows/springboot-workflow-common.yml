@@ -68,7 +68,7 @@ jobs:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-    container: alpine/git:latest
+    container: ubuntu:24.04
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
@@ -80,6 +80,8 @@ jobs:
         run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
+      - name: Install Git
+        run: apt-get update && apt-get install -y git
       - uses: dorny/paths-filter@v3
         id: filter
         with:
