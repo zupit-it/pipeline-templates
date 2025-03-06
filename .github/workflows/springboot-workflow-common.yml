@@ -68,7 +68,7 @@ jobs:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-    container: ubuntu:24.04
+    container: alpine/git:latest
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
