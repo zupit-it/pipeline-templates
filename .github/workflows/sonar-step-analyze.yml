@@ -82,18 +82,11 @@ jobs:
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.SONAR_IMAGE }}
-      options: --user github-runner
+      options: --user root
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
     steps:
-      - name: whoami
-        run: |
-          echo provbbbbbbbbbbbb
-          echo "pwd is $(pwd)"
-          echo "ls -la is $(ls -la)"
-          echo "whoami is $(whoami)"
-
       - name: Checkout code
         uses: actions/checkout@v4
         with:
