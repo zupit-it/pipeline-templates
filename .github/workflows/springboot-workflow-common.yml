@@ -80,6 +80,8 @@ jobs:
         run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
 
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Install Git
         run: apt-get update && apt-get install -y git
       - uses: dorny/paths-filter@v3
