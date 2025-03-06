@@ -75,6 +75,7 @@ jobs:
     runs-on:
       labels: 'test-bonte'
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container: ubuntu:24.04
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
