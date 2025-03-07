@@ -81,8 +81,8 @@ jobs:
 
 #      - name: Install Git
 #        run: apt-get update && apt-get install -y git
-#      - name: Configure Git safe directory
-#        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - uses: actions/checkout@v4
         with:
