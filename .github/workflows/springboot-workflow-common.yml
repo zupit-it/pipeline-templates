@@ -53,11 +53,13 @@ on:
         required: false
         type: string
       RUN_ON:
-        required: true
+        required: false
         type: string
+        default: 'zupit-agents'
       RUNNERS_CONTAINER_GROUP:
-        required: true
+        required: false
         type: string
+        default: 'Container'
 
 
 env:
