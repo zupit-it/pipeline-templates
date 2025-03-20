@@ -61,7 +61,6 @@ on:
         type: string
         default: 'Container'
 
-
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
 
