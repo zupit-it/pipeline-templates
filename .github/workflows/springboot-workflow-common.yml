@@ -102,6 +102,8 @@ jobs:
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
       RUN: ${{inputs.RUN}}
+      RUN_ON: ${{ inputs.RUN_ON }}
+      RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
   springboot-tests:
@@ -118,6 +120,8 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
       RUN: ${{ inputs.RUN }}
+      RUN_ON: ${{ inputs.RUN_ON }}
+      RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
   springboot-tests-mysql:
@@ -133,6 +137,8 @@ jobs:
       MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       RUN: ${{ inputs.RUN }}
+      RUN_ON: ${{ inputs.RUN_ON }}
+      RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
   jobs-succeded:
