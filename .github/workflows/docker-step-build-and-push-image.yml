@@ -74,7 +74,7 @@ jobs:
         if: inputs.PRE_BUILD_SCRIPT != ''
         run: |
           echo "Executing pre-build script..."
-          sh -c "${{ inputs.PRE_BUILD_SCRIPT }}"
+          sh -c '${{ inputs.PRE_BUILD_SCRIPT }}'
       - name: Docker Build & Push
         id: docker
         uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.26.2
