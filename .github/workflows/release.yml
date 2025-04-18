@@ -9,9 +9,7 @@ on:
 jobs:
   release-npm:
     name: Release
-    runs-on:
-      labels: 'zupit-agents'
-      group: 'Container'
+    runs-on: 'ubuntu-24.04'
     steps:
       - uses: actions/checkout@v4
         with:
