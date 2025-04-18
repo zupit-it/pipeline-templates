@@ -43,6 +43,10 @@ on:
         required: false
         type: string
         default: ''
+      ENVIRONMENT:
+        required: false
+        type: string
+        default: ''
       PRE_BUILD_SCRIPT:
         required: false
         type: string
@@ -56,6 +60,7 @@ env: "${{secrets}}"
 
 jobs:
   docker-build-push-image:
+    environment: ${{ inputs.ENVIRONMENT }}
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
