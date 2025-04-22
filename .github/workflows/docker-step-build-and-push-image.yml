@@ -82,7 +82,7 @@ jobs:
           sh -c '${{ inputs.PRE_BUILD_SCRIPT }}'
       - name: Docker Build & Push
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.27.1
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.27.2
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
