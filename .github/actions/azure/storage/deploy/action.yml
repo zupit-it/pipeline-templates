@@ -56,7 +56,11 @@ runs:
       shell: bash
       run: |
         curl -sL https://aka.ms/downloadazcopy-v10-linux | tar -xz -C /tmp
-        cp /tmp/azcopy_linux_amd64_*/azcopy /usr/bin/
+        mkdir -p /github/home/bin
+        cp /tmp/azcopy_linux_amd64_*/azcopy /github/home/bin/
+        chmod +x /github/home/bin/azcopy
+        echo "/github/home/bin" >> $GITHUB_PATH
+
 
 
     - name: Deploy to Azure Storage
