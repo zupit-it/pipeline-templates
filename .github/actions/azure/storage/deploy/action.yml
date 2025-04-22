@@ -52,21 +52,16 @@ runs:
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
         
-    - name: Install AzCopy
+    - name: Upload to Azure Storage (upload-batch)
       shell: bash
       run: |
-        curl -sL https://aka.ms/downloadazcopy-v10-linux | tar -xz -C /tmp
-        mkdir -p /github/home/bin
-        cp /tmp/azcopy_linux_amd64_*/azcopy /github/home/bin/
-        chmod +x /github/home/bin/azcopy
-        echo "/github/home/bin" >> $GITHUB_PATH
+        echo "Uploading new blobs to '$web'..."
+        az storage blob upload-batch \
+        --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} \
+        --destination '$web' \
+        --source "${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}" \
+        --overwrite
 
-
-
-    - name: Deploy to Azure Storage
-      shell: 'bash'
-      run: |
-        az storage blob sync --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} -c '$web' -s ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
 
     - name: Purge CDN endpoint
       shell: 'bash'
