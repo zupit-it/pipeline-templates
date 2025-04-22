@@ -51,6 +51,13 @@ runs:
       uses: azure/login@v1
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
+        
+    - name: Install AzCopy
+      shell: bash
+      run: |
+        curl -sL https://aka.ms/downloadazcopy-v10-linux | tar -xz -C /tmp
+        cp /tmp/azcopy_linux_amd64_*/azcopy /usr/bin/
+
 
     - name: Deploy to Azure Storage
       shell: 'bash'
