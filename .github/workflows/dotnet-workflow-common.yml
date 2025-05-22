@@ -110,13 +110,13 @@ jobs:
 
       - name: Lint
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/lint@v1.27.3
-        if: ${{ inputs.RUN_LINT == 'true' }}
+        if: ${{ inputs.RUN_LINT == 'true' || inputs.RUN_LINT == true }}
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
 
       - name: Run tests
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.27.3
-        if: ${{ inputs.RUN_TESTS == 'true' }}
+        if: ${{ inputs.RUN_TESTS == 'true' || inputs.RUN_TESTS == true }}
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           GENERATE_CODE_COVERAGE: false
