@@ -21,12 +21,12 @@ runs:
   using: composite
   steps:
     - name: Run tests with coverage report
-      if: ${{ inputs.GENERATE_CODE_COVERAGE == 'true' }}
+      if: ${{ inputs.GENERATE_CODE_COVERAGE == 'true' || inputs.GENERATE_CODE_COVERAGE == true }}
       shell: 'bash'
       run: |
         params=()
         [[ -n "${{ inputs.EXCLUDE_FILES }}" ]] && params+=(-p:ExcludeByFile=\"${{ inputs.EXCLUDE_FILES }}\")
-        
+
         dotnet test --no-build \
           --logger trx -p:CollectCoverage=true \
           -p:CoverletOutputFormat=opencover \

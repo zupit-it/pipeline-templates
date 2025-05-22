@@ -110,7 +110,7 @@ jobs:
 
       - name: Lint
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/lint@v1.27.3
-        if: ${{ inputs.RUN_LINT == 'true' }}
+        if: ${{ inputs.RUN_LINT == 'true' || inputs.RUN_LINT == true }}
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
 
