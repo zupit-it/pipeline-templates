@@ -6,11 +6,11 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       NODE_VERSION:
         required: true
         type: string
@@ -61,7 +61,7 @@ on:
       ENV_VARIABLES:
         required: false
         type: string
-        default: '{}'
+        default: "{}"
       PROJECT:
         required: false
         type: string
@@ -81,7 +81,7 @@ on:
       CHECKOUT_REF:
         required: false
         type: string
-        default: ''
+        default: ""
 
 env: "${{secrets}}"
 
@@ -114,7 +114,7 @@ jobs:
           ref: ${{ inputs.CHECKOUT_REF }}
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@ZCH-126/removes-caching
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
@@ -138,12 +138,12 @@ jobs:
     container:
       image: ${{ inputs.AZURE_CLI_IMAGE }}
       env:
-         GNUPGHOME: /root/.gnupg
+        GNUPGHOME: /root/.gnupg
 
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
-    needs: [ build-node-project ]
+    needs: [build-node-project]
     steps:
       - name: Installing tar package with tdnf
         if: ${{ inputs.TDNF_PACKAGE_MANAGER_INSTALL_TAR == true }}
@@ -160,7 +160,7 @@ jobs:
         uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.27.3
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
-          BINARIES_DIRECTORY: ''
+          BINARIES_DIRECTORY: ""
           AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
           STORAGE_ACCOUNT_NAME: ${{ inputs.STORAGE_ACCOUNT_NAME }}
           CDN_PROFILE_NAME: ${{ inputs.CDN_PROFILE_NAME }}

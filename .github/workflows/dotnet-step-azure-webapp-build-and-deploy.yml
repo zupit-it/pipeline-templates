@@ -6,11 +6,11 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       RELEASE_ENVIRONMENT:
         required: true
         type: string
@@ -26,15 +26,15 @@ on:
       CHECKOUT_REF:
         required: false
         type: string
-        default: ''
+        default: ""
       ENV_VARIABLES:
         required: false
         type: string
-        default: '{}'
+        default: "{}"
       DOTNET_IMAGE:
         required: false
         type: string
-        default: 'mcr.microsoft.com/dotnet/sdk:7.0'
+        default: "mcr.microsoft.com/dotnet/sdk:7.0"
       AZURE_CLI_IMAGE:
         required: false
         type: string
@@ -43,7 +43,10 @@ on:
         required: false
         type: boolean
         default: true
-
+      CACHE_SUFFIX:
+        required: false
+        type: string
+        default: ""
 
 env: "${{secrets}}"
 
@@ -76,12 +79,13 @@ jobs:
           NAME_PREFIX: dotnet-build
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@ZCH-126/removes-caching
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Release"
           PROJECT: ${{ inputs.PROJECT }}
           OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+          CACHE_SUFFIX: ${{ inputs.CACHE_SUFFIX }}
 
       - name: Upload build artifact
         uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.27.3
@@ -98,9 +102,9 @@ jobs:
     container:
       image: ${{ inputs.AZURE_CLI_IMAGE }}
       env:
-         GNUPGHOME: /root/.gnupg
+        GNUPGHOME: /root/.gnupg
 
-    needs: [ build ]
+    needs: [build]
     steps:
       - name: Installing tar package with tdnf
         if: ${{ inputs.TDNF_PACKAGE_MANAGER_INSTALL_TAR == true }}
@@ -117,6 +121,6 @@ jobs:
         uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.27.3
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
-          BINARIES_DIRECTORY: ''
+          BINARIES_DIRECTORY: ""
           AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
           WEBAPP_NAME: ${{ inputs.WEBAPP_NAME }}
