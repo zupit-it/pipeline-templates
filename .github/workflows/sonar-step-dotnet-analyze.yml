@@ -61,6 +61,10 @@ on:
         required: false
         type: string
         default: "all"
+      CACHE_SUFFIX:
+        required: false
+        type: string
+        default: ""
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -142,10 +146,11 @@ jobs:
             "${params[@]}"
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@ZCH-126/removes-caching
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
+          CACHE_SUFFIX: ${{ inputs.CACHE_SUFFIX }}
 
       - name: Run tests
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.27.3
