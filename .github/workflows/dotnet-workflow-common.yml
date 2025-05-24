@@ -45,6 +45,10 @@ on:
         required: false
         type: string
         default: "all"
+      CACHE_SUFFIX:
+        required: true
+        type: string
+        default: ""
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -107,6 +111,7 @@ jobs:
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
+          CACHE_SUFFIX: ${{ inputs.CACHE_SUFFIX }}
 
       - name: Lint
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/lint@v1.27.3

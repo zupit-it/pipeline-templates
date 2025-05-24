@@ -16,7 +16,11 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
+  CACHE_SUFFIX:
+    required: false
+    type: string
+    default: ""
 
 runs:
   using: composite
@@ -27,6 +31,7 @@ runs:
         WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
         BUILD_CONFIG: ${{ inputs.BUILD_CONFIG }}
         SHELL: ${{ inputs.SHELL }}
+        CACHE_SUFFIX: ${{ inputs.CACHE_SUFFIX }}
 
     - name: Publish
       uses: zupit-it/pipeline-templates/.github/actions/dotnet/publish@v1.27.3
