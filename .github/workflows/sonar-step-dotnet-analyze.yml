@@ -61,10 +61,10 @@ on:
         required: false
         type: string
         default: "all"
-      CACHE_SUFFIX:
-        required: true
-        type: string
-        default: ""
+      DISABLE_CACHE:
+        required: false
+        type: boolean
+        default: false
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -146,11 +146,11 @@ jobs:
             "${params[@]}"
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@ZCH-126/caching-by-suffix
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
-          CACHE_SUFFIX: ${{ inputs.CACHE_SUFFIX }}
+          DISABLE_CACHE: ${{ inputs.DISABLE_CACHE }}
 
       - name: Run tests
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.27.3

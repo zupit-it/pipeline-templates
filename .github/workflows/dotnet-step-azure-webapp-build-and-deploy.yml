@@ -43,10 +43,6 @@ on:
         required: false
         type: boolean
         default: true
-      CACHE_SUFFIX:
-        required: true
-        type: string
-        default: ""
 
 env: "${{secrets}}"
 
@@ -85,7 +81,6 @@ jobs:
           BUILD_CONFIG: "Release"
           PROJECT: ${{ inputs.PROJECT }}
           OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
-          CACHE_SUFFIX: ${{ inputs.CACHE_SUFFIX }}
 
       - name: Upload build artifact
         uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.27.3

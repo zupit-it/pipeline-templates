@@ -11,24 +11,20 @@ inputs:
     required: false
     type: string
     default: "bash"
-  CACHE_SUFFIX:
+  DISABLE_CACHE:
     required: true
-    type: string
-    default: ""
+    type: boolean
 
 runs:
   using: composite
   steps:
-    - name: Create folder if not exist
-      shell: bash
-      run: mkdir -p ~/.nuget/packages${{ inputs.CACHE_SUFFIX }}
-
     - name: Restore NuGet packages cache
-      uses: actions/cache@v3
+      if: ${{ inputs.DISABLE_CACHE == 'false' }}
+      uses: actions/cache@v4
       with:
-        path: ~/.nuget/packages${{ inputs.CACHE_SUFFIX }}
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-        restore-keys: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
       shell: ${{ inputs.SHELL }}
