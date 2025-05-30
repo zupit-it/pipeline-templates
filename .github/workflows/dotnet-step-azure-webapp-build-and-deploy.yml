@@ -43,6 +43,10 @@ on:
         required: false
         type: boolean
         default: true
+      DISABLE_CACHE:
+        required: false
+        type: boolean
+        default: false
 
 env: "${{secrets}}"
 
@@ -75,12 +79,13 @@ jobs:
           NAME_PREFIX: dotnet-build
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@ZCH-126/caching-by-suffix
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Release"
           PROJECT: ${{ inputs.PROJECT }}
           OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+          DISABLE_CACHE: ${{ inputs.DISABLE_CACHE }}
 
       - name: Upload build artifact
         uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.27.3
