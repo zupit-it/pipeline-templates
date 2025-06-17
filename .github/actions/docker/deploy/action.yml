@@ -23,7 +23,7 @@ runs:
 
     steps:
       - name: Log in to the Container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ inputs.REGISTRY_URL }}
           username: ${{ github.actor }}

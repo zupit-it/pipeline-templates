@@ -36,7 +36,7 @@ runs:
 
     steps:
       - name: Log in to the Container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ inputs.REGISTRY_URL }}
           username: ${{ inputs.REGISTRY_USER }}
@@ -44,13 +44,13 @@ runs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ${{ inputs.REGISTRY_URL }}/${{ github.repository }}/${{ inputs.DOCKER_IMAGE_NAME }}
           tags: ${{ inputs.DOCKER_IMAGE_TAG }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: ./${{ inputs.WORKING_DIRECTORY }}
           file: ${{ inputs.DOCKERFILE_PATH }}
