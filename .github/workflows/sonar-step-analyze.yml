@@ -10,7 +10,7 @@ on:
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       WORKING_DIRECTORY:
         required: true
         type: string
