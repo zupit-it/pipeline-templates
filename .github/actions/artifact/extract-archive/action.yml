@@ -13,10 +13,10 @@ runs:
 
   steps:
     - name: Extract
-      shell: 'bash'
+      shell: "bash"
       run: tar xzvf ${{ inputs.ARCHIVE_PATH }}
       working-directory: ${{ inputs.OUTPUT_FOLDER }}
 
     - name: Remove tar
-      shell: 'bash'
+      shell: "bash"
       run: rm ${{ inputs.ARCHIVE_PATH }}

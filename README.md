@@ -80,8 +80,8 @@ Each composite should be located inside the path
 
 Where:
 
--   **technology** is the technology used to execute the action. For example, the build of a NodeJS project, **NodeJS** is the technology.
--   **action-to-execute** is the action that you want to execute. In the previous example, **build** is the action.
+- **technology** is the technology used to execute the action. For example, the build of a NodeJS project, **NodeJS** is the technology.
+- **action-to-execute** is the action that you want to execute. In the previous example, **build** is the action.
 
 In this way, all actions for the same technology are grouped together.
 
@@ -89,14 +89,14 @@ Sometimes you could need more than one nesting level because you want to group m
 
 For example:
 
--   Azure
-    -   App Service
-    -   Functions
-    -   Storage Accounts
--   AWS
-    -   App Runner
-    -   Lambda
-    -   S3 bucket
+- Azure
+    - App Service
+    - Functions
+    - Storage Accounts
+- AWS
+    - App Runner
+    - Lambda
+    - S3 bucket
 
 ### NodeJS Action
 
@@ -118,17 +118,17 @@ This workflow uses **npm** as package manager.
 
 It requires these inputs:
 
--   **NODE_VERSION**: The NodeJS version required to build the project.
--   **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **NODE_VERSION**: The NodeJS version required to build the project.
+- **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 
 In addition, it is possible to specify this optional input:
 
--   **SHELL**: The shell type to use. By default, it is **bash**.
--   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
--   **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
+- **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
+- **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -169,20 +169,20 @@ This workflow uses **npm** as package manager.
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
--   **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
--   **REGISTRY_USER**: The registry url where to push the Docker image.
-    By default, it is the GitHub variable **github.actor**, the user who started the workflow.
--   **REGISTRY_PASSWORD**: The user's password to access the registry.
--   **DOCKERFILE_PATH**: The path to the Dockerfile to build.
--   **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
--   **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
--   **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
--   **ENV_VARIABLES**: A stringified json to pass multiple values at once, since Github does not propagate env variables.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
+- **REGISTRY_USER**: The registry url where to push the Docker image.
+  By default, it is the GitHub variable **github.actor**, the user who started the workflow.
+- **REGISTRY_PASSWORD**: The user's password to access the registry.
+- **DOCKERFILE_PATH**: The path to the Dockerfile to build.
+- **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
+- **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
+- **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
+- **ENV_VARIABLES**: A stringified json to pass multiple values at once, since Github does not propagate env variables.
 
 It then outputs this variable:
 
--   **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
+- **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
 
 This is an example to show how data should be formatted.
 
@@ -215,13 +215,13 @@ steps:
 
 This action:
 
--   auto-generate a `global.json`, if not provided;
--   [install .NET SDK dependencies on Alpine OS](https://learn.microsoft.com/en-us/dotnet/core/install/linux-alpine#dependencies);
--   install the specified .NET SDK version. The `dotnet` command becomes globally available.
+- auto-generate a `global.json`, if not provided;
+- [install .NET SDK dependencies on Alpine OS](https://learn.microsoft.com/en-us/dotnet/core/install/linux-alpine#dependencies);
+- install the specified .NET SDK version. The `dotnet` command becomes globally available.
 
 ###### Requirements
 
--   The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
 
 _This workflow doesn't download the codebase. You have to check out the repo by yourself._
 
@@ -231,13 +231,13 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
--   **DOTNET_VERSION**: The .NET SDK version to install. See [documentation](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#version) for allowed values.
--   **ALPINE_OS**: Whatever or not the current Linux distribution is Alpine. This could be auto-detected in the future.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+- **DOTNET_VERSION**: The .NET SDK version to install. See [documentation](https://learn.microsoft.com/en-us/dotnet/core/tools/global-json#version) for allowed values.
+- **ALPINE_OS**: Whatever or not the current Linux distribution is Alpine. This could be auto-detected in the future.
 
 In addition, it is possible to specify this optional input:
 
--   **SHELL**: The shell type to use. By default, it is **bash**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
 
@@ -256,15 +256,15 @@ steps:
 
 This action:
 
--   download NuGet packages from the cache, if available;
--   restore NuGet packages;
--   run the `dotnet build` command on the `WORKING_DIRECTORY`.
+- download NuGet packages from the cache, if available;
+- restore NuGet packages;
+- run the `dotnet build` command on the `WORKING_DIRECTORY`.
 
 ###### Requirements
 
--   The `WORKING_DIRECTORY` directory must contain a solution or a project file.
--   A `packages.lock.json` file must be provided for the solution in order to enable [repeatable package restoration](https://github.com/NuGet/Home/wiki/Enable-repeatable-package-restore-using-lock-file).
--   The correct .NET version must be installed.
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- A `packages.lock.json` file must be provided for the solution in order to enable [repeatable package restoration](https://github.com/NuGet/Home/wiki/Enable-repeatable-package-restore-using-lock-file).
+- The correct .NET version must be installed.
 
 _This workflow doesn't download the codebase. You have to check out the repo by yourself._
 
@@ -274,12 +274,12 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
--   **BUILD_CONFIG**: The configuration to use when building the solution or the project. Usually `Debug` or `Release`.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+- **BUILD_CONFIG**: The configuration to use when building the solution or the project. Usually `Debug` or `Release`.
 
 In addition, it is possible to specify this optional input:
 
--   **SHELL**: The shell type to use. By default, it is **bash**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
 
@@ -297,13 +297,13 @@ steps:
 
 This action:
 
--   install or update [CSharpier](https://csharpier.com/);
--   run the `dotnet-csharpier . --check` command on the `WORKING_DIRECTORY`.
+- install or update [CSharpier](https://csharpier.com/);
+- run the `dotnet-csharpier . --check` command on the `WORKING_DIRECTORY`.
 
 ###### Requirements
 
--   The `WORKING_DIRECTORY` directory must contain a solution or a project file.
--   The correct .NET version must be installed.
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- The correct .NET version must be installed.
 
 _This workflow doesn't download the codebase. You have to check out the repo by yourself._
 
@@ -313,12 +313,12 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
 
 In addition, it is possible to specify this optional input:
 
--   **SHELL**: The shell type to use. By default, it is **bash**.
--   **CSHARPIER_VERSION**: The [CSharpier version](https://github.com/belav/csharpier/releases) to install. By default, it is the latest.
+- **SHELL**: The shell type to use. By default, it is **bash**.
+- **CSHARPIER_VERSION**: The [CSharpier version](https://github.com/belav/csharpier/releases) to install. By default, it is the latest.
 
 This is an example to show how data should be formatted.
 
@@ -335,12 +335,13 @@ steps:
 #### .NET Action - Lint
 
 This action:
--   run the `dotnet format` command on the `WORKING_DIRECTORY`.
+
+- run the `dotnet format` command on the `WORKING_DIRECTORY`.
 
 ###### Requirements
 
--   The `WORKING_DIRECTORY` directory must contain a solution or a project file.
--   The correct .NET (6+) version must be installed.
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- The correct .NET (6+) version must be installed.
 
 _This workflow doesn't download the codebase. You have to check out the repo by yourself._
 
@@ -350,11 +351,11 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
 
 In addition, it is possible to specify this optional input:
 
--   **SHELL**: The shell type to use. By default, it is **bash**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
 
@@ -371,14 +372,14 @@ steps:
 
 This action:
 
--   discovers and executes tests on the .NET solution contained in the `WORKING_DIRECTORY` directory;
--   if specified, it generates tests and code coverage results.
+- discovers and executes tests on the .NET solution contained in the `WORKING_DIRECTORY` directory;
+- if specified, it generates tests and code coverage results.
 
 ###### Requirements
 
--   The `WORKING_DIRECTORY` directory must contain a solution or a project file.
--   The correct .NET version must be installed.
--   The project must be already built.
+- The `WORKING_DIRECTORY` directory must contain a solution or a project file.
+- The correct .NET version must be installed.
+- The project must be already built.
 
 _This workflow doesn't download the codebase. You have to check out the repo by yourself._
 
@@ -388,12 +389,12 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. It must contain a solution (`.sln`) or a project (`.csproj`) file.
 
 In addition, it is possible to specify this optional input:
 
--   **GENERATE_CODE_COVERAGE**: Whatever or not the test results and code coverage files should be generated. If `true`, a `TestResults` folder containing `.trx` test results and a `coverage.opencover.xml` cover file are generated inside each test project folder. By default, it is **true**.
--   **SHELL**: The shell type to use. By default, it is **bash**.
+- **GENERATE_CODE_COVERAGE**: Whatever or not the test results and code coverage files should be generated. If `true`, a `TestResults` folder containing `.trx` test results and a `coverage.opencover.xml` cover file are generated inside each test project folder. By default, it is **true**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
 
@@ -414,9 +415,9 @@ This action run the [dotnet publish](https://learn.microsoft.com/en-us/dotnet/co
 
 ###### Requirements
 
--   The `WORKING_DIRECTORY` directory must be an ancestor of the project file (`PROJECT` parameter).
--   The correct .NET version must be installed.
--   The project must be already built.
+- The `WORKING_DIRECTORY` directory must be an ancestor of the project file (`PROJECT` parameter).
+- The correct .NET version must be installed.
+- The project must be already built.
 
 _This workflow doesn't download the codebase. You have to check out the repo by yourself._
 
@@ -426,14 +427,14 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The ancestor directory of the project.
--   **BUILD_CONFIG**: The configuration to use when publishing the project. Usually `Release`.
--   **PROJECT**: The path to the `.csproj` file, relative to the `WORKING_DIRECTORY` directory.
--   **OUTPUT_DIRECTORY**: The directory where output binaries will be created. This is relative to the `WORKING_DIRECTORY` directory.
+- **WORKING_DIRECTORY**: The ancestor directory of the project.
+- **BUILD_CONFIG**: The configuration to use when publishing the project. Usually `Release`.
+- **PROJECT**: The path to the `.csproj` file, relative to the `WORKING_DIRECTORY` directory.
+- **OUTPUT_DIRECTORY**: The directory where output binaries will be created. This is relative to the `WORKING_DIRECTORY` directory.
 
 In addition, it is possible to specify this optional input:
 
--   **SHELL**: The shell type to use. By default, it is **bash**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
 
 This is an example to show how data should be formatted.
 
@@ -453,8 +454,8 @@ steps:
 
 This action executes the following child-actions:
 
--   [.NET Build](#net-action---build)
--   [.NET Publish](#net-action---publish)
+- [.NET Build](#net-action---build)
+- [.NET Publish](#net-action---publish)
 
 It's a convenience action for repeated actions used together for most of the time.
 
@@ -462,8 +463,8 @@ It's a convenience action for repeated actions used together for most of the tim
 
 Check the requirements of the child actions:
 
--   [.NET Build requirements](#net-action---build)
--   [.NET Publish requirements](#net-action---publish)
+- [.NET Build requirements](#net-action---build)
+- [.NET Publish requirements](#net-action---publish)
 
 _This workflow doesn't download the codebase. You have to check out the repo by yourself._
 
@@ -473,14 +474,14 @@ _This workflow doesn't download the codebase. You have to check out the repo by 
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**
--   **BUILD_CONFIG**
--   **PROJECT**
--   **OUTPUT_DIRECTORY**
+- **WORKING_DIRECTORY**
+- **BUILD_CONFIG**
+- **PROJECT**
+- **OUTPUT_DIRECTORY**
 
 In addition, it is possible to specify this optional input:
 
--   **SHELL**: The shell type to use. By default, it is **bash**.
+- **SHELL**: The shell type to use. By default, it is **bash**.
 
 Each parameter is passed down to the homonym parameter of child actions (if available). Check out child actions' parameters definition.
 
@@ -503,19 +504,19 @@ steps:
 
 This action:
 
--   logs in to Azure CLI;
--   deploy an application to an Azure App Service or Azure Function instance.
--   logs out from Azure CLI.
+- logs in to Azure CLI;
+- deploy an application to an Azure App Service or Azure Function instance.
+- logs out from Azure CLI.
 
 **Note**: [Azure Functions are built on top of Azure App Service infrastructure](https://learn.microsoft.com/en-us/azure/architecture/guide/multitenant/service/app-service), reason for which this action is named just _App Service_.
 
 ###### Requirements
 
--   The `WORKING_DIRECTORY` directory must be an ancestor of the `BINARIES_DIRECTORY` directory.
--   The App Service/Function must be correctly configured with the correct technology and runtime version.
--   This action must run in an environment with the Azure CLI installed.
--   This action must run in an environment without any other action performing AZ login/logout in parallel.
--   Bash
+- The `WORKING_DIRECTORY` directory must be an ancestor of the `BINARIES_DIRECTORY` directory.
+- The App Service/Function must be correctly configured with the correct technology and runtime version.
+- This action must run in an environment with the Azure CLI installed.
+- This action must run in an environment without any other action performing AZ login/logout in parallel.
+- Bash
 
 ###### Action
 
@@ -523,17 +524,17 @@ This action:
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
--   **BINARIES_DIRECTORY**: The folder containing binaries to publish to the App Service/Function.
--   **WEBAPP_NAME**: The name of the AppService/Function.
+- **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
+- **BINARIES_DIRECTORY**: The folder containing binaries to publish to the App Service/Function.
+- **WEBAPP_NAME**: The name of the AppService/Function.
 
 It also requires these secrets:
 
--   **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
+- **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
 
 In addition, it is possible to specify this optional input:
 
--   **WEBAPP_SLOT**: The App Service/Function slot where the binaries should be published to. By default, it is **production**.
+- **WEBAPP_SLOT**: The App Service/Function slot where the binaries should be published to. By default, it is **production**.
 
 **Note:** this action restarts the App Service/Function.
 
@@ -556,52 +557,57 @@ steps:
 
 This action:
 
--   logs in to Azure CLI;
--   deploy a static web-app to Azure Storage Blob Service.
--   [optional] cleans the Azure CDN or Azure Front-door cache.
--   logs out from Azure CLI.
+- logs in to Azure CLI;
+- deploy a static web-app to Azure Storage Blob Service.
+- [optional] cleans the Azure CDN or Azure Front-door cache.
+- logs out from Azure CLI.
 
 ###### Requirements
 
--   The `WORKING_DIRECTORY` directory must be an ancestor of the `BINARIES_DIRECTORY` directory.
--   The Storage Account must be configured to [serve static content](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website).
--   This action must run in an environment with the Azure CLI installed.
--   This action must run in an environment without any other action performing AZ login/logout in parallel.
--   Bash
+- The `WORKING_DIRECTORY` directory must be an ancestor of the `BINARIES_DIRECTORY` directory.
+- The Storage Account must be configured to [serve static content](https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blob-static-website).
+- This action must run in an environment with the Azure CLI installed.
+- This action must run in an environment without any other action performing AZ login/logout in parallel.
+- Bash
 
 ###### Action
 
 **.github/actions/azure/storage/deploy** is the action that deploys a static web-app to an Azure Storage Account. It also cleans the cache of the Azure CDN or Azure Front-door if specified.
 
 It requires these inputs:
--   **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
--   **BINARIES_DIRECTORY**: The folder containing binaries to publish to the Storage Account.
--   **STORAGE_ACCOUNT_NAME**: The name of the Storage Account.
+
+- **WORKING_DIRECTORY**: The ancestor directory of the `BINARIES_DIRECTORY` directory.
+- **BINARIES_DIRECTORY**: The folder containing binaries to publish to the Storage Account.
+- **STORAGE_ACCOUNT_NAME**: The name of the Storage Account.
 
 In addition, it is possible to specify this optional input:
--   **CDN_PROFILE_NAME**: Name of the Azure CDN profile name. Required if `CDN_RG_NAME` is specified.
--   **CDN_ENDPOINT_NAME**: Name of the Azure CDN endpoint name. It must be a child of the `CDN_PROFILE_NAME` CDN profile. Required if `CDN_RG_NAME` is specified.
--   **CDN_RG_NAME**: Resource group name where the Azure CDN profile is hold.
--   **FD_ENDPOINT_NAME**: Name of the Azure Front-door endpoint name. Required if `FD_RG_NAME` is specified.
--   **FD_DOMAIN_NAME**: Domain name of the Azure Front-door endpoint. It must be a child of the `FD_ENDPOINT_NAME` Front-door endpoint. Required if `FD_RG_NAME` is specified.
--   **FD_PROFILE_NAME**: Name of the Azure Front-door profile name. Required if `FD_RG_NAME` is specified.
--   **FD_RG_NAME**: Resource group name where the Front-door instance is hold.
+
+- **CDN_PROFILE_NAME**: Name of the Azure CDN profile name. Required if `CDN_RG_NAME` is specified.
+- **CDN_ENDPOINT_NAME**: Name of the Azure CDN endpoint name. It must be a child of the `CDN_PROFILE_NAME` CDN profile. Required if `CDN_RG_NAME` is specified.
+- **CDN_RG_NAME**: Resource group name where the Azure CDN profile is hold.
+- **FD_ENDPOINT_NAME**: Name of the Azure Front-door endpoint name. Required if `FD_RG_NAME` is specified.
+- **FD_DOMAIN_NAME**: Domain name of the Azure Front-door endpoint. It must be a child of the `FD_ENDPOINT_NAME` Front-door endpoint. Required if `FD_RG_NAME` is specified.
+- **FD_PROFILE_NAME**: Name of the Azure Front-door profile name. Required if `FD_RG_NAME` is specified.
+- **FD_RG_NAME**: Resource group name where the Front-door instance is hold.
 
 If no Front-door or CDN is specified, the action will only upload the files to the Storage Account.
 
 If you want to purge the CDN cache, you must specify:
--   **CDN_PROFILE_NAME**
--   **CDN_ENDPOINT_NAME**
--   **CDN_RG_NAME**
+
+- **CDN_PROFILE_NAME**
+- **CDN_ENDPOINT_NAME**
+- **CDN_RG_NAME**
 
 If you want to purge the Front-door cache, you must specify:
--  **FD_ENDPOINT_NAME**
--  **FD_DOMAIN_NAME**
--  **FD_PROFILE_NAME**
--  **FD_RG_NAME**
+
+- **FD_ENDPOINT_NAME**
+- **FD_DOMAIN_NAME**
+- **FD_PROFILE_NAME**
+- **FD_RG_NAME**
 
 It also requires these secrets:
--   **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
+
+- **AZURE_CREDENTIALS**: The secret json containing credentials to connect using Azure CLI. See the [documentation](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure) for more information.
 
 This is an example to show how data should be formatted.
 
@@ -625,20 +631,20 @@ steps:
 
 This action:
 
--   deploy an application to IIS.
+- deploy an application to IIS.
 
 ###### Requirements
 
--   IIS 6
--   The account used to run the GitHub runner must be part of the `Administrators` group.
--   The application pool must have the same name as the folder of the application.
--   The entrypoint for the IIS website must be located inside the application's folder, and it must be named `htdocs`.
+- IIS 6
+- The account used to run the GitHub runner must be part of the `Administrators` group.
+- The application pool must have the same name as the folder of the application.
+- The entrypoint for the IIS website must be located inside the application's folder, and it must be named `htdocs`.
 
 **Example**
 
--   Application pool name: `example.zupit.software`
--   Application folder: `C:\inetpub\example.zupit.software`
--   IIS website entrypoint: `C:\inetpub\example.zupit.software\htdocs`
+- Application pool name: `example.zupit.software`
+- Application folder: `C:\inetpub\example.zupit.software`
+- IIS website entrypoint: `C:\inetpub\example.zupit.software\htdocs`
 
 ###### Action
 
@@ -646,9 +652,9 @@ This action:
 
 It requires these inputs:
 
--   **ARTIFACT_NAME**: The artifact's name holding the application's binaries.
--   **APPS_PATH**: The folder path where IIS websites are hosted. This must be the parent of the application's folder.
--   **APP_POOL_NAME**: The name of the application pool.
+- **ARTIFACT_NAME**: The artifact's name holding the application's binaries.
+- **APPS_PATH**: The folder path where IIS websites are hosted. This must be the parent of the application's folder.
+- **APP_POOL_NAME**: The name of the application pool.
 
 This is an example to show how data should be formatted.
 
@@ -667,11 +673,13 @@ steps:
 #### Artifact Action - Generate name
 
 This action:
+
 - generates a unique name for an artifact using the specified prefix
 
 The generated artifact name is in the format `prefix-<random-string>`.
 
 ###### Requirements
+
 - Bash
 
 ###### Action
@@ -679,42 +687,46 @@ The generated artifact name is in the format `prefix-<random-string>`.
 **.github/actions/artifact/generate-name** is the action that generates a unique name for an artifact using the specified prefix. This is useful when you have multiple artifacts to upload on the same workflow, and you want to avoid name collisions.
 
 It requires these inputs:
--   **NAME_PREFIX**: The prefix to use when generating the artifact name.
+
+- **NAME_PREFIX**: The prefix to use when generating the artifact name.
 
 It then outputs this variable:
--   **ARTIFACT_NAME**: The generated artifact name.
+
+- **ARTIFACT_NAME**: The generated artifact name.
 
 This is an example to show how to use this action with the support of the **Generate artifact name** action.
 
 ```yaml
-  - name: Generate artifact name
-    id: artifact-name
-    uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.27.3
-    with:
-        NAME_PREFIX: dotnet-build
+- name: Generate artifact name
+  id: artifact-name
+  uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.27.3
+  with:
+      NAME_PREFIX: dotnet-build
 
-  - name: Build
-    uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.27.3
-    with:
-        WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
-        BUILD_CONFIG: "Release"
-        PROJECT: my-project
-        OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+- name: Build
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.27.3
+  with:
+      WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+      BUILD_CONFIG: "Release"
+      PROJECT: my-project
+      OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 
-  - name: Upload build artifact
-    uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.27.3
-    with:
-        SOURCE_FOLDER: my-source-folder
-        ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+- name: Upload build artifact
+  uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.27.3
+  with:
+      SOURCE_FOLDER: my-source-folder
+      ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 ```
 
 #### Artifact Action - Download
 
 This action:
+
 - downloads an archived artifact.
 - extracts the artifact in the specified directory.
 
 ###### Requirements
+
 - See the requirements of [Artifact Action - Extract archive](#artifact-action---extract-archive).
 
 ###### Action
@@ -722,11 +734,13 @@ This action:
 **.github/actions/artifact/download** is the action that downloads an artifact and extracts the archive it holds in the specified directory.
 
 It requires these inputs:
--   **ARTIFACT_NAME**: The artifact's name. Usually, it is the name generated using the action **artifact/generate-name**.
+
+- **ARTIFACT_NAME**: The artifact's name. Usually, it is the name generated using the action **artifact/generate-name**.
 
 In addition, it is possible to specify this optional input:
--   **OUTPUT_FOLDER**: The folder where the artifact will be extracted. By default, it is **/tmp**.
--   **ARCHIVE_NAME**: The name of the archive hold in the artifact. By default, it is **dist.tar.gz**.
+
+- **OUTPUT_FOLDER**: The folder where the artifact will be extracted. By default, it is **/tmp**.
+- **ARCHIVE_NAME**: The name of the archive hold in the artifact. By default, it is **dist.tar.gz**.
 
 This is an example to show how data should be formatted.
 
@@ -741,9 +755,11 @@ steps:
 #### Artifact Action - Upload
 
 This action:
+
 - creates an archive containing the files in the specified folder and uploads it as an artifact.
 
 ###### Requirements
+
 - See the requirements of [Artifact Action - Create archive](#artifact-action---create-archive).
 
 ###### Action
@@ -751,43 +767,47 @@ This action:
 **.github/actions/artifact/upload** is the action that creates an archive containing the files in the specified folder and uploads it as an artifact.
 
 It requires these inputs:
+
 - **SOURCE_FOLDER**: The folder containing the files to archive and upload.
 - **ARTIFACT_NAME**: The name of the artifact to create.
 
 In addition, it is possible to specify this optional input:
+
 - **ARCHIVE_PATH**: The path to the archive to create. By default, it is **/tmp/dist.tar.gz**.
 - **RETENTION_DAYS**: The number of days to keep the artifact. By default, it is **1**.
 
 This is an example to show how to use this action with the support of the **Generate artifact name** action.
 
 ```yaml
-  - name: Generate artifact name
-    id: artifact-name
-    uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.27.3
-    with:
-        NAME_PREFIX: dotnet-build
+- name: Generate artifact name
+  id: artifact-name
+  uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.27.3
+  with:
+      NAME_PREFIX: dotnet-build
 
-  - name: Build
-    uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.27.3
-    with:
-        WORKING_DIRECTORY: my-dir
-        BUILD_CONFIG: "Release"
-        PROJECT: my-project
-        OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+- name: Build
+  uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.27.3
+  with:
+      WORKING_DIRECTORY: my-dir
+      BUILD_CONFIG: "Release"
+      PROJECT: my-project
+      OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 
-  - name: Upload build artifact
-    uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.27.3
-    with:
-        SOURCE_FOLDER: my-source-folder
-        ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+- name: Upload build artifact
+  uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.27.3
+  with:
+      SOURCE_FOLDER: my-source-folder
+      ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 ```
 
 #### Artifact Action - Create archive
 
 This action:
+
 - creates an archive containing the files in the specified folder.
 
 ###### Requirements
+
 - Bash
 - OS: Linux or Windows 10 Build 17063 and more recent. The action is based on the `tar` command.
 
@@ -796,32 +816,37 @@ This action:
 **.github/actions/artifact/create-archive** is the action that creates an archive containing the files in the specified folder.
 
 It requires these inputs:
-  - **SOURCE_FOLDER**: The folder containing the files to archive.
+
+- **SOURCE_FOLDER**: The folder containing the files to archive.
 
 In addition, it is possible to specify this optional input:
-  - **ARCHIVE_PATH**: The path to the archive to create. By default, it is **/tmp/dist.tar.gz**.
 
+- **ARCHIVE_PATH**: The path to the archive to create. By default, it is **/tmp/dist.tar.gz**.
 
 It then outputs this variable:
+
 - **ARCHIVE_PATH**: The path to the archive created.
 
 You may want to use the [Artifact Action - Upload](#artifact-action---upload) instead of this action, as it creates an archive and uploads it as an artifact.
 
 This is an example to show how data should be formatted.
+
 ```yaml
-    - name: Create archive
-      uses: zupit-it/pipeline-templates/.github/actions/artifact/create-archive@v1.27.3
-      with:
-          SOURCE_FOLDER: my-source-folder
-          ARCHIVE_NAME: my-archive
+- name: Create archive
+  uses: zupit-it/pipeline-templates/.github/actions/artifact/create-archive@v1.27.3
+  with:
+      SOURCE_FOLDER: my-source-folder
+      ARCHIVE_NAME: my-archive
 ```
 
 #### Artifact Action - Extract archive
 
 This action:
+
 - extracts an archive in the specified directory.
 
 ###### Requirements
+
 - Bash
 - OS: Linux or Windows 10 Build 17063 and more recent. The action is based on the `tar` command.
 
@@ -830,24 +855,25 @@ This action:
 **.github/actions/artifact/extract-archive** is the action that extracts an archive in the specified directory.
 
 It requires these inputs:
+
 - **ARCHIVE_PATH**: The path to the archive to extract.
 - **OUTPUT_FOLDER**: The folder where the archive will be extracted.
 
 You may want to use the [Artifact Action - Download](#artifact-action---download) instead of this action, as it downloads an archived artifact and extracts it in the specified directory.
 
 This is an example to show how data should be formatted.
+
 ```yaml
-    - name: Extract archive
-      uses: zupit-it/pipeline-templates/.github/actions/artifact/extract-archive@v1.27.3
-      with:
-          ARCHIVE_PATH: /tmp/my-archive.tar.gz
-          OUTPUT_FOLDER: my-output-folder
+- name: Extract archive
+  uses: zupit-it/pipeline-templates/.github/actions/artifact/extract-archive@v1.27.3
+  with:
+      ARCHIVE_PATH: /tmp/my-archive.tar.gz
+      OUTPUT_FOLDER: my-output-folder
 ```
 
 ### Maven Action
 
 #### Maven Action - Setttings
-
 
 This action configures Maven settings for your build environment by generating a `settings.xml` file with the specified server credentials (if provided). It leverages the [s4u/maven-settings-action](https://github.com/s4u/maven-settings-action) to create a proper Maven configuration.
 
@@ -863,6 +889,7 @@ This action configures Maven settings for your build environment by generating a
 **Action Details**
 
 **`.github/actions/maven/settings`** is a composite action that:
+
 - Checks if a Maven server ID is provided.
 - Creates the `settings.xml` file at the location `${MAVEN_USER_HOME}/settings.xml` with the provided server credentials.
 
@@ -896,10 +923,10 @@ the reusable workflows. As we want to define the runners as late as possible, we
 
 We've defined 2 different types of workflows:
 
--   **step**: a _reusable workflow_ that _runs a set of specific tasks_ that can be grouped together
-    (e.g. checking if the project is linted and builds, run the tests, build and push a docker image, ...).
--   **workflow**: a _reusable workflow_ that _contains a set of our "steps" workflows_ to reduce the boilerplate when writing the final workflows.
-    One of the use cases is to check if the code is linted, it builds correctly and the tests pass, as this is used in almost all of our projects.
+- **step**: a _reusable workflow_ that _runs a set of specific tasks_ that can be grouped together
+  (e.g. checking if the project is linted and builds, run the tests, build and push a docker image, ...).
+- **workflow**: a _reusable workflow_ that _contains a set of our "steps" workflows_ to reduce the boilerplate when writing the final workflows.
+  One of the use cases is to check if the code is linted, it builds correctly and the tests pass, as this is used in almost all of our projects.
 
 Our reusable workflows are named to follow this standard:
 
@@ -911,9 +938,9 @@ Thus, it is easy to understand that the workflows uses a specific technology or 
 
 > The following workflows are deprecated:
 >
-> -   node-step-docker-build-and-push-image.yml
-> -   node-step-format-lint-build.yml
-> -   node-workflow-common.yml
+> - node-step-docker-build-and-push-image.yml
+> - node-step-format-lint-build.yml
+> - node-workflow-common.yml
 
 #### NodeJS Common
 
@@ -939,25 +966,25 @@ builds correctly and that all tests pass.
 
 It groups together these reusable workflows:
 
--   _node-step-format-lint-build.yml_
--   _node-step-test-cypress.yml_
+- _node-step-format-lint-build.yml_
+- _node-step-test-cypress.yml_
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the NodeJS application.
--   **NODE_VERSION**: The NodeJS Docker image where the runner execute all the commands.
--   **CYPRESS_IMAGE**: The Cypress Docker image where the runner execute all the commands.
--   **DIST_PATH**: The output distribution path of the node build
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the NodeJS application.
+- **NODE_VERSION**: The NodeJS Docker image where the runner execute all the commands.
+- **CYPRESS_IMAGE**: The Cypress Docker image where the runner execute all the commands.
+- **DIST_PATH**: The output distribution path of the node build
 
 In addition, it is possible to specify these optional inputs:
 
--   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _lcov.info_ file. By default, it is **lcov.info**.
--   **ENABLE_TESTS**: Whether it should skip or not the cypress tests workflow. By default, it is **true**.
--   **TIMEOUT**: Used for tests, if the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
--   **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
--   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _lcov.info_ file. By default, it is **lcov.info**.
+- **ENABLE_TESTS**: Whether it should skip or not the cypress tests workflow. By default, it is **true**.
+- **TIMEOUT**: Used for tests, if the tests take more than the given time in minutes, Github stops forcefully the workflow. By default, it is **30**.
+- **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
+- **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1033,35 +1060,36 @@ This is a similar version of the _docker-step-build-and-push-image.yml_ as this 
 
 This workflow uses these composite actions:
 
--   **actions/node/build**: builds NodeJS project
--   **actions/docker/build-and-push**: creates the Docker image and pushes it to the desired registry.
+- **actions/node/build**: builds NodeJS project
+- **actions/docker/build-and-push**: creates the Docker image and pushes it to the desired registry.
 
 _This workflow uses a NodeJS Docker image, hence remember to use labels to match runners specific for Docker._
 
 It requires these inputs:
--   **NODE_VERSION**: The NodeJS version required to build the project.
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
--   **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
--   **DOCKERFILE_PATH**: The path to the Dockerfile to build.
--   **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
--   **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
--   **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
--   **DIST_PATH**: The output distribution path of the node build
--   **ARTIFACT_NAME**: The name of the artifact. Should be changed when using multiple node builds for the same project at the same time
+
+- **NODE_VERSION**: The NodeJS version required to build the project.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
+- **DOCKERFILE_PATH**: The path to the Dockerfile to build.
+- **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
+- **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
+- **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
+- **DIST_PATH**: The output distribution path of the node build
+- **ARTIFACT_NAME**: The name of the artifact. Should be changed when using multiple node builds for the same project at the same time
 
 In addition, it is possible to specify these optional inputs:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
--   **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
--   **REGISTRY_USER**: The registry url where to push the Docker image.
-    By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
--   **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
--   **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
+- **REGISTRY_USER**: The registry url where to push the Docker image.
+  By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
+- **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
+- **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
 
 It then outputs this variable:
 
--   **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
+- **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
 
 This is an example to show how data should be formatted.
 
@@ -1088,17 +1116,18 @@ jobs:
 
 This workflow combines two main actions:
 
--   [Node.js Build](#nodejs-action---build)
--   [Azure Storage Account](#azure-action---storage-account---deploy)
+- [Node.js Build](#nodejs-action---build)
+- [Azure Storage Account](#azure-action---storage-account---deploy)
 
 The input parameters of this workflow have the same name of the corresponding parameters in child actions. Refer to them for more information.
 
 Also, these input parameters are optional:
--   **IMAGE**: the docker image to use when running the node build. By default, it is **ubuntu:23.04**.
--   **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.69.0**.
--   **TDNF_PACKAGE_MANAGER_INSTALL_TAR**: a boolean that determines whether the tar package should be installed. Default is **true**.
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+
+- **IMAGE**: the docker image to use when running the node build. By default, it is **ubuntu:23.04**.
+- **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.69.0**.
+- **TDNF_PACKAGE_MANAGER_INSTALL_TAR**: a boolean that determines whether the tar package should be installed. Default is **true**.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1139,25 +1168,26 @@ are not broken and that all tests pass.
 
 It groups together these reusable workflows:
 
--   _django-step-lint-check.yml_
--   _django-step-tests.yml_
+- _django-step-lint-check.yml_
+- _django-step-tests.yml_
 
 It requires these inputs:
--   
+
+-
 - **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
--   **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands.
+- **PYTHON_IMAGE**: The Python Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify this optional input:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
--   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _coverage-django.xml_ file. By default, it is **coverage-django.xml**.
--   **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
--   **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
--   **SETUP_COMMANDS**: Allow to execute commands before the download of the dependencies. Useful to install packages required for Python dependencies.
--   **ENABLE_LFS**: To enable Git LFS support on checkout  
--   **LFS_REPO_PATH**: Required when ENABLE_LFS is true. Workaround for https://github.com/actions/checkout/issues/1169. Set to "/__w/repo-name/repo-name" 
--   **COVERAGE_THRESHOLD**: The minimal code coverage for this project. If the coverage is lower than this value, the workflow will fail. By default, it is **50**.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _coverage-django.xml_ file. By default, it is **coverage-django.xml**.
+- **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
+- **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
+- **SETUP_COMMANDS**: Allow to execute commands before the download of the dependencies. Useful to install packages required for Python dependencies.
+- **ENABLE_LFS**: To enable Git LFS support on checkout
+- **LFS_REPO_PATH**: Required when ENABLE_LFS is true. Workaround for https://github.com/actions/checkout/issues/1169. Set to "/\_\_w/repo-name/repo-name"
+- **COVERAGE_THRESHOLD**: The minimal code coverage for this project. If the coverage is lower than this value, the workflow will fail. By default, it is **50**.
 
 This is an example to show how data should be formatted.
 
@@ -1235,30 +1265,30 @@ This workflow uses **maven** as package manager.
 
 It groups together these reusable workflows:
 
--   _springboot-step-lint-check.yml_
--   _springboot-step-tests.yml_
+- _springboot-step-lint-check.yml_
+- _springboot-step-tests.yml_
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
--   **JAVA_IMAGE**: The Java Docker image where the runner execute all the commands.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands. This is basically the directory which contains the Django application.
+- **JAVA_IMAGE**: The Java Docker image where the runner execute all the commands.
 
 In addition, it is possible to specify this optional input:
 
--   **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _jacoco reports_ file. By default, it is **target**.
--   **MAVEN_USER_HOME**: T    RUN_ON:
-      required: false
-      type: string
-      default: 'zupit-agents'
-    RUNNERS_CONTAINER_GROUP:
-      required: false
-      type: string
-      default: 'Container'he path to Maven directory. By default, it is **./m2**.
--   **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
--   **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
--   **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _jacoco reports_ file. By default, it is **target**.
+- **MAVEN_USER_HOME**: T RUN_ON:
+  required: false
+  type: string
+  default: 'zupit-agents'
+  RUNNERS_CONTAINER_GROUP:
+  required: false
+  type: string
+  default: 'Container'he path to Maven directory. By default, it is **./m2**.
+- **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
+- **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
+- **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1333,23 +1363,23 @@ _This workflow uses a Java Docker image, hence remember to use labels to match r
 
 It requires these inputs:
 
--   **JAVA_IMAGE**: The Java image required to build the project.
--   **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
--   **REGISTRY_URL**: The registry url where to push the Docker image.
--   **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
--   **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
+- **JAVA_IMAGE**: The Java image required to build the project.
+- **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **REGISTRY_URL**: The registry url where to push the Docker image.
+- **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
+- **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
 
 In addition, it is possible to specify this optional input:
 
--   **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
--   **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
+- **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 It then outputs this variable:
 
--   **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
+- **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
 
 This is an example to show how data should be formatted.
 
@@ -1379,11 +1409,11 @@ jobs:
 
 This workflow is based on the following actions:
 
--   [.NET - Install](#net-action---install)
--   [.NET - Build](#net-action---build)
--   [.NET - Format](#net-action---format)
--   [.NET - Lint](#net-action---lint)
--   [.NET - Test](#net-action---test)
+- [.NET - Install](#net-action---install)
+- [.NET - Build](#net-action---build)
+- [.NET - Format](#net-action---format)
+- [.NET - Lint](#net-action---lint)
+- [.NET - Test](#net-action---test)
 
 Check these actions requirements before using this workflow.
 
@@ -1393,16 +1423,16 @@ Check these actions requirements before using this workflow.
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: check actions used by this workflow for more information.
--   **DOTNET_IMAGE**: the .NET docker image (usually 'mcr.microsoft.com/dotnet/sdk') to use.
+- **WORKING_DIRECTORY**: check actions used by this workflow for more information.
+- **DOTNET_IMAGE**: the .NET docker image (usually 'mcr.microsoft.com/dotnet/sdk') to use.
 
 In addition, it is possible to specify these optional inputs:
--   **DOTNET_IMAGE_ENV_VARIABLES**: The environment variables to set when running the .NET docker image.
--   **CSHARPIER_VERSION**: The version of the CSharpier tool to use. For the default value, see the `dotnet/format` action.
--   **RUN_LINT**: Whatever or not the lint command should be executed. By default, it is **true**.
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
+- **DOTNET_IMAGE_ENV_VARIABLES**: The environment variables to set when running the .NET docker image.
+- **CSHARPIER_VERSION**: The version of the CSharpier tool to use. For the default value, see the `dotnet/format` action.
+- **RUN_LINT**: Whatever or not the lint command should be executed. By default, it is **true**.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1433,29 +1463,29 @@ The github runner which will execute this workflow should be capable of running 
 
 This workflow uses this composite action:
 
--   **actions/docker/build-and-push**: creates the Docker image and pushes it to the desired registry.
+- **actions/docker/build-and-push**: creates the Docker image and pushes it to the desired registry.
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
--   **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
--   **DOCKERFILE_PATH**: The path to the Dockerfile to build.
--   **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
--   **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
--   **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **RELEASE_ENVIRONMENT**: The environment for which the project must be compiled (e.g. _testing_, _staging_, _production_).
+- **DOCKERFILE_PATH**: The path to the Dockerfile to build.
+- **DOCKER_IMAGE_NAME**: The name to assign to the built Docker image.
+- **DOCKER_IMAGE_TAG**: The tag to assign to the built Docker image.
+- **BUILD_ARGS**: Additional data to pass when building the Dockerfile.
 
 In addition, it is possible to specify these optional inputs:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
--   **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
--   **REGISTRY_USER**: The registry url where to push the Docker image.
-    By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
--   **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
+- **REGISTRY_USER**: The registry url where to push the Docker image.
+  By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
+- **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
 
 It then outputs these variables:
 
--   **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
+- **DOCKER_IMAGE_NAME**: The final Docker image name with the registry path included.
 
 This is an example to show how data should be formatted.
 
@@ -1487,19 +1517,18 @@ This workflow requires a **docker-compose** file to start all services required 
 
 It requires these inputs:
 
--   **DEPLOY_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow.
--   **ENVIRONMENT**: The target environment that will show GitHub on the GitHub action page.
--   **DEPLOY_URL**: The target environment url that will show GitHub on the GitHub action page.
--   **REGISTRY_URL**: The registry url where to pull the Docker images.
--   **PROJECT_NAME**: The name that will be associated to the Docker Compose stack.
--   **DOCKER_COMPOSE_PATH**: The path to the docker-compose file to start.
--   **DOCKER_COMPOSE_EXTRA_ARGS**: Extra arguments to pass to the docker-compose command. Optional
--   **IMAGES**: A stringified json object containing as key the environment variables images used in the
-    Docker compose file and as value the name of the images that will be downloaded from the registry.
-    You can retrieve dynamically the image name from the _docker build and push step_ by adding the step's name to the **needs** array of the workflow
-    and using `${{ needs.{STEP_NAME}.outputs.DOCKER_IMAGE_NAME }}` where STEP_NAME is the step's name.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If the runner has no group, set it to **''**.
-
+- **DEPLOY_ON**: the _labels_ to select the correct _github-runner_ that will execute this workflow.
+- **ENVIRONMENT**: The target environment that will show GitHub on the GitHub action page.
+- **DEPLOY_URL**: The target environment url that will show GitHub on the GitHub action page.
+- **REGISTRY_URL**: The registry url where to pull the Docker images.
+- **PROJECT_NAME**: The name that will be associated to the Docker Compose stack.
+- **DOCKER_COMPOSE_PATH**: The path to the docker-compose file to start.
+- **DOCKER_COMPOSE_EXTRA_ARGS**: Extra arguments to pass to the docker-compose command. Optional
+- **IMAGES**: A stringified json object containing as key the environment variables images used in the
+  Docker compose file and as value the name of the images that will be downloaded from the registry.
+  You can retrieve dynamically the image name from the _docker build and push step_ by adding the step's name to the **needs** array of the workflow
+  and using `${{ needs.{STEP_NAME}.outputs.DOCKER_IMAGE_NAME }}` where STEP_NAME is the step's name.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If the runner has no group, set it to **''**.
 
 This is an example to show how data should be formatted.
 
@@ -1508,7 +1537,7 @@ jobs:
     deploy:
         uses: zupit-it/pipeline-templates/.github/workflows/docker-step-deploy.yml@v1.27.3
         with:
-            DEPLOY_ON: 'sevensedie'
+            DEPLOY_ON: "sevensedie"
             ENVIRONMENT: testing
             DEPLOY_URL: https://workflows-example.testing.zupit.software
             REGISTRY_URL: ghcr.io
@@ -1531,24 +1560,24 @@ This workflow should be scheduled using cron to achieve the retention policy.
 
 The images' tags must follow this naming convention:
 
--   `latest`: for testing environment. This won't be deleted.
--   `v[0-9]+.[0-9]+.[0-9]+-rc`: for staging environment.
--   `v[0-9]+.[0-9]+.[0-9]+`: for production environment.
+- `latest`: for testing environment. This won't be deleted.
+- `v[0-9]+.[0-9]+.[0-9]+-rc`: for staging environment.
+- `v[0-9]+.[0-9]+.[0-9]+`: for production environment.
 
 It requires these inputs:
 
--   **IMAGE_NAME**: The image name to apply the retention policy.
--   **KEEP_AT_LEAST**: The number of tagged version to maintain for both staging and production environments.
+- **IMAGE_NAME**: The image name to apply the retention policy.
+- **KEEP_AT_LEAST**: The number of tagged version to maintain for both staging and production environments.
 
 It also requires these secrets:
 
--   **RETENTION_POLICY_TOKEN**: A PAT with permissions to **read:packages** and **delete:packages**
+- **RETENTION_POLICY_TOKEN**: A PAT with permissions to **read:packages** and **delete:packages**
 
 In addition, it is possible to specify these optional inputs:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
--   **DRY_RUN**: Only for tagged images, it shows which ones will be deleted without deleting them. By default, it is **false**.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **DRY_RUN**: Only for tagged images, it shows which ones will be deleted without deleting them. By default, it is **false**.
 
 This is an example to show how data should be formatted.
 
@@ -1575,20 +1604,19 @@ jobs:
 
 It requires these inputs:
 
--   **STATUS**: the final status of the Jira issue.
--   **BRANCH_OR_COMMIT_TITLE**: the branch or commit title from where extract the Jira issue key.
+- **STATUS**: the final status of the Jira issue.
+- **BRANCH_OR_COMMIT_TITLE**: the branch or commit title from where extract the Jira issue key.
 
 It also requires these secrets:
 
--   **JIRA_BASE_URL**: the JIRA url.
--   **JIRA_USER_EMAIL**: the JIRA user account email.
--   **JIRA_API_TOKEN**: the token to login the Jira user account email.
+- **JIRA_BASE_URL**: the JIRA url.
+- **JIRA_USER_EMAIL**: the JIRA user account email.
+- **JIRA_API_TOKEN**: the token to login the Jira user account email.
 
 In addition, it is possible to specify this optional inputs:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
-
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1610,10 +1638,10 @@ the branch or commit title based on the workflow type.
 
 Basically, these workflows starts with these events:
 
--   **Pull Request opened**: Move the Jira issue to _In Progress_.
--   **Pull Request review**: Move the Jira issue to _Merge Request_ if the PR is not in draft.
--   **Pull Request ready for review**: Move the Jira issue to _Merge Request_.
--   **On main workflow completion**: Move the Jira issue to _Developed_.
+- **Pull Request opened**: Move the Jira issue to _In Progress_.
+- **Pull Request review**: Move the Jira issue to _Merge Request_ if the PR is not in draft.
+- **Pull Request ready for review**: Move the Jira issue to _Merge Request_.
+- **On main workflow completion**: Move the Jira issue to _Developed_.
 
 **Move to In Progress** - _jira-move-in-progress.yml_
 
@@ -1662,16 +1690,16 @@ jobs:
 name: Jira Move to Developed
 
 on:
-  push:
-    branches: [ "main", "release/*" ]
+    push:
+        branches: ["main", "release/*"]
 
 jobs:
-  jira-move-issue-to-developed:
-    uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.27.3
-    with:
-      STATUS: "Developed"
-      BRANCH_OR_COMMIT_TITLE: ${{ github.event.head_commit.message }}
-    secrets: inherit
+    jira-move-issue-to-developed:
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-move-issue.yml@v1.27.3
+        with:
+            STATUS: "Developed"
+            BRANCH_OR_COMMIT_TITLE: ${{ github.event.head_commit.message }}
+        secrets: inherit
 ```
 
 ---
@@ -1679,64 +1707,67 @@ jobs:
 #### Jira Add Description to PR
 
 ###### Workflow
+
 **jira-add-description-to-pr.yml** is the workflow that adds the Jira issue description to the pull request description.
 
 It requires these secrets:
 
--   **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
--   **JIRA_BASE_URL**: the JIRA url.
--   **JIRA_USER_EMAIL**: the JIRA user account email.
--   **JIRA_API_TOKEN**: the token to login the Jira user account email.
+- **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
+- **JIRA_BASE_URL**: the JIRA url.
+- **JIRA_USER_EMAIL**: the JIRA user account email.
+- **JIRA_API_TOKEN**: the token to login the Jira user account email.
 
 In addition, it is possible to specify this optional inputs:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
--   **DIND_IMAGE**: Docker image to use. Default is docker:26.0.0-dind.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **DIND_IMAGE**: Docker image to use. Default is docker:26.0.0-dind.
 
 This is an example to show how data should be formatted.
+
 ```yaml
 jobs:
-  jira-description:
-    uses:
-      zupit-it/pipeline-templates/.github/workflows/jira-add-description-to-pr.yml@v1.21.4
-    secrets: inherit
+    jira-description:
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-add-description-to-pr.yml@v1.21.4
+        secrets: inherit
 ```
 
 #### Jira Create TODO Issues
 
 ###### Workflow
+
 **jira-step-create-todo-issues.yml** is the workflow that creates Jira issues based on the TODO comments in the code.
 
 It requires these inputs:
 
--   **PROJECT_KEY**: the Jira project key.
+- **PROJECT_KEY**: the Jira project key.
 
 It requires these secrets:
 
--   **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
--   **JIRA_BASE_URL**: the JIRA url.
--   **JIRA_USER_EMAIL**: the JIRA user account email.
--   **JIRA_API_TOKEN**: the token to login the Jira user account email.
+- **GITHUB_TOKEN**: The GitHub token to allow the workflow to make changes to the pull request.
+- **JIRA_BASE_URL**: the JIRA url.
+- **JIRA_USER_EMAIL**: the JIRA user account email.
+- **JIRA_API_TOKEN**: the token to login the Jira user account email.
 
 In addition, it is possible to specify this optional inputs:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
--   **DIND_IMAGE**: Docker image to use. Default is docker:26.0.0-dind.
--   **ISSUE_TYPE**: The type of the issue to create. Default is Task.
--   **ISSUE_DESCRIPTION**: The description of the issue to create. Default is "Created automatically via GitHub Actions".
--   **LINK**: A link to put in the issue description. Default is an empty string.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **DIND_IMAGE**: Docker image to use. Default is docker:26.0.0-dind.
+- **ISSUE_TYPE**: The type of the issue to create. Default is Task.
+- **ISSUE_DESCRIPTION**: The description of the issue to create. Default is "Created automatically via GitHub Actions".
+- **LINK**: A link to put in the issue description. Default is an empty string.
 
 This is an example to show how data should be formatted.
+
 ```yaml
 jobs:
-  jira-create-todo-issue:
-    uses: zupit-it/pipeline-templates/.github/workflows/jira-step-create-todo-issues.yml@v1.21.4
-    with:
-      PROJECT_KEY: DDSO
-      LINK: ${{ github.event.compare }}
-    secrets: inherit
+    jira-create-todo-issue:
+        uses: zupit-it/pipeline-templates/.github/workflows/jira-step-create-todo-issues.yml@v1.21.4
+        with:
+            PROJECT_KEY: DDSO
+            LINK: ${{ github.event.compare }}
+        secrets: inherit
 ```
 
 ---
@@ -1749,8 +1780,8 @@ jobs:
 
 It is possible to specify this optional input:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1769,13 +1800,12 @@ jobs:
 
 It requires these secrets:
 
--   **RELEASE_TOKEN**: a personal access token with grants to create a release and to push new commits. (use the zupit bot)
+- **RELEASE_TOKEN**: a personal access token with grants to create a release and to push new commits. (use the zupit bot)
 
 In addition, it is possible to specify this optional input:
 
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
-
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1802,20 +1832,20 @@ This workflow requires a **sonar-project.properties** file inside the _working d
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
 
 It also requires these secrets:
 
--   **SONAR_TOKEN**: The Sonarqube token.
--   **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is on organization secrets: **https://sonarqube.zupit.software**
+- **SONAR_TOKEN**: The Sonarqube token.
+- **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is on organization secrets: **https://sonarqube.zupit.software**
 
 In addition, it is possible to specify these optional inputs:
 
--   **SONAR_IMAGE**: The Sonarqube docker image where the runner execute all commands. By default, it is **sonarsource/sonar-scanner-cli**.
--   **DOWNLOAD_ARTIFACT**: Whether it should download an artifact or not to analyze. By default, it is **true**.
--   **ARTIFACT_FILENAME**: The name of the artifact. By default, it is an empty string.
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **SONAR_IMAGE**: The Sonarqube docker image where the runner execute all commands. By default, it is **sonarsource/sonar-scanner-cli**.
+- **DOWNLOAD_ARTIFACT**: Whether it should download an artifact or not to analyze. By default, it is **true**.
+- **ARTIFACT_FILENAME**: The name of the artifact. By default, it is an empty string.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1832,14 +1862,14 @@ jobs:
 If you want to analyze a Dart or Flutter project, you should use this workflow in the following way:
 
 ```yaml
-    flutter-sonar-analyze:
-        uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-analyze.yml@1.12.0
-        with:
-            WORKING_DIRECTORY: '.'
-            DOWNLOAD_ARTIFACT: false
-            PRE_SCAN_COMMANDS: 'git config --global --add safe.directory /opt/flutter && mv .env.github .env && flutter pub get && flutter test --machine --coverage > tests.output'
-            SONAR_IMAGE: 'ghcr.io/zupit-it/pipeline-templates/flutter-sonar-scanner-cli:latest'
-        secrets: inherit
+flutter-sonar-analyze:
+    uses: zupit-it/pipeline-templates/.github/workflows/sonar-step-analyze.yml@1.12.0
+    with:
+        WORKING_DIRECTORY: "."
+        DOWNLOAD_ARTIFACT: false
+        PRE_SCAN_COMMANDS: "git config --global --add safe.directory /opt/flutter && mv .env.github .env && flutter pub get && flutter test --machine --coverage > tests.output"
+        SONAR_IMAGE: "ghcr.io/zupit-it/pipeline-templates/flutter-sonar-scanner-cli:latest"
+    secrets: inherit
 ```
 
 #### Sonar Analyze - .NET
@@ -1858,22 +1888,22 @@ Additional properties are provided by this workflow and the required ones are ex
 
 It requires these inputs:
 
--   **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
--   **SONAR_PROJECT_KEY**: The SonarQube project key.
+- **WORKING_DIRECTORY**: The directory where the runner can execute all the commands.
+- **SONAR_PROJECT_KEY**: The SonarQube project key.
 
 It also requires these secrets:
 
--   **SONAR_TOKEN**: The Sonarqube token.
--   **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is on organization secrets: **https://sonarqube.zupit.software**
+- **SONAR_TOKEN**: The Sonarqube token.
+- **SONAR_HOST_URL**: The Sonarqube host to where submit analyzed data. By default, it is on organization secrets: **https://sonarqube.zupit.software**
 
 In addition, it is possible to specify these optional inputs:
 
--   **SONAR_IMAGE**: The SonarQube docker image where the runner execute all commands. By default, it is `sonarsource/sonar-scanner-cli`.
--   **SONAR_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded from Sonarqube analysis. You can't use a `sonar-project.properties` file since it's [not supported](https://community.sonarsource.com/t/configure-net-core-analysis-with-configuration-file/41299/2) from SonarScanner for .NET.
--   **COVERAGE_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded when computing tests code coverage ([docs](https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#source-files)). Since `dotnet test` expect absolute path for the exclusion list, you should provide this parameter in the form `**/my-path/*.cs` (always starting with `**/*`).
--   **DOTNET_VERSION**: The .NET version to build the solution. By default, it is `7`.
--   **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
--   **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **SONAR_IMAGE**: The SonarQube docker image where the runner execute all commands. By default, it is `sonarsource/sonar-scanner-cli`.
+- **SONAR_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded from Sonarqube analysis. You can't use a `sonar-project.properties` file since it's [not supported](https://community.sonarsource.com/t/configure-net-core-analysis-with-configuration-file/41299/2) from SonarScanner for .NET.
+- **COVERAGE_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded when computing tests code coverage ([docs](https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#source-files)). Since `dotnet test` expect absolute path for the exclusion list, you should provide this parameter in the form `**/my-path/*.cs` (always starting with `**/*`).
+- **DOTNET_VERSION**: The .NET version to build the solution. By default, it is `7`.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
 
 This is an example to show how data should be formatted.
 
@@ -1890,21 +1920,23 @@ jobs:
 ---
 
 #### Concurrent Workflow Runs
-Use the concurrency feature to manage overlapping workflow runs, ensuring only the most recent commit in branches like main triggers a workflow. 
+
+Use the concurrency feature to manage overlapping workflow runs, ensuring only the most recent commit in branches like main triggers a workflow.
 This optimizes resource usage and keeps deployments current.
 
 ##### Main Workflow Example with Concurrency
+
 ```yaml
 on:
-  push:
-    branches: [ "main", "release/*" ]
+    push:
+        branches: ["main", "release/*"]
 
-concurrency: 
-  group: ${{ github.ref }}
-  cancel-in-progress: true
+concurrency:
+    group: ${{ github.ref }}
+    cancel-in-progress: true
 
-jobs:
-    ...
+jobs: ...
 ```
-*Note:* When using concurrency with workflows that trigger others, ensure subsequent workflows account for potential cancellations of initiating workflows. 
+
+_Note:_ When using concurrency with workflows that trigger others, ensure subsequent workflows account for potential cancellations of initiating workflows.
 This may involve status checks or logic adjustments for such cases.

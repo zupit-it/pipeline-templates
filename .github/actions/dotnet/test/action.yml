@@ -11,22 +11,22 @@ inputs:
   EXCLUDE_FILES:
     required: false
     type: boolean
-    default: ''
+    default: ""
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
 
 runs:
   using: composite
   steps:
     - name: Run tests with coverage report
       if: ${{ inputs.GENERATE_CODE_COVERAGE == 'true' }}
-      shell: 'bash'
+      shell: "bash"
       run: |
         params=()
         [[ -n "${{ inputs.EXCLUDE_FILES }}" ]] && params+=(-p:ExcludeByFile=\"${{ inputs.EXCLUDE_FILES }}\")
-        
+
         dotnet test --no-build \
           --logger trx -p:CollectCoverage=true \
           -p:CoverletOutputFormat=opencover \

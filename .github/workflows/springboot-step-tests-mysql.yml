@@ -6,11 +6,11 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       WORKING_DIRECTORY:
         required: true
         type: string
@@ -95,4 +95,3 @@ jobs:
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.xml
             ${{ inputs.WORKING_DIRECTORY }}/target/**/*.class
           retention-days: 1
-

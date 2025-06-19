@@ -13,7 +13,7 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
 
 runs:
   using: composite
@@ -28,7 +28,7 @@ runs:
       if: ${{ inputs.ALPINE_OS == 'true' }}
       shell: ${{ inputs.SHELL }}
       run: |
-          apk add bash
+        apk add bash
 
     - name: Install .NET common dependencies for Alpine
       if: ${{ inputs.ALPINE_OS == 'true' }}
@@ -41,31 +41,31 @@ runs:
       if: ${{ inputs.ALPINE_OS == 'true' }}
       shell: bash
       run: |
-          # Dependencies: https://learn.microsoft.com/en-us/dotnet/core/install/linux-alpine
-          specified_major_version=3
-          specified_minor_version=18
+        # Dependencies: https://learn.microsoft.com/en-us/dotnet/core/install/linux-alpine
+        specified_major_version=3
+        specified_minor_version=18
 
-          # Extract the version from the file
-          version=$(cat /etc/alpine-release)
+        # Extract the version from the file
+        version=$(cat /etc/alpine-release)
 
-          # Parse the major and minor versions from the extracted version
-          major_version=$(echo $version | cut -d. -f1)
-          minor_version=$(echo $version | cut -d. -f2)
+        # Parse the major and minor versions from the extracted version
+        major_version=$(echo $version | cut -d. -f1)
+        minor_version=$(echo $version | cut -d. -f2)
 
-          # Dependencies for v3.18+
-          if [[ $major_version -eq $specified_major_version && $minor_version -ge $specified_minor_version ]]; then
-            echo "Alpine >= v3.18"
-            apk add ca-certificates-bundle 
-          else
-            echo "Alpine <= v3.17"
-            apk add icu-libs krb5-libs libintl
-          fi
+        # Dependencies for v3.18+
+        if [[ $major_version -eq $specified_major_version && $minor_version -ge $specified_minor_version ]]; then
+          echo "Alpine >= v3.18"
+          apk add ca-certificates-bundle 
+        else
+          echo "Alpine <= v3.17"
+          apk add icu-libs krb5-libs libintl
+        fi
 
     - name: Install Timezone package
       if: ${{ inputs.ALPINE_OS == 'true' }}
       shell: ${{ inputs.SHELL }}
       run: |
-          apk add tzdata
+        apk add tzdata
 
     - name: Install .NET
       uses: actions/setup-dotnet@v3

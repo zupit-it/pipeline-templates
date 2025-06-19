@@ -6,15 +6,15 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       DIND_IMAGE:
         required: false
         type: string
-        default: 'docker:26.0.0-dind'
+        default: "docker:26.0.0-dind"
 
 jobs:
   jira-description:

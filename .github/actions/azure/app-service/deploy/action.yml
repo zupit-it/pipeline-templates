@@ -31,13 +31,12 @@ runs:
       with:
         app-name: ${{ inputs.WEBAPP_NAME }}
         slot-name: ${{ inputs.WEBAPP_SLOT }}
-        package:  ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
+        package: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
 
     - name: Azure logout
-      shell: 'bash'
+      shell: "bash"
       if: always()
       run: |
-          az logout
-          az cache purge
-          az account clear
-
+        az logout
+        az cache purge
+        az account clear

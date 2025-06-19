@@ -51,7 +51,7 @@ runs:
       uses: azure/login@v1
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
-        
+
     - name: Upload to Azure Storage (upload-batch)
       shell: bash
       run: |
@@ -62,24 +62,23 @@ runs:
         --source "${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}" \
         --overwrite
 
-
     - name: Purge CDN endpoint
-      shell: 'bash'
+      shell: "bash"
       if: ${{ inputs.CDN_RG_NAME != '' }}
       run: |
         az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
 
     - name: Purge Azure Front Door endpoint
-      shell: 'bash'
+      shell: "bash"
       if: ${{ inputs.FD_RG_NAME != '' }}
       run: |
         az afd endpoint purge --content-paths  "/*" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" --domains "${{ inputs.FD_DOMAIN_NAME }}" --profile-name "${{ inputs.FD_PROFILE_NAME }}"
 
     - name: Azure logout
-      shell: 'bash'
+      shell: "bash"
       if: always()
       continue-on-error: true
       run: |
-          az logout
-          az cache purge
-          az account clear
+        az logout
+        az cache purge
+        az account clear

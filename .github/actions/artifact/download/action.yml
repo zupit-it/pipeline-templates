@@ -35,7 +35,6 @@ runs:
         OUTPUT_FOLDER: ${{ inputs.OUTPUT_FOLDER }}
 
     - name: Output folder
-      shell: 'bash'
+      shell: "bash"
       id: output-folder
       run: echo "OUTPUT_FOLDER=${{ inputs.OUTPUT_FOLDER }}"  >> "$GITHUB_OUTPUT"
-

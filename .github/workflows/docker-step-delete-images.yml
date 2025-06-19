@@ -6,15 +6,15 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       DIND_IMAGE:
         required: false
         type: string
-        default: 'docker:26.0.0-dind'
+        default: "docker:26.0.0-dind"
       IMAGE_NAME:
         required: true
         type: string
@@ -26,7 +26,6 @@ on:
         required: false
         type: boolean
         default: false
-
 
 jobs:
   to-lowercase-repository-name:
@@ -99,7 +98,7 @@ jobs:
       - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
         uses: vlaurin/action-ghcr-prune@v0.4.0
         with:
-          container:  "${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
+          container: "${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
           organization: zupit-it
           keep-last: ${{ inputs.KEEP_AT_LEAST }}
           tag-regex: v[0-9]+.[0-9]+.[0-9]+

@@ -18,11 +18,11 @@ runs:
 
   steps:
     - name: Archive
-      shell: 'bash'
+      shell: "bash"
       run: tar czvf ${{ inputs.ARCHIVE_PATH }} .
       working-directory: ${{ inputs.SOURCE_FOLDER }}
 
     - name: Output archive path
-      shell: 'bash'
+      shell: "bash"
       id: archive-path
       run: echo "ARCHIVE_PATH=${{ inputs.ARCHIVE_PATH }}"  >> "$GITHUB_OUTPUT"

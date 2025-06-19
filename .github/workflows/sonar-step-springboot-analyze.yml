@@ -64,7 +64,6 @@ on:
         required: false
         type: string
 
-
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
@@ -119,7 +118,6 @@ jobs:
           MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
           MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
           MAVEN_SERVER_PASSWORD: ${{ secrets.CI_MAVEN_SERVER_PASSWORD }}
-
 
       - name: Download coverage artifact
         if: ${{ inputs.DOWNLOAD_ARTIFACT }}

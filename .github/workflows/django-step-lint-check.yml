@@ -6,11 +6,11 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       WORKING_DIRECTORY:
         required: true
         type: string
@@ -71,7 +71,7 @@ jobs:
         uses: actions/checkout@v4
         if: ${{ inputs.ENABLE_LFS == true }}
         with:
-          lfs: 'true'
+          lfs: "true"
       - uses: actions/checkout@v4
         if: ${{ inputs.ENABLE_LFS == false }}
       - name: Checkout LFS objects
