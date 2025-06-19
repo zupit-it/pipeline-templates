@@ -10,6 +10,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  format-check:
+    name: Format check
+    runs-on: "ubuntu-24.04"
+    steps:
+      - run: npm run format:check
+
   lint-pr:
     name: Lint PR
     runs-on: "ubuntu-24.04"
