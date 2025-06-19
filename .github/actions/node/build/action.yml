@@ -21,17 +21,16 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
 
 runs:
   using: composite
   steps:
-
     - name: Setup Node.js ${{ inputs.NODE_VERSION }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.NODE_VERSION }}
-        cache: 'npm'
+        cache: "npm"
         cache-dependency-path: ${{ inputs.WORKING_DIRECTORY }}/**/package-lock.json
 
     - name: Set NPM cache directory

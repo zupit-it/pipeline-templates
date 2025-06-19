@@ -28,8 +28,7 @@ runs:
           }]
 
     - name: Set default maven settings
-      uses : s4u/maven-settings-action@v3.1.0
+      uses: s4u/maven-settings-action@v3.1.0
       if: ${{ inputs.MAVEN_SERVER_ID == '' }}
       with:
         path: "${{ inputs.MAVEN_USER_HOME }}/settings.xml"
-

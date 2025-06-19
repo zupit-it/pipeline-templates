@@ -15,7 +15,7 @@ runs:
 
   steps:
     - name: Generate artifact name
-      shell: 'bash'
+      shell: "bash"
       id: artifact-name
       run: |
         NAME=$(echo $RANDOM | md5sum | head -c 20)

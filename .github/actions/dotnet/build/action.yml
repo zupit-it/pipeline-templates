@@ -12,8 +12,9 @@ inputs:
     type: string
     default: "bash"
   DISABLE_CACHE:
-    required: true
+    required: false
     type: boolean
+    default: false
 
 runs:
   using: composite

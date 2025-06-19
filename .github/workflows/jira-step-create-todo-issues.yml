@@ -6,15 +6,15 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       DIND_IMAGE:
         required: false
         type: string
-        default: 'docker:26.0.0-dind'
+        default: "docker:26.0.0-dind"
       PROJECT_KEY:
         required: true
         type: string
@@ -40,18 +40,18 @@ jobs:
       image: ${{ inputs.DIND_IMAGE }}
 
     steps:
-    - name: Login to Jira
-      uses: atlassian/gajira-login@master
-      env:
-        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      - name: Login to Jira
+        uses: atlassian/gajira-login@master
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
 
-    - name: Create TODO
-      uses: atlassian/gajira-todo@v3
-      with:
-        project: ${{ inputs.PROJECT_KEY }}
-        issuetype: ${{ inputs.ISSUE_TYPE }}
-        description: ${{ inputs.ISSUE_DESCRIPTION }} ${{ inputs.LINK }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create TODO
+        uses: atlassian/gajira-todo@v3
+        with:
+          project: ${{ inputs.PROJECT_KEY }}
+          issuetype: ${{ inputs.ISSUE_TYPE }}
+          description: ${{ inputs.ISSUE_DESCRIPTION }} ${{ inputs.LINK }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
