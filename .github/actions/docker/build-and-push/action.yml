@@ -26,6 +26,10 @@ inputs:
     required: false
     type: string
     default: ""
+  NO_CACHE:
+    required: false
+    type: boolean
+    default: false
 outputs:
   DOCKER_IMAGE_NAME:
     description: "The docker image name that has been built"
@@ -58,5 +62,6 @@ runs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: ${{ inputs.BUILD_ARGS }}
+          no-cache: inputs.NO_CACHE
 
 
