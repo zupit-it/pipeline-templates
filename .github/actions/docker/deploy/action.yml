@@ -4,6 +4,18 @@ inputs:
   REGISTRY_URL:
     required: true
     type: string
+  REGISTRY_USER:
+    required: false
+    type: string
+    default: ${{ github.actor }}
+  REGISTRY_PASSWORD:
+    required: false
+    type: string
+    default: ""
+  GITHUB_TOKEN:
+    required: false
+    type: string
+    default: ""
   PROJECT_NAME:
     required: true
     type: string
@@ -14,25 +26,31 @@ inputs:
     required: false
     type: string
     default: ''
-  GITHUB_TOKEN:
-    required: true
+  DOCKER_COMPOSE_EXTRA_SERVICES:
+    required: false
     type: string
+    default: ''
 
 runs:
     using: composite
 
     steps:
+      - name: Validate token input
+        shell: sh
+        run: |
+          if [ -z '${{ inputs.REGISTRY_PASSWORD }}' ] && [ -z '${{ inputs.GITHUB_TOKEN }}' ]; then
+            echo 'Error: You must provide either REGISTRY_PASSWORD or GITHUB_TOKEN input.'
+            exit 1
+          fi
       - name: Log in to the Container registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ inputs.REGISTRY_URL }}
-          username: ${{ github.actor }}
-          password: ${{ inputs.GITHUB_TOKEN }}
+          username: ${{ inputs.REGISTRY_USER }}
+          password: ${{ inputs.REGISTRY_PASSWORD || inputs.GITHUB_TOKEN }}
       - name: Pull docker images
         shell: 'sh'
-        run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} pull
+        run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} pull ${{ inputs.DOCKER_COMPOSE_EXTRA_SERVICES }}
       - name: Run docker-compose up
         shell: 'sh'
-        run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} up --build --remove-orphans --force-recreate -d
-
-
+        run: docker-compose --project-name ${{ inputs.PROJECT_NAME }} -f ${{ inputs.DOCKER_COMPOSE_PATH }} ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }} up --build --remove-orphans --force-recreate -d ${{ inputs.DOCKER_COMPOSE_EXTRA_SERVICES }}
