@@ -6,15 +6,15 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       DIND_IMAGE:
         required: false
         type: string
-        default: 'docker:26.0.0-dind'
+        default: "docker:26.0.0-dind"
       WORKING_DIRECTORY:
         required: true
         type: string
@@ -42,11 +42,11 @@ on:
       CHECKOUT_REF:
         required: false
         type: string
-        default: ''
+        default: ""
       ENVIRONMENT:
         required: false
         type: string
-        default: ''
+        default: ""
       PRE_BUILD_SCRIPT:
         required: false
         type: string
@@ -93,5 +93,3 @@ jobs:
           DOCKER_IMAGE_TAG: ${{ inputs.DOCKER_IMAGE_TAG }}
           BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
         env: "${{secrets}}"
-
-

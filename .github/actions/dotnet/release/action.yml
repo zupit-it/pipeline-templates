@@ -16,17 +16,22 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
+  DISABLE_CACHE:
+    required: false
+    type: boolean
+    default: false
 
 runs:
   using: composite
   steps:
     - name: Build
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.27.3
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@ZCH-126/caching-by-suffix
       with:
         WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
         BUILD_CONFIG: ${{ inputs.BUILD_CONFIG }}
         SHELL: ${{ inputs.SHELL }}
+        DISABLE_CACHE: ${{ inputs.DISABLE_CACHE }}
 
     - name: Publish
       uses: zupit-it/pipeline-templates/.github/actions/dotnet/publish@v1.27.3

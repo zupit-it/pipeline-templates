@@ -9,7 +9,7 @@ on:
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       ENVIRONMENT:
         required: true
         type: string
@@ -28,14 +28,14 @@ on:
       DOCKER_COMPOSE_EXTRA_ARGS:
         required: false
         type: string
-        default: ''
+        default: ""
       IMAGES:
         required: true
         type: string
       DIND_IMAGE:
         required: false
         type: string
-        default: 'docker:26.0.0-dind'
+        default: "docker:26.0.0-dind"
 
 env: "${{secrets}}"
 

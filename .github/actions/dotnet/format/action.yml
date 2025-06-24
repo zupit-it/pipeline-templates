@@ -7,11 +7,11 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
   CSHARPIER_VERSION:
     required: false
     type: string
-    default: ''
+    default: ""
 
 runs:
   using: composite

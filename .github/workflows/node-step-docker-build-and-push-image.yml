@@ -6,15 +6,15 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: 'zupit-agents'
+        default: "zupit-agents"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
-        default: 'Container'
+        default: "Container"
       DIND_IMAGE:
         required: false
         type: string
-        default: 'docker:26.0.0-dind'
+        default: "docker:26.0.0-dind"
       NODE_VERSION:
         required: true
         type: string
@@ -51,7 +51,7 @@ on:
       ENV_VARIABLES:
         required: false
         type: string
-        default: '{}'
+        default: "{}"
       PROJECT:
         required: false
         type: string
@@ -66,7 +66,7 @@ on:
       CHECKOUT_REF:
         required: false
         type: string
-        default: ''
+        default: ""
 
     outputs:
       DOCKER_IMAGE_NAME:
@@ -122,7 +122,7 @@ jobs:
 
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
 
-    needs: [ build-node-project ]
+    needs: [build-node-project]
 
     steps:
       - name: Checkout repository

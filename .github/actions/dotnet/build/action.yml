@@ -10,13 +10,18 @@ inputs:
   SHELL:
     required: false
     type: string
-    default: 'bash'
+    default: "bash"
+  DISABLE_CACHE:
+    required: false
+    type: boolean
+    default: false
 
 runs:
   using: composite
   steps:
     - name: Restore NuGet packages cache
-      uses: actions/cache@v3
+      if: ${{ inputs.DISABLE_CACHE == 'false' }}
+      uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
