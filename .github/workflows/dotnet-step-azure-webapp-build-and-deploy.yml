@@ -79,7 +79,7 @@ jobs:
           NAME_PREFIX: dotnet-build
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@ZCH-126/caching-by-suffix
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.27.3
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Release"
