@@ -107,7 +107,7 @@ jobs:
           CSHARPIER_VERSION: ${{ inputs.CSHARPIER_VERSION }}
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@ZCH-126/caching-by-suffix
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.27.3
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
