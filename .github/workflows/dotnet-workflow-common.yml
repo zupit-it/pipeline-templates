@@ -111,7 +111,6 @@ jobs:
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
-          DISABLE_CACHE: ${{ inputs.DISABLE_CACHE }}
 
       - name: Lint
         uses: zupit-it/pipeline-templates/.github/actions/dotnet/lint@v1.27.3
