@@ -1,0 +1,99 @@
+name: Docker build and push image to Google Artifact Registry
+
+on:
+  workflow_call:
+    inputs:
+      RUN_ON:
+        required: false
+        type: string
+        default: "zupit-agents"
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: "Container"
+      DIND_IMAGE:
+        required: false
+        type: string
+        default: "docker:26.0.0-dind"
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      DOCKERFILE_PATH:
+        required: true
+        type: string
+      DOCKER_IMAGE_NAME:
+        required: true
+        type: string
+      DOCKER_IMAGE_TAG:
+        required: true
+        type: string
+      BUILD_ARGS:
+        required: false
+        type: string
+        default: ""
+      GCP_PROJECT_ID:
+        required: true
+        type: string
+      GAR_LOCATION:
+        required: true
+        type: string
+      GAR_REPOSITORY:
+        required: true
+        type: string
+      CHECKOUT_REF:
+        required: false
+        type: string
+        default: ""
+      ENVIRONMENT:
+        required: false
+        type: string
+        default: ""
+      PRE_BUILD_SCRIPT:
+        required: false
+        type: string
+        default: ""
+    outputs:
+      DOCKER_IMAGE_NAME:
+        description: "The docker image name that has been built"
+        value: ${{ jobs.docker-build-push-image.outputs.DOCKER_IMAGE_NAME }}
+
+env: "${{secrets}}"
+
+jobs:
+  docker-build-push-image:
+    environment: ${{ inputs.ENVIRONMENT }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container:
+      image: ${{ inputs.DIND_IMAGE }}
+
+    outputs:
+      DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.CHECKOUT_REF }}
+
+      - name: Run pre-build script
+        if: inputs.PRE_BUILD_SCRIPT != ''
+        run: |
+          echo "Executing pre-build script..."
+          sh -c '${{ inputs.PRE_BUILD_SCRIPT }}'
+
+      - name: Docker Build & Push to GAR
+        id: docker
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push-gar@v1.28.0
+        with:
+          GCP_CREDENTIALS_JSON: ${{ secrets.GCP_SA_KEY }}
+          GAR_LOCATION: ${{ inputs.GAR_LOCATION }}
+          GCP_PROJECT_ID: ${{ inputs.GCP_PROJECT_ID }}
+          GAR_REPOSITORY: ${{ inputs.GAR_REPOSITORY }}
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          DOCKERFILE_PATH: ${{ inputs.DOCKERFILE_PATH }}
+          DOCKER_IMAGE_NAME: ${{ inputs.DOCKER_IMAGE_NAME }}
+          DOCKER_IMAGE_TAG: ${{ inputs.DOCKER_IMAGE_TAG }}
+          BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
+        env: "${{secrets}}"

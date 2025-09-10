@@ -1,0 +1,63 @@
+name: Docker build and push image to Google Artifact Registry
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  GCP_CREDENTIALS_JSON:
+    required: true
+    type: string
+  GAR_LOCATION:
+    required: true
+    type: string
+  GCP_PROJECT_ID:
+    required: true
+    type: string
+  GAR_REPOSITORY:
+    required: true
+    type: string
+  DOCKERFILE_PATH:
+    required: true
+    type: string
+  DOCKER_IMAGE_NAME:
+    required: true
+    type: string
+  DOCKER_IMAGE_TAG:
+    required: true
+    type: string
+  BUILD_ARGS:
+    required: false
+    type: string
+    default: ""
+outputs:
+  DOCKER_IMAGE_NAME:
+    description: "The docker image name that has been built"
+    value: ${{ steps.meta.outputs.tags }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Log in to Google Artifact Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ inputs.GAR_LOCATION }}-docker.pkg.dev
+        username: _json_key
+        password: ${{ inputs.GCP_CREDENTIALS_JSON }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ inputs.GAR_LOCATION }}-docker.pkg.dev/${{ inputs.GCP_PROJECT_ID }}/${{ inputs.GAR_REPOSITORY }}/${{ inputs.DOCKER_IMAGE_NAME }}
+        tags: ${{ inputs.DOCKER_IMAGE_TAG }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v3
+      with:
+        context: ./${{ inputs.WORKING_DIRECTORY }}
+        file: ${{ inputs.DOCKERFILE_PATH }}
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: ${{ inputs.BUILD_ARGS }}
