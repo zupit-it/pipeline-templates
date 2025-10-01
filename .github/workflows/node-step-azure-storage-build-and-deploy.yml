@@ -87,7 +87,7 @@ env: "${{secrets}}"
 
 jobs:
   build-node-project:
-    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+    runs-on: buildjet-2vcpu-ubuntu-2204
     container:
       image: ${{ inputs.IMAGE }}
 
@@ -128,7 +128,7 @@ jobs:
           ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 
   node-deploy-azure-storage:
-    runs-on: buildjet-2vcpu-ubuntu-2204-arm
+    runs-on: buildjet-2vcpu-ubuntu-2204
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:
