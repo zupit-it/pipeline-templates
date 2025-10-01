@@ -54,7 +54,6 @@ env:
 jobs:
   workdir-has-changes:
     runs-on: buildjet-4vcpu-ubuntu-2204
-    container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
