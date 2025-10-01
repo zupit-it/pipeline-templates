@@ -45,10 +45,6 @@ on:
         required: false
         type: string
         default: "all"
-      DISABLE_CACHE:
-        required: false
-        type: boolean
-        default: false
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}

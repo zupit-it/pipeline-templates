@@ -11,10 +11,6 @@ inputs:
     required: false
     type: string
     default: "bash"
-  DISABLE_CACHE:
-    required: false
-    type: boolean
-    default: false
 
 runs:
   using: composite
@@ -26,7 +22,6 @@ runs:
 
     # 2) Compute a narrow cache key: OS + SDK pin + only lockfiles under WORKING_DIRECTORY
     - name: Compute cache key
-      if: ${{ inputs.DISABLE_CACHE == 'false' }}
       id: key
       shell: bash
       run: |
@@ -40,10 +35,10 @@ runs:
         KEY_SRC="$(printf '%s' "$CONTENT" | git hash-object --stdin)"
         echo "key=${{ runner.os }}-nuget-$KEY_SRC" >> "$GITHUB_OUTPUT"
 
-    # 3) On PRs, restore only (don’t create new caches)
+    # 3) On PRs, restore only (don't create new caches)
     - name: Restore NuGet cache (PRs)
-      if: ${{ inputs.DISABLE_CACHE == 'false' && github.event_name == 'pull_request' }}
-      uses: actions/cache/restore@v4
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: buildjet/cache/restore@v4
       with:
         path: ${{ env.NUGET_PACKAGES }}
         key: ${{ steps.key.outputs.key }}
@@ -51,9 +46,9 @@ runs:
 
     # 4) On main (or default branch), allow restore+save
     - name: Restore NuGet cache (main)
-      if: ${{ inputs.DISABLE_CACHE == 'false' && github.ref_name == 'main' }}
+      if: ${{ github.ref_name == 'main' }}
       id: cache_main
-      uses: actions/cache@v4
+      uses: buildjet/cache@v4
       with:
         path: ${{ env.NUGET_PACKAGES }}
         key: ${{ steps.key.outputs.key }}
@@ -71,10 +66,10 @@ runs:
       run: dotnet build --no-restore --configuration "${{ inputs.BUILD_CONFIG }}"
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
-    # 7) Save cache only if we’re on main and there wasn’t a hit
+    # 7) Save cache only if we're on main and there wasn't a hit
     - name: Save NuGet cache (main, miss)
-      if: ${{ inputs.DISABLE_CACHE == 'false' && github.ref_name == 'main' && steps.cache_main.outputs.cache-hit != 'true' }}
-      uses: actions/cache/save@v4
+      if: ${{ github.ref_name == 'main' && steps.cache_main.outputs.cache-hit != 'true' }}
+      uses: buildjet/cache/save@v4
       with:
         path: ${{ env.NUGET_PACKAGES }}
         key: ${{ steps.key.outputs.key }}

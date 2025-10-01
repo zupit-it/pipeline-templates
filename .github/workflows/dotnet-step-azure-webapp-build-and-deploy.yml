@@ -43,10 +43,6 @@ on:
         required: false
         type: boolean
         default: true
-      DISABLE_CACHE:
-        required: false
-        type: boolean
-        default: false
 
 env: "${{secrets}}"
 
@@ -83,7 +79,6 @@ jobs:
           BUILD_CONFIG: "Release"
           PROJECT: ${{ inputs.PROJECT }}
           OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
-          DISABLE_CACHE: ${{ inputs.DISABLE_CACHE }}
 
       - name: Upload build artifact
         uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.27.3

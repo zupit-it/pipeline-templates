@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ inputs.NODE_VERSION }}
-        uses: actions/setup-node@v3
+        uses: buildjet/setup-node@v4.0.4
         with:
           node-version: ${{ inputs.NODE_VERSION }}
           cache: "npm"
