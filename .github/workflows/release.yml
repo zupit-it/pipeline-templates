@@ -30,4 +30,5 @@ jobs:
         shell: bash
         run: npm run semantic-release
         env:
+          HUSKY: 0
           GITHUB_TOKEN: ${{ secrets.ZUPIT_BOT_GITHUB_TOKEN }}
