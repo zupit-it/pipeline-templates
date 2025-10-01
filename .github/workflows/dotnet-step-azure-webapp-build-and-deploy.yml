@@ -52,9 +52,7 @@ env: "${{secrets}}"
 
 jobs:
   build:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: buildjet-4vcpu-ubuntu-2204
     container:
       image: ${{ inputs.DOTNET_IMAGE }}
 
@@ -94,9 +92,7 @@ jobs:
           ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 
   deploy:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: buildjet-4vcpu-ubuntu-2204
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:

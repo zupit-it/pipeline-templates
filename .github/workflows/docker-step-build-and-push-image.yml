@@ -61,9 +61,7 @@ env: "${{secrets}}"
 jobs:
   docker-build-push-image:
     environment: ${{ inputs.ENVIRONMENT }}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: buildjet-4vcpu-ubuntu-2204
     container:
       image: ${{ inputs.DIND_IMAGE }}
 
