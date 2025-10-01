@@ -60,6 +60,10 @@ on:
         required: false
         type: string
         default: "all"
+      DB_POSTGRES_VERSION:
+        required: false
+        type: string
+        default: "latest"
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
 
@@ -105,6 +109,7 @@ jobs:
       SETUP_COMMANDS: ${{inputs.SETUP_COMMANDS}}
       ENABLE_LFS: ${{inputs.ENABLE_LFS}}
       LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
+      DB_POSTGRES_VERSION: ${{inputs.DB_POSTGRES_VERSION}}
     secrets: inherit
 
   django-tests:
@@ -122,6 +127,7 @@ jobs:
       ENABLE_LFS: ${{inputs.ENABLE_LFS}}
       LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
       COVERAGE_THRESHOLD: ${{inputs.COVERAGE_THRESHOLD}}
+      DB_POSTGRES_VERSION: ${{inputs.DB_POSTGRES_VERSION}}
     secrets: inherit
 
   jobs-succeded:
