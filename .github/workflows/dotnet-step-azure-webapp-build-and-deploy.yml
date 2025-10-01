@@ -68,12 +68,12 @@ jobs:
 
       - name: Generate artifact name
         id: artifact-name
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@test-buildjet
         with:
           NAME_PREFIX: dotnet-build
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@test-buildjet
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Release"
@@ -81,7 +81,7 @@ jobs:
           OUTPUT_DIRECTORY: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 
       - name: Upload build artifact
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@test-buildjet
         with:
           SOURCE_FOLDER: ${{ inputs.WORKING_DIRECTORY }}/${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
           ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
@@ -104,12 +104,12 @@ jobs:
 
       - name: Download build artifact
         id: output-folder
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@test-buildjet
         with:
           ARTIFACT_NAME: ${{ needs.build.outputs.ARTIFACT_NAME }}
 
       - name: Publish to Azure App Service
-        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@test-buildjet
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
           BINARIES_DIRECTORY: ""

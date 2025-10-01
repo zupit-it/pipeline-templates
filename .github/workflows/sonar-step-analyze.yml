@@ -93,7 +93,7 @@ jobs:
 
       - name: Sonar step analyze with artifacts
         id: sonar
-        uses: zupit-it/pipeline-templates/.github/actions/sonar/analyze@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/sonar/analyze@test-buildjet
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

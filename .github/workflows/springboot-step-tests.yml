@@ -73,7 +73,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set Maven settings
-        uses: zupit-it/pipeline-templates/.github/actions/maven/settings@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/maven/settings@test-buildjet
         with:
           MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
           MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
