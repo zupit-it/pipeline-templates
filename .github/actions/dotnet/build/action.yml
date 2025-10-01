@@ -19,20 +19,62 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Restore NuGet packages cache
+    # 1) Use a repo-local NuGet packages folder to avoid global bloat across projects
+    - name: Set repo-local NuGet packages folder
+      shell: ${{ inputs.SHELL }}
+      run: echo "NUGET_PACKAGES=${{ github.workspace }}/.nuget/packages" >> $GITHUB_ENV
+
+    # 2) Compute a narrow cache key: OS + SDK pin + only lockfiles under WORKING_DIRECTORY
+    - name: Compute cache key
       if: ${{ inputs.DISABLE_CACHE == 'false' }}
-      uses: actions/cache@v4
+      id: key
+      shell: bash
+      run: |
+        set -euo pipefail
+        SDK="$(cat global.json 2>/dev/null || true)"
+        LOCKS="$(git ls-files '${{ inputs.WORKING_DIRECTORY }}/**/packages.lock.json' 2>/dev/null || true)"
+        CONTENT="$SDK"
+        if [ -n "$LOCKS" ]; then
+          while IFS= read -r f; do CONTENT="$CONTENT$(printf '\n')$(cat "$f")"; done <<< "$LOCKS"
+        fi
+        KEY_SRC="$(printf '%s' "$CONTENT" | git hash-object --stdin)"
+        echo "key=${{ runner.os }}-nuget-$KEY_SRC" >> "$GITHUB_OUTPUT"
+
+    # 3) On PRs, restore only (don’t create new caches)
+    - name: Restore NuGet cache (PRs)
+      if: ${{ inputs.DISABLE_CACHE == 'false' && github.event_name == 'pull_request' }}
+      uses: actions/cache/restore@v4
       with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        path: ${{ env.NUGET_PACKAGES }}
+        key: ${{ steps.key.outputs.key }}
         restore-keys: ${{ runner.os }}-nuget-
 
+    # 4) On main (or default branch), allow restore+save
+    - name: Restore NuGet cache (main)
+      if: ${{ inputs.DISABLE_CACHE == 'false' && github.ref_name == 'main' }}
+      id: cache_main
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.NUGET_PACKAGES }}
+        key: ${{ steps.key.outputs.key }}
+        restore-keys: ${{ runner.os }}-nuget-
+
+    # 5) Restore using the repo-local packages path
     - name: Restore dependencies
       shell: ${{ inputs.SHELL }}
-      run: dotnet restore --locked-mode
+      run: dotnet restore --locked-mode --packages "$NUGET_PACKAGES"
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
 
+    # 6) Build
     - name: Build
       shell: ${{ inputs.SHELL }}
-      run: dotnet build --no-restore --configuration ${{ inputs.BUILD_CONFIG }}
+      run: dotnet build --no-restore --configuration "${{ inputs.BUILD_CONFIG }}"
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    # 7) Save cache only if we’re on main and there wasn’t a hit
+    - name: Save NuGet cache (main, miss)
+      if: ${{ inputs.DISABLE_CACHE == 'false' && github.ref_name == 'main' && steps.cache_main.outputs.cache-hit != 'true' }}
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ env.NUGET_PACKAGES }}
+        key: ${{ steps.key.outputs.key }}
