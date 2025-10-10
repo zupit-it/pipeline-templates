@@ -136,9 +136,6 @@ jobs:
       env:
         GNUPGHOME: /root/.gnupg
 
-    defaults:
-      run:
-        working-directory: ${{ inputs.WORKING_DIRECTORY }}
     needs: [build-node-project]
     steps:
       - name: Installing tar package with tdnf
