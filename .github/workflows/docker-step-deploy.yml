@@ -42,11 +42,7 @@ env: "${{secrets}}"
 jobs:
   deploy-with-runner-group:
     if: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' }}
-    runs-on:
-      labels:
-        - deploy
-        - ${{ inputs.DEPLOY_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: buildjet-2vcpu-ubuntu-2204
     env: ${{ fromJson(inputs.IMAGES) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
@@ -67,11 +63,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-without-runner-group:
-    if: ${{ inputs.RUNNERS_CONTAINER_GROUP == '' }}
-    runs-on:
-      labels:
-        - deploy
-        - ${{ inputs.DEPLOY_ON }}
+    runs-on: buildjet-2vcpu-ubuntu-2204
     env: ${{ fromJson(inputs.IMAGES) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}

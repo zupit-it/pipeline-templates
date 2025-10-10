@@ -60,9 +60,7 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: buildjet-2vcpu-ubuntu-2204
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
@@ -115,9 +113,7 @@ jobs:
 
   jobs-succeded:
     needs: ["lint-check-build", "cypress-run"]
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: buildjet-2vcpu-ubuntu-2204
     if: ${{ always()}}
     steps:
       - name: "Jobs: lint-check-build, cypress-run didn't fail."

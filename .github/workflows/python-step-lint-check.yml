@@ -40,9 +40,7 @@ env: "${{secrets}}"
 jobs:
   python-linter:
     if: ${{ inputs.RUN }}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: buildjet-2vcpu-ubuntu-2204
     container: ${{ inputs.PYTHON_IMAGE }}
 
     defaults:
