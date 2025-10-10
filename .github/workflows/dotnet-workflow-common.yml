@@ -51,7 +51,7 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: buildjet-2vcpu-ubuntu-2204
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
     steps:
@@ -118,7 +118,7 @@ jobs:
 
   jobs-succeded:
     needs: dotnet-common
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: buildjet-2vcpu-ubuntu-2204
     if: ${{ always()}}
     steps:
       - name: "Jobs: dotnet-common didn't fail."
