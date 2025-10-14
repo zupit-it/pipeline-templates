@@ -51,7 +51,7 @@ env: "${{secrets}}"
 jobs:
   springboot-run-tests:
     if: ${{ inputs.RUN }}
-    runs-on: buildjet-2vcpu-ubuntu-2204
+    runs-on: buildjet-4vcpu-ubuntu-2204
     container: ${{ inputs.JAVA_IMAGE }}
 
     defaults:
