@@ -35,7 +35,7 @@ env: "${{secrets}}"
 jobs:
   springboot-lint-check:
     if: ${{ inputs.RUN }}
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: buildjet-2vcpu-ubuntu-2204
     container: ${{ inputs.JAVA_IMAGE }}
 
     defaults:
