@@ -131,7 +131,7 @@ jobs:
         run: ${{ inputs.PRE_SCAN_COMMANDS }}
 
       - name: Run Sonar
-        run: ./mvnw -ntp initialize sonar:sonar --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
+        run: ./mvnw -ntp initialize org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
 
   jobs-succeded:
     needs: ["sonar-analyze"]
