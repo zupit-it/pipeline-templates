@@ -52,21 +52,22 @@ runs:
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
-    - name: Upload to Azure Storage (upload-batch)
+    - name: Sync to Azure Storage ($web)
       shell: bash
       run: |
-        echo "Uploading new blobs to '$web'..."
-        az storage blob upload-batch \
-        --account-name ${{ inputs.STORAGE_ACCOUNT_NAME }} \
-        --destination '$web' \
-        --source "${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}" \
-        --overwrite
+        SRC="${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}"
+        echo "Syncing '$SRC' -> '$web'..."
+        az storage blob sync \
+          --account-name "${{ inputs.STORAGE_ACCOUNT_NAME }}" \
+          --container '$web' \
+          --source "$SRC" \
+          --only-show-errors
 
     - name: Purge CDN endpoint
       shell: "bash"
       if: ${{ inputs.CDN_RG_NAME != '' }}
       run: |
-        az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
+        az cdn endpoint purge --content-paths  "/index.html" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
 
     - name: Purge Azure Front Door endpoint
       shell: "bash"
