@@ -43,6 +43,10 @@ inputs:
     required: false
     type: string
     default: ""
+  PURGE_CONTENT_PATHS:
+    required: false
+    type: string
+    default: "/*"
 
 runs:
   using: composite
@@ -56,10 +60,15 @@ runs:
       shell: bash
       run: |
         SRC="${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}"
-        echo "Syncing '$SRC' -> '$web'..."
-        az storage blob sync \
+        echo "Deleting existing blobs from '$web' container..."
+        az storage blob delete-batch \
           --account-name "${{ inputs.STORAGE_ACCOUNT_NAME }}" \
-          --container '$web' \
+          --source '$web' \
+          --only-show-errors
+        echo "Uploading '$SRC' -> '$web'..."
+        az storage blob upload-batch \
+          --account-name "${{ inputs.STORAGE_ACCOUNT_NAME }}" \
+          --destination '$web' \
           --source "$SRC" \
           --only-show-errors
 
@@ -67,13 +76,13 @@ runs:
       shell: "bash"
       if: ${{ inputs.CDN_RG_NAME != '' }}
       run: |
-        az cdn endpoint purge --content-paths  "/index.html" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
+        az cdn endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}" --no-wait
 
     - name: Purge Azure Front Door endpoint
       shell: "bash"
       if: ${{ inputs.FD_RG_NAME != '' }}
       run: |
-        az afd endpoint purge --content-paths  "/*" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" --domains "${{ inputs.FD_DOMAIN_NAME }}" --profile-name "${{ inputs.FD_PROFILE_NAME }}"
+        az afd endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" --domains "${{ inputs.FD_DOMAIN_NAME }}" --profile-name "${{ inputs.FD_PROFILE_NAME }}" --no-wait
 
     - name: Azure logout
       shell: "bash"
