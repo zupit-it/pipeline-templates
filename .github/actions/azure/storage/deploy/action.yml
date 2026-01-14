@@ -76,7 +76,7 @@ runs:
       shell: "bash"
       if: ${{ inputs.CDN_RG_NAME != '' }}
       run: |
-        az cdn endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}" --no-wait
+        az cdn endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
 
     - name: Purge Azure Front Door endpoint
       shell: "bash"
@@ -86,7 +86,7 @@ runs:
         if [ -n "${{ inputs.FD_DOMAIN_NAME }}" ]; then
           DOMAIN_PARAM="--domains ${{ inputs.FD_DOMAIN_NAME }}"
         fi
-        az afd endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" $DOMAIN_PARAM --profile-name "${{ inputs.FD_PROFILE_NAME }}" --no-wait
+        az afd endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" $DOMAIN_PARAM --profile-name "${{ inputs.FD_PROFILE_NAME }}"
 
     - name: Azure logout
       shell: "bash"
