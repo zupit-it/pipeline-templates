@@ -82,7 +82,11 @@ runs:
       shell: "bash"
       if: ${{ inputs.FD_RG_NAME != '' }}
       run: |
-        az afd endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" --domains "${{ inputs.FD_DOMAIN_NAME }}" --profile-name "${{ inputs.FD_PROFILE_NAME }}" --no-wait
+        DOMAIN_PARAM=""
+        if [ -n "${{ inputs.FD_DOMAIN_NAME }}" ]; then
+          DOMAIN_PARAM="--domains ${{ inputs.FD_DOMAIN_NAME }}"
+        fi
+        az afd endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" $DOMAIN_PARAM --profile-name "${{ inputs.FD_PROFILE_NAME }}" --no-wait
 
     - name: Azure logout
       shell: "bash"
