@@ -43,6 +43,10 @@ inputs:
     required: false
     type: string
     default: ""
+  NEW_CACHE_STRATEGY:
+    required: false
+    type: boolean
+    default: false
   PURGE_CONTENT_PATHS:
     required: false
     type: string
@@ -72,15 +76,40 @@ runs:
           --source "$SRC" \
           --only-show-errors
 
+    - name: Upload index.html with cache control
+      shell: bash
+      run: |
+        SRC="${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}"
+        echo "Uploading index.html with cache control settings..."
+        az storage blob upload \
+          --account-name "${{ inputs.STORAGE_ACCOUNT_NAME }}" \
+          --container-name '$web' \
+          --name index.html \
+          --file "$SRC/index.html" \
+          --content-cache-control "no-cache, no-store, must-revalidate" \
+          --content-type "text/html" \
+          --overwrite \
+          --only-show-errors
+
+    - name: Verify index.html cache control
+      shell: bash
+      run: |
+        echo "Verifying cache control settings for index.html..."
+        az storage blob show \
+          --account-name "${{ inputs.STORAGE_ACCOUNT_NAME }}" \
+          --container-name '$web' \
+          --name index.html \
+          --query "properties.contentSettings.cacheControl"
+
     - name: Purge CDN endpoint
       shell: "bash"
-      if: ${{ inputs.CDN_RG_NAME != '' }}
+      if: ${{ inputs.CDN_RG_NAME != '' && !inputs.NEW_CACHE_STRATEGY }}
       run: |
         az cdn endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
 
     - name: Purge Azure Front Door endpoint
       shell: "bash"
-      if: ${{ inputs.FD_RG_NAME != '' }}
+      if: ${{ inputs.FD_RG_NAME != '' && !inputs.NEW_CACHE_STRATEGY }}
       run: |
         DOMAIN_PARAM=""
         if [ -n "${{ inputs.FD_DOMAIN_NAME }}" ]; then
