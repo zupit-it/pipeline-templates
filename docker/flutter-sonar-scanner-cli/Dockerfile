@@ -4,7 +4,7 @@ RUN apt update -y && apt install -y curl xz-utils clang cmake git ninja-build pk
 
 WORKDIR /opt
 
-ENV FLUTTER_VERSION="3.38.4"
+ENV FLUTTER_VERSION="3.38.7"
 ENV FLUTTER_HOME "/opt/flutter"
 ENV PATH $PATH:$FLUTTER_HOME/bin:/opt/sonar-scanner-cli/bin
 
@@ -15,6 +15,8 @@ RUN mkdir $FLUTTER_HOME \
 
 RUN cd $FLUTTER_HOME && tar -xf flutter_linux_${FLUTTER_VERSION}-stable.tar.xz --strip-components=1 \
     && rm flutter_linux_${FLUTTER_VERSION}-stable.tar.xz
+
+RUN git config --global --add safe.directory /opt/flutter
 
 RUN flutter precache
 
