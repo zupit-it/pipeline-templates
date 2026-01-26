@@ -65,6 +65,13 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      SONAR_TOKEN:
+        required: true
+      SONAR_HOST_URL:
+        required: true
+      DEVEXPRESS_LICENSE:
+        required: false
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -98,6 +105,8 @@ jobs:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))) }}
     runs-on: buildjet-4vcpu-ubuntu-2204
+    env:
+      DevExpress_License: ${{ secrets.DEVEXPRESS_LICENSE }}
     container:
       image: ${{ inputs.SONAR_IMAGE }}
       env: ${{ fromJson(inputs.SONAR_IMAGE_ENV_VARIABLES) }}
