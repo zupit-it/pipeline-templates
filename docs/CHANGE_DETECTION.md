@@ -57,23 +57,26 @@ jobs:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-        outputs:
-            changes-detected: ${{ steps.filter.outputs.changes-detected }}
-        steps:
-            - name: Set CHECK_DIR to custom directory if provided
-              if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
-              run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
-            - name: Set default CHECK_DIR
-              if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
-              run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+    container: buildpack-deps:24.04-scm
+    outputs:
+        changes-detected: ${{ steps.filter.outputs.changes-detected }}
+    steps:
+        - name: Set CHECK_DIR to custom directory if provided
+          if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
+          run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
+        - name: Set default CHECK_DIR
+          if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
+          run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+        - name: Configure Git safe directory
+          run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-            - uses: actions/checkout@v4
-            - uses: dorny/paths-filter@v3
-              id: filter
-              with:
-                  filters: |
-                      changes-detected:
-                        - "${{ env.CHECK_DIR }}/**"
+        - uses: actions/checkout@v4
+        - uses: dorny/paths-filter@v3
+          id: filter
+          with:
+            filters: |
+              changes-detected:
+                - "${{ env.CHECK_DIR }}/**"
 ```
 
 ### 4. Update Your Main Jobs
