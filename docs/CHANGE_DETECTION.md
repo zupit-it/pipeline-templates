@@ -19,7 +19,7 @@ Add these parameters to your workflow's `workflow_call` inputs:
 ```yaml
 inputs:
     CHECK_WORKDIR_CHANGES:
-        required: true
+        required: false
         type: boolean
         default: false
         description: "When true, enables change detection. When false, always runs jobs"
