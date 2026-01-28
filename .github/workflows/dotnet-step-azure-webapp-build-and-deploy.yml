@@ -70,23 +70,23 @@ jobs:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-      outputs:
-        changes-detected: ${{ steps.filter.outputs.changes-detected }}
-      steps:
-        - name: Set CHECK_DIR to custom directory if provided
-          if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
-          run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
-        - name: Set default CHECK_DIR
-          if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
-          run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+    outputs:
+      changes-detected: ${{ steps.filter.outputs.changes-detected }}
+    steps:
+      - name: Set CHECK_DIR to custom directory if provided
+        if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
+        run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
+      - name: Set default CHECK_DIR
+        if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
+        run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
 
-        - uses: actions/checkout@v4
-        - uses: dorny/paths-filter@v3
-          id: filter
-          with:
-            filters: |
-              changes-detected:
-                - "${{ inputs.WORKING_DIRECTORY }}/**"
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changes-detected:
+              - "${{ inputs.WORKING_DIRECTORY }}/**"
 
   build:
     needs: workdir-has-changes
@@ -171,7 +171,7 @@ jobs:
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-      if: ${{ always() }}
-      steps:
-        - name: "Check if jobs succeeded"
-          run: if [[ "${{ needs.build.result }}" == "failure" || "${{ needs.deploy.result }}" == "failure" ]]; then exit 1; fi
+    if: ${{ always() }}
+    steps:
+      - name: "Check if jobs succeeded"
+        run: if [[ "${{ needs.build.result }}" == "failure" || "${{ needs.deploy.result }}" == "failure" ]]; then exit 1; fi
