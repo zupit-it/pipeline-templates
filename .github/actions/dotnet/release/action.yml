@@ -26,7 +26,7 @@ runs:
   using: composite
   steps:
     - name: Build
-      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@ZCH-126/caching-by-suffix
+      uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@ZCH-126/caching-new
       with:
         WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
         BUILD_CONFIG: ${{ inputs.BUILD_CONFIG }}
