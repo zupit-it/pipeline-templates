@@ -82,11 +82,55 @@ on:
         required: false
         type: string
         default: ""
+      CHECK_WORKDIR_CHANGES:
+        required: false
+        type: boolean
+        default: false
+        description: "When true, enables change detection. When false, always runs jobs"
+      CHECK_CUSTOM_DIR:
+        required: false
+        type: string
+        default: ""
+        description: "Override directory to check for changes. Defaults to WORKING_DIRECTORY if empty"
+      CHECK_CHANGES_BY_JOBS:
+        required: false
+        type: string
+        default: "all"
+        description: "JSON array of job IDs to run change detection for. The default 'all' runs for all jobs"
 
 env: "${{secrets}}"
 
 jobs:
+  workdir-has-changes:
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container: buildpack-deps:24.04-scm
+    outputs:
+      changes-detected: ${{ steps.filter.outputs.changes-detected }}
+    steps:
+      - name: Set CHECK_DIR to custom directory if provided
+        if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
+        run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
+      - name: Set default CHECK_DIR
+        if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
+        run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changes-detected:
+              - "${{ inputs.WORKING_DIRECTORY }}/**"
+
   build-node-project:
+    needs: workdir-has-changes
+    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
@@ -130,6 +174,8 @@ jobs:
           ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 
   node-deploy-azure-storage:
+    needs: [workdir-has-changes, build-node-project]
+    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
@@ -143,7 +189,7 @@ jobs:
     defaults:
       run:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
-    needs: [build-node-project]
+
     steps:
       - name: Installing tar package with tdnf
         if: ${{ inputs.TDNF_PACKAGE_MANAGER_INSTALL_TAR == true }}
@@ -170,3 +216,13 @@ jobs:
           FD_ENDPOINT_NAME: ${{ inputs.FD_ENDPOINT_NAME }}
           FD_DOMAIN_NAME: ${{ inputs.FD_DOMAIN_NAME }}
           FD_PROFILE_NAME: ${{ inputs.FD_PROFILE_NAME }}
+
+  jobs-succeded:
+    needs: [build-node-project, node-deploy-azure-storage]
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    if: ${{ always() }}
+    steps:
+      - name: "Check if jobs succeeded"
+        run: if [[ "${{ needs.build-node-project.result }}" == "failure" || "${{ needs.node-deploy-azure-storage.result }}" == "failure" ]]; then exit 1; fi

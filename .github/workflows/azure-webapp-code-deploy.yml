@@ -1,0 +1,134 @@
+name: Deploy code to Azure WebApp
+
+on:
+  workflow_call:
+    inputs:
+      RUN_ON:
+        required: false
+        type: string
+        default: "zupit-agents"
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: "Container"
+      RELEASE_ENVIRONMENT:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      WEBAPP_NAME:
+        required: true
+        type: string
+      WEBAPP_SLOT:
+        required: false
+        type: string
+        default: "production"
+      CHECKOUT_REF:
+        required: false
+        type: string
+        default: ""
+      ENV_VARIABLES:
+        required: false
+        type: string
+        default: "{}"
+      AZURE_CLI_IMAGE:
+        required: false
+        type: string
+        default: "mcr.microsoft.com/azure-cli:2.69.0"
+      TDNF_PACKAGE_MANAGER_INSTALL_TAR:
+        required: false
+        type: boolean
+        default: true
+      CHECK_WORKDIR_CHANGES:
+        required: false
+        type: boolean
+        default: false
+      CHECK_CUSTOM_DIR:
+        required: false
+        type: string
+        default: ""
+      CHECK_CHANGES_BY_JOBS:
+        required: false
+        type: string
+        default: "all"
+
+env:
+  CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
+
+jobs:
+  workdir-has-changes:
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container: buildpack-deps:24.04-scm
+    outputs:
+      changes-detected: ${{ steps.filter.outputs.changes-detected }}
+    steps:
+      - name: Set CHECK_DIR to custom directory if provided
+        if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
+        run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
+      - name: Set default CHECK_DIR
+        if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
+        run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            changes-detected:
+              - "${{ env.CHECK_DIR }}/**"
+
+  deploy:
+    needs: workdir-has-changes
+    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    env: ${{ fromJson(inputs.ENV_VARIABLES) }}
+    environment: ${{ inputs.RELEASE_ENVIRONMENT }}
+    container:
+      image: ${{ inputs.AZURE_CLI_IMAGE }}
+      env:
+        GNUPGHOME: /root/.gnupg
+
+    steps:
+      - name: Installing tar package with tdnf
+        if: ${{ inputs.TDNF_PACKAGE_MANAGER_INSTALL_TAR == true }}
+        run: |
+          tdnf install -y tar
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.CHECKOUT_REF }}
+
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p /tmp/deployment
+          cp -r ${{ inputs.WORKING_DIRECTORY }}/* /tmp/deployment/ 2>/dev/null || true
+          cp -r ${{ inputs.WORKING_DIRECTORY }}/.[!.]* /tmp/deployment/ 2>/dev/null || true
+
+      - name: Deploy to Azure App Service
+        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.30.0
+        with:
+          WORKING_DIRECTORY: /tmp
+          BINARIES_DIRECTORY: deployment
+          AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
+          WEBAPP_NAME: ${{ inputs.WEBAPP_NAME }}
+          WEBAPP_SLOT: ${{ inputs.WEBAPP_SLOT }}
+
+  jobs-succeeded:
+    needs: deploy
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    if: ${{ always()}}
+    steps:
+      - name: "Jobs: deploy didn't fail."
+        run: if [ "${{ needs.deploy.result }}" == "failure" ]; then exit 1; fi

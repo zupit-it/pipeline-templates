@@ -19,7 +19,7 @@ Add these parameters to your workflow's `workflow_call` inputs:
 ```yaml
 inputs:
     CHECK_WORKDIR_CHANGES:
-        required: true
+        required: false
         type: boolean
         default: false
         description: "When true, enables change detection. When false, always runs jobs"
@@ -55,25 +55,28 @@ Add this job to check for directory changes:
 jobs:
     workdir-has-changes:
     runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-        outputs:
-            changes-detected: ${{ steps.filter.outputs.changes-detected }}
-        steps:
-            - name: Set CHECK_DIR to custom directory if provided
-              if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
-              run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
-            - name: Set default CHECK_DIR
-              if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
-              run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+        labels: ${{ inputs.RUN_ON }}
+        group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container: buildpack-deps:24.04-scm
+    outputs:
+        changes-detected: ${{ steps.filter.outputs.changes-detected }}
+    steps:
+        - name: Set CHECK_DIR to custom directory if provided
+          if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
+          run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
+        - name: Set default CHECK_DIR
+          if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
+          run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+        - name: Configure Git safe directory
+          run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-            - uses: actions/checkout@v4
-            - uses: dorny/paths-filter@v3
-              id: filter
-              with:
-                  filters: |
-                      changes-detected:
-                        - "${{ env.CHECK_DIR }}/**"
+        - uses: actions/checkout@v4
+        - uses: dorny/paths-filter@v3
+          id: filter
+          with:
+              filters: |
+                  changes-detected:
+                    - "${{ env.CHECK_DIR }}/**"
 ```
 
 ### 4. Update Your Main Jobs
