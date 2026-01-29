@@ -55,8 +55,8 @@ Add this job to check for directory changes:
 jobs:
     workdir-has-changes:
     runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+        labels: ${{ inputs.RUN_ON }}
+        group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container: buildpack-deps:24.04-scm
     outputs:
         changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -74,9 +74,9 @@ jobs:
         - uses: dorny/paths-filter@v3
           id: filter
           with:
-            filters: |
-              changes-detected:
-                - "${{ env.CHECK_DIR }}/**"
+              filters: |
+                  changes-detected:
+                    - "${{ env.CHECK_DIR }}/**"
 ```
 
 ### 4. Update Your Main Jobs

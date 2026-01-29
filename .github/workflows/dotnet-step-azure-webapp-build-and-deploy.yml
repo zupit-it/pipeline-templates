@@ -169,7 +169,7 @@ jobs:
           BINARIES_DIRECTORY: ""
           AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
           WEBAPP_NAME: ${{ inputs.WEBAPP_NAME }}
-    
+
   jobs-succeded:
     needs: [build, deploy]
     runs-on:

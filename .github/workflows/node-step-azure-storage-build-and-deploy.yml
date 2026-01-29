@@ -127,7 +127,7 @@ jobs:
           filters: |
             changes-detected:
               - "${{ inputs.WORKING_DIRECTORY }}/**"
-                      
+
   build-node-project:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
@@ -216,7 +216,7 @@ jobs:
           FD_ENDPOINT_NAME: ${{ inputs.FD_ENDPOINT_NAME }}
           FD_DOMAIN_NAME: ${{ inputs.FD_DOMAIN_NAME }}
           FD_PROFILE_NAME: ${{ inputs.FD_PROFILE_NAME }}
-  
+
   jobs-succeded:
     needs: [build-node-project, node-deploy-azure-storage]
     runs-on:
