@@ -67,6 +67,20 @@ runs:
       run: |
         apk add tzdata
 
+    - name: Install dependencies for non-Alpine images
+      if: ${{ inputs.ALPINE_OS != 'true' }}
+      shell: bash
+      run: |
+        if command -v apk &> /dev/null; then
+          apk add findutils libicu
+        elif command -v apt-get &> /dev/null; then
+          apt-get update && apt-get install -y --no-install-recommends findutils libicu-dev
+        elif command -v dnf &> /dev/null; then
+          dnf install -y findutils libicu
+        elif command -v yum &> /dev/null; then
+          yum install -y findutils libicu
+        fi
+
     - name: Install .NET
       uses: buildjet/setup-dotnet@v4
       with:
