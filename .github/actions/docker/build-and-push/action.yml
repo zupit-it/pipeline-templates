@@ -13,6 +13,10 @@ inputs:
   REGISTRY_PASSWORD:
     required: true
     type: string
+  REPOSITORY:
+    required: false
+    type: string
+    default: ${{ github.repository }}
   DOCKERFILE_PATH:
     required: true
     type: string
@@ -46,8 +50,10 @@ runs:
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images: ${{ inputs.REGISTRY_URL }}/${{ github.repository }}/${{ inputs.DOCKER_IMAGE_NAME }}
-        tags: ${{ inputs.DOCKER_IMAGE_TAG }}
+        images: ${{ inputs.REGISTRY_URL }}/${{ inputs.REPOSITORY }}/${{ inputs.DOCKER_IMAGE_NAME }}
+        tags: |
+            type=raw,value=${{ inputs.DOCKER_IMAGE_TAG }}
+            type=sha,prefix=,format=short
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v3

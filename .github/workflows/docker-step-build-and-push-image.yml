@@ -18,6 +18,10 @@ on:
       WORKING_DIRECTORY:
         required: true
         type: string
+      REPOSITORY:
+        required: false
+        type: string
+        default: ${{ github.repository }}
       DOCKERFILE_PATH:
         required: true
         type: string
@@ -51,6 +55,9 @@ on:
         required: false
         type: string
         default: ""
+    secrets:
+      REGISTRY_PASSWORD:
+        required: false
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
@@ -67,6 +74,9 @@ jobs:
     container:
       image: ${{ inputs.DIND_IMAGE }}
 
+    env:
+      DOCKER_PASSWORD: ${{ secrets.REGISTRY_PASSWORD != '' && secrets.REGISTRY_PASSWORD || secrets.GITHUB_TOKEN }}
+
     outputs:
       DOCKER_IMAGE_NAME: ${{ steps.docker.outputs.DOCKER_IMAGE_NAME }}
 
@@ -75,18 +85,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.CHECKOUT_REF }}
+
       - name: Run pre-build script
         if: inputs.PRE_BUILD_SCRIPT != ''
         run: |
           echo "Executing pre-build script..."
           sh -c '${{ inputs.PRE_BUILD_SCRIPT }}'
+
       - name: Docker Build & Push
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.27.3
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.28.1
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
-          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY_PASSWORD: ${{ env.DOCKER_PASSWORD }}
+          REPOSITORY: ${{ inputs.REPOSITORY }}
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOCKERFILE_PATH: ${{ inputs.DOCKERFILE_PATH }}
           DOCKER_IMAGE_NAME: ${{ inputs.DOCKER_IMAGE_NAME }}
