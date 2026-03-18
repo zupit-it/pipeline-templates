@@ -85,7 +85,7 @@ jobs:
 
       - name: Docker Build & Push to GAR
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push-gar@v1.31.1
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push-gar@v1.31.2
         with:
           GCP_CREDENTIALS_JSON: ${{ secrets.GCP_SA_KEY }}
           GAR_LOCATION: ${{ inputs.GAR_LOCATION }}
