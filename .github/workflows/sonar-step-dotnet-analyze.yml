@@ -146,14 +146,14 @@ jobs:
             "${params[@]}"
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/build@test/warpbuild-vs-github-runners
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Debug"
           DISABLE_CACHE: ${{ inputs.DISABLE_CACHE }}
 
       - name: Run tests
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/test@test/warpbuild-vs-github-runners
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           EXCLUDE_FILES: ${{ inputs.COVERAGE_EXCLUSIONS }}

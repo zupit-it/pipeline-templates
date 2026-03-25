@@ -18,6 +18,10 @@ inputs:
     required: false
     type: string
     default: ""
+  CHECKOUT_REF:
+    required: false
+    type: string
+    default: ""
   SHELL:
     required: false
     type: string
@@ -27,7 +31,7 @@ runs:
   using: composite
   steps:
     - name: Setup Node.js ${{ inputs.NODE_VERSION }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.NODE_VERSION }}
         cache: "npm"

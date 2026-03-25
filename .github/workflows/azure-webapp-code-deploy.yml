@@ -111,7 +111,7 @@ jobs:
           cp -r ${{ inputs.WORKING_DIRECTORY }}/.[!.]* /tmp/deployment/ 2>/dev/null || true
 
       - name: Deploy to Azure App Service
-        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@test/warpbuild-vs-github-runners
         with:
           WORKING_DIRECTORY: /tmp
           BINARIES_DIRECTORY: deployment
