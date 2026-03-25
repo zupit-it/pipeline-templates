@@ -6,7 +6,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "ubuntu-24.04"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -19,9 +19,7 @@ on:
 jobs:
   release:
     name: release
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container:
       image: ${{ inputs.DIND_IMAGE }}
     steps:
