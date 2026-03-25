@@ -58,6 +58,14 @@ on:
         required: false
         type: string
         default: ""
+      NEW_CACHE_STRATEGY:
+        required: false
+        type: boolean
+        default: false
+      PURGE_CONTENT_PATHS:
+        required: false
+        type: string
+        default: "/*"
       ENV_VARIABLES:
         required: false
         type: string
@@ -203,7 +211,7 @@ jobs:
           ARTIFACT_NAME: ${{ needs.build-node-project.outputs.ARTIFACT_NAME }}
 
       - name: Deploy to Azure Storage
-        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/azure/storage/deploy@test/warpbuild-vs-github-runners
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
           BINARIES_DIRECTORY: ""
@@ -216,6 +224,8 @@ jobs:
           FD_ENDPOINT_NAME: ${{ inputs.FD_ENDPOINT_NAME }}
           FD_DOMAIN_NAME: ${{ inputs.FD_DOMAIN_NAME }}
           FD_PROFILE_NAME: ${{ inputs.FD_PROFILE_NAME }}
+          NEW_CACHE_STRATEGY: ${{ inputs.NEW_CACHE_STRATEGY }}
+          PURGE_CONTENT_PATHS: ${{ inputs.PURGE_CONTENT_PATHS }}
 
   jobs-succeded:
     needs: [build-node-project, node-deploy-azure-storage]
