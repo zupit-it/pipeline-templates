@@ -117,7 +117,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install .NET
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/install@test/warpbuild-vs-github-runners
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
