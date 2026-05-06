@@ -7,6 +7,10 @@ inputs:
   BUILD_CONFIG:
     required: true
     type: string
+  DISABLE_CACHE:
+    required: false
+    type: boolean
+    default: false
   SHELL:
     required: false
     type: string
@@ -37,7 +41,7 @@ runs:
 
     # 3) On PRs, restore only (don't create new caches)
     - name: Restore NuGet cache (PRs)
-      if: ${{ github.event_name == 'pull_request' }}
+      if: ${{ github.event_name == 'pull_request' && inputs.DISABLE_CACHE != 'true' }}
       uses: WarpBuilds/cache/restore@v1
       with:
         path: ${{ env.NUGET_PACKAGES }}
@@ -46,7 +50,7 @@ runs:
 
     # 4) On main (or default branch), allow restore+save
     - name: Restore NuGet cache (main)
-      if: ${{ github.ref_name == 'main' }}
+      if: ${{ github.ref_name == 'main' && inputs.DISABLE_CACHE != 'true' }}
       id: cache_main
       uses: WarpBuilds/cache@v1
       with:
@@ -68,7 +72,7 @@ runs:
 
     # 7) Save cache only if we're on main and there wasn't a hit
     - name: Save NuGet cache (main, miss)
-      if: ${{ github.ref_name == 'main' && steps.cache_main.outputs.cache-hit != 'true' }}
+      if: ${{ github.ref_name == 'main' && inputs.DISABLE_CACHE != 'true' && steps.cache_main.outputs.cache-hit != 'true' }}
       uses: WarpBuilds/cache/save@v1
       with:
         path: ${{ env.NUGET_PACKAGES }}

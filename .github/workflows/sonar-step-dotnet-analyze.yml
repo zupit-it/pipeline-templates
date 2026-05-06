@@ -65,6 +65,10 @@ on:
         required: false
         type: boolean
         default: false
+      ALPINE_OS:
+        required: false
+        type: boolean
+        default: true
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -117,7 +121,7 @@ jobs:
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
-          ALPINE_OS: true
+          ALPINE_OS: ${{ inputs.ALPINE_OS }}
 
       - name: Install SonarSource for .NET
         run: |

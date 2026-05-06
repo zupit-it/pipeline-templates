@@ -23,5 +23,21 @@ runs:
 
     - name: Check code formatting
       shell: ${{ inputs.SHELL }}
-      run: /tmp/dotnet-tools/dotnet-csharpier . --check
+      # CSharpier 1.0 renamed the binary from `dotnet-csharpier` to `csharpier` and
+      # switched to subcommand syntax (`csharpier check .` vs `dotnet-csharpier . --check`).
+      run: |
+        if [ -x /tmp/dotnet-tools/csharpier ]; then
+          VERSION=$(/tmp/dotnet-tools/csharpier --version 2>/dev/null || echo "0")
+        elif [ -x /tmp/dotnet-tools/dotnet-csharpier ]; then
+          VERSION=$(/tmp/dotnet-tools/dotnet-csharpier --version 2>/dev/null || echo "0")
+        else
+          echo "csharpier not found in /tmp/dotnet-tools" >&2
+          exit 1
+        fi
+        MAJOR=$(echo "$VERSION" | cut -d. -f1)
+        if [ "${MAJOR:-0}" -ge 1 ]; then
+          /tmp/dotnet-tools/csharpier check .
+        else
+          /tmp/dotnet-tools/dotnet-csharpier . --check
+        fi
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
