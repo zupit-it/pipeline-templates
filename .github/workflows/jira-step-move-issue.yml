@@ -32,7 +32,7 @@ jobs:
 
     steps:
       - name: Login to Jira
-        uses: atlassian/gajira-login@master
+        uses: atlassian/gajira-login@v3
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
@@ -40,7 +40,7 @@ jobs:
 
       - name: Find issue key
         id: find
-        uses: atlassian/gajira-find-issue-key@master
+        uses: atlassian/gajira-find-issue-key@v3
         with:
           string: ${{ inputs.BRANCH_OR_COMMIT_TITLE }}
         continue-on-error: true
@@ -66,7 +66,7 @@ jobs:
           echo "verified=$is_verified" >> "$GITHUB_OUTPUT"
 
       - name: Transition issue
-        uses: atlassian/gajira-transition@master
+        uses: atlassian/gajira-transition@v3
         if: steps.find.outcome == 'success' && steps.check-status.outputs.verified != 'true'
         with:
           issue: ${{ steps.find.outputs.issue }}

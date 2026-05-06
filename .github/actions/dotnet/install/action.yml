@@ -68,6 +68,6 @@ runs:
         apk add tzdata
 
     - name: Install .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         global-json-file: ${{ inputs.WORKING_DIRECTORY }}/global.json

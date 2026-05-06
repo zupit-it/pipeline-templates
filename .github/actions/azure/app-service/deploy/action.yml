@@ -22,12 +22,12 @@ runs:
   using: composite
   steps:
     - name: Azure login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
     - name: Deploy to Azure App Service
-      uses: Azure/webapps-deploy@v2.2.5
+      uses: Azure/webapps-deploy@v3
       with:
         app-name: ${{ inputs.WEBAPP_NAME }}
         slot-name: ${{ inputs.WEBAPP_SLOT }}
