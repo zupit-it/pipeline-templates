@@ -38,7 +38,7 @@ runs:
     # 3) On PRs, restore only (don't create new caches)
     - name: Restore NuGet cache (PRs)
       if: ${{ github.event_name == 'pull_request' }}
-      uses: buildjet/cache/restore@v4
+      uses: WarpBuilds/cache/restore@v1
       with:
         path: ${{ env.NUGET_PACKAGES }}
         key: ${{ steps.key.outputs.key }}
@@ -48,7 +48,7 @@ runs:
     - name: Restore NuGet cache (main)
       if: ${{ github.ref_name == 'main' }}
       id: cache_main
-      uses: buildjet/cache@v4
+      uses: WarpBuilds/cache@v1
       with:
         path: ${{ env.NUGET_PACKAGES }}
         key: ${{ steps.key.outputs.key }}
@@ -69,7 +69,7 @@ runs:
     # 7) Save cache only if we're on main and there wasn't a hit
     - name: Save NuGet cache (main, miss)
       if: ${{ github.ref_name == 'main' && steps.cache_main.outputs.cache-hit != 'true' }}
-      uses: buildjet/cache/save@v4
+      uses: WarpBuilds/cache/save@v1
       with:
         path: ${{ env.NUGET_PACKAGES }}
         key: ${{ steps.key.outputs.key }}

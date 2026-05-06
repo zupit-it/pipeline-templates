@@ -67,3 +67,5 @@ runs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         build-args: ${{ inputs.BUILD_ARGS }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max,ignore-error=true

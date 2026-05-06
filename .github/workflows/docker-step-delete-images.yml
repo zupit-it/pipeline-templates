@@ -6,7 +6,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-4x"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -30,9 +30,7 @@ on:
 jobs:
   to-lowercase-repository-name:
     name: "Get repository name to lowercase"
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container:
       image: ${{ inputs.DIND_IMAGE }}
 
@@ -47,9 +45,7 @@ jobs:
 
   clean-untagged-images:
     name: "Delete untagged images ${{ needs.to-lowercase-repository-name.outputs.REPOSITORY_NAME }}/${{ inputs.IMAGE_NAME }}"
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container:
       image: ${{ inputs.DIND_IMAGE }}
     needs: [to-lowercase-repository-name]
@@ -68,9 +64,7 @@ jobs:
 
   clean-staging-tagged-images:
     name: "Delete staging tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container:
       image: ${{ inputs.DIND_IMAGE }}
     needs: [clean-untagged-images]
@@ -89,9 +83,7 @@ jobs:
   clean-production-tagged-images:
     name: "Delete production tagged images ${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
     needs: [clean-untagged-images]
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container:
       image: ${{ inputs.DIND_IMAGE }}
     steps:

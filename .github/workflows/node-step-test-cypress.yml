@@ -6,7 +6,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-4x"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -43,9 +43,7 @@ jobs:
   cypress-run:
     if: ${{ inputs.RUN }}
     timeout-minutes: ${{ inputs.TESTS_TIMEOUT }}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container:
       image: ${{ inputs.CYPRESS_IMAGE }}
     defaults:

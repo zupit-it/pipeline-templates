@@ -6,7 +6,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-4x"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -35,9 +35,7 @@ env: "${{secrets}}"
 jobs:
   springboot-lint-check:
     if: ${{ inputs.RUN }}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: ${{ inputs.JAVA_IMAGE }}
 
     defaults:
