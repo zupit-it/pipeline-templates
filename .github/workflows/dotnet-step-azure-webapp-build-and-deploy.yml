@@ -120,12 +120,12 @@ jobs:
 
       - name: Generate artifact name
         id: artifact-name
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@chore/warpbuild-and-action-bumps
         with:
           NAME_PREFIX: dotnet-build
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@chore/warpbuild-and-action-bumps
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Release"
@@ -134,7 +134,7 @@ jobs:
           DISABLE_CACHE: ${{ inputs.DISABLE_CACHE }}
 
       - name: Upload build artifact
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@chore/warpbuild-and-action-bumps
         with:
           SOURCE_FOLDER: ${{ inputs.WORKING_DIRECTORY }}/${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
           ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
@@ -158,12 +158,12 @@ jobs:
 
       - name: Download build artifact
         id: output-folder
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@chore/warpbuild-and-action-bumps
         with:
           ARTIFACT_NAME: ${{ needs.build.outputs.ARTIFACT_NAME }}
 
       - name: Publish to Azure App Service
-        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@chore/warpbuild-and-action-bumps
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
           BINARIES_DIRECTORY: ""

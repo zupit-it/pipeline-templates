@@ -53,7 +53,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Deploy
-        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@chore/warpbuild-and-action-bumps
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
