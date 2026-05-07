@@ -27,7 +27,11 @@ runs:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
     - name: Deploy to Azure App Service
-      uses: Azure/webapps-deploy@v3
+      # Keep v2.2.5 (Kudu zip-deploy). v3 switches to OneDeploy which triggers
+      # server-side Oryx build on this Linux Function App and fails ("Deployment
+      # Log file does not exist in /tmp/oryx-build.log"). Revisit only after
+      # confirming SCM_DO_BUILD_DURING_DEPLOYMENT is configured for OneDeploy.
+      uses: Azure/webapps-deploy@v2.2.5
       with:
         app-name: ${{ inputs.WEBAPP_NAME }}
         slot-name: ${{ inputs.WEBAPP_SLOT }}
