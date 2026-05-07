@@ -6,7 +6,13 @@ on:
       RUN_ON:
         required: false
         type: string
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). p95 CPU < 13% on 4x in profiling."
+      RUN_ON_ANALYZE:
+        required: false
+        type: string
         default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner for the CPU-bound sonar-analyze job (build + tests + scan). p95 CPU 99% on 4x in profiling; consider 8x for headroom."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -102,7 +108,7 @@ jobs:
   sonar-analyze:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))) }}
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on: ${{ inputs.RUN_ON_ANALYZE }}
     container:
       image: ${{ inputs.SONAR_IMAGE }}
       env: ${{ fromJson(inputs.SONAR_IMAGE_ENV_VARIABLES) }}

@@ -6,7 +6,21 @@ on:
       RUN_ON:
         required: false
         type: string
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
+      # NOTE: RUN_ON_ANALYZE default kept at warp-ubuntu-latest-x64-4x because
+      # we have no direct WarpBuild profiling data for the Spring Boot
+      # sonar-analyze job. The .NET equivalent (sonar-step-dotnet-analyze.yml)
+      # saturated 4x at p95 99% CPU and the Maven sonar:sonar goal generally
+      # has comparable load (compile + tests + analysis). Before lowering this
+      # to 2x: capture max_sustained_cpu for one full run on 4x and only
+      # downsize if p95 CPU% stays below ~50%. If anything this is a candidate
+      # for upsizing to 8x.
+      RUN_ON_ANALYZE:
+        required: false
+        type: string
         default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner for the Spring Boot sonar-analyze job. See note above - kept at 4x by analogy with sonar-step-dotnet-analyze.yml; not directly profiled."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -98,7 +112,7 @@ jobs:
   sonar-analyze:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on: ${{ inputs.RUN_ON_ANALYZE }}
     container: ${{ inputs.JAVA_IMAGE }}
     defaults:
       run:

@@ -7,6 +7,12 @@ on:
         required: false
         type: string
         default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner for the docker-build-and-push job. NOTE: not directly profiled in the WarpBuild usage export (x.json) - this template wasn't exercised by provisus during the 7-day capture window. Kept at 4x because docker buildx + push is typically CPU-bound and IO-bound; downsizing to 2x risks longer wall time. Capture max_sustained_cpu for one full run before deciding to lower to 2x or raise to 8x."
+      RUN_ON_BUILD:
+        required: false
+        type: string
+        default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner for the build-node-project job. Same job ID and action as node-step-azure-storage-build-and-deploy.yml's build-node-project, which p95'd at 95% CPU on 4x in profiling - so kept at 4x and a candidate for upsizing to 8x."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -77,7 +83,7 @@ env: "${{secrets}}"
 
 jobs:
   build-node-project:
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on: ${{ inputs.RUN_ON_BUILD }}
     container:
       image: ${{ inputs.IMAGE }}
 

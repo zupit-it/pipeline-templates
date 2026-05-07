@@ -3,6 +3,12 @@ name: Lint, check and build a Javascript app
 on:
   workflow_call:
     inputs:
+      # NOTE: RUN_ON default kept at warp-ubuntu-latest-x64-4x because the single
+      # job here (lint-check-build) saturated the 4x runner at p95 95% CPU in
+      # the 7-day provisus profiling export. Downsizing to 2x would slow lint /
+      # build noticeably; if anything this is a candidate for upsizing to
+      # warp-ubuntu-latest-x64-8x (extra ~$0.008/min, halves wall time on
+      # CPU-bound workloads). Callers can already override RUN_ON per call.
       RUN_ON:
         required: false
         type: string

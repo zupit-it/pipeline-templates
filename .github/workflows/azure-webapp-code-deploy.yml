@@ -6,7 +6,8 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "warp-ubuntu-latest-x64-4x"
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for all jobs. workdir-has-changes and jobs-succeeded match the cheap-pattern profiled in sibling templates; deploy mirrors dotnet-step-azure-webapp-build-and-deploy.yml's deploy job (p95 CPU 22% on 4x) - the only work is the Azure App Service publish action."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string

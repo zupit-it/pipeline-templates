@@ -6,7 +6,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "warp-ubuntu-latest-x64-4x"
+        default: "warp-ubuntu-latest-x64-2x"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string

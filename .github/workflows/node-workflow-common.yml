@@ -29,7 +29,13 @@ on:
       RUN_ON:
         required: false
         type: string
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). p95 CPU < 12% on 4x in profiling."
+      RUN_ON_BUILD:
+        required: false
+        type: string
         default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner forwarded to lint-check-build (node-step-format-lint-build) and cypress-run (node-step-test-cypress). lint-check-build saturates 4x at p95 95% in profiling; cypress has no profiling data so kept at 4x conservatively."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -89,7 +95,7 @@ jobs:
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
     uses: ./.github/workflows/node-step-format-lint-build.yml
     with:
-      RUN_ON: ${{inputs.RUN_ON}}
+      RUN_ON: ${{inputs.RUN_ON_BUILD}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       NODE_VERSION: ${{inputs.NODE_VERSION}}
@@ -102,7 +108,7 @@ jobs:
     if: ${{ inputs.ENABLE_TESTS && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))) }}
     uses: ./.github/workflows/node-step-test-cypress.yml
     with:
-      RUN_ON: ${{inputs.RUN_ON}}
+      RUN_ON: ${{inputs.RUN_ON_BUILD}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}

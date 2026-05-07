@@ -12,7 +12,13 @@ on:
       RUN_ON:
         required: false
         type: string
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). p95 CPU < 12% on 4x in profiling."
+      RUN_ON_BUILD:
+        required: false
+        type: string
         default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner for the CPU-bound dotnet-common job (.NET build + format + lint + tests). p95 CPU 92% on 4x in profiling; consider 8x for headroom."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -83,7 +89,7 @@ jobs:
     needs: workdir-has-changes
     name: Run .NET build, check formatting and test
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on: ${{ inputs.RUN_ON_BUILD }}
     container:
       image: ${{ inputs.DOTNET_IMAGE }}
       env: ${{ fromJson(inputs.DOTNET_IMAGE_ENV_VARIABLES) }}

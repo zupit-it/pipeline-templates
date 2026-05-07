@@ -55,7 +55,21 @@ on:
       RUN_ON:
         required: false
         type: string
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
+      # NOTE: RUN_ON_BUILD default kept at warp-ubuntu-latest-x64-4x because we
+      # have no direct WarpBuild profiling data for springboot-step-lint-check,
+      # springboot-step-tests, or springboot-step-tests-mysql. Test/lint jobs in
+      # sibling templates that were profiled (.NET dotnet-common, sonar-analyze,
+      # node lint-check-build) all saturated 4x at p95 ~92-99% CPU; Maven
+      # compile + Surefire is typically in the same regime, so 4x is the
+      # conservative choice. Capture max_sustained_cpu for one full run before
+      # lowering to 2x; if the suite still saturates 4x, consider 8x.
+      RUN_ON_BUILD:
+        required: false
+        type: string
         default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner forwarded to springboot-step-lint-check, springboot-step-tests, springboot-step-tests-mysql. See note above - kept at 4x conservatively; not directly profiled."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -100,7 +114,7 @@ jobs:
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
       RUN: ${{inputs.RUN}}
-      RUN_ON: ${{ inputs.RUN_ON }}
+      RUN_ON: ${{ inputs.RUN_ON_BUILD }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
@@ -118,7 +132,7 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
       RUN: ${{ inputs.RUN }}
-      RUN_ON: ${{ inputs.RUN_ON }}
+      RUN_ON: ${{ inputs.RUN_ON_BUILD }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
@@ -135,7 +149,7 @@ jobs:
       MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       RUN: ${{ inputs.RUN }}
-      RUN_ON: ${{ inputs.RUN_ON }}
+      RUN_ON: ${{ inputs.RUN_ON_BUILD }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
