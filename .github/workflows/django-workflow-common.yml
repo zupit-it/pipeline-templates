@@ -60,6 +60,10 @@ on:
         required: false
         type: string
         default: "all"
+      DB_IMAGE:
+        required: false
+        type: string
+        default: "postgres"
       DB_POSTGRES_VERSION:
         required: false
         type: string
@@ -109,6 +113,7 @@ jobs:
       SETUP_COMMANDS: ${{inputs.SETUP_COMMANDS}}
       ENABLE_LFS: ${{inputs.ENABLE_LFS}}
       LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
+      DB_IMAGE: ${{inputs.DB_IMAGE}}
       DB_POSTGRES_VERSION: ${{inputs.DB_POSTGRES_VERSION}}
     secrets: inherit
 
@@ -127,6 +132,7 @@ jobs:
       ENABLE_LFS: ${{inputs.ENABLE_LFS}}
       LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
       COVERAGE_THRESHOLD: ${{inputs.COVERAGE_THRESHOLD}}
+      DB_IMAGE: ${{inputs.DB_IMAGE}}
       DB_POSTGRES_VERSION: ${{inputs.DB_POSTGRES_VERSION}}
     secrets: inherit
 
