@@ -64,6 +64,10 @@ on:
         required: false
         type: string
         default: "latest"
+      DB_POSTGRES_IMAGE_NAME:
+        required: false
+        type: string
+        default: "postgres"
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
 
@@ -110,6 +114,7 @@ jobs:
       ENABLE_LFS: ${{inputs.ENABLE_LFS}}
       LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
       DB_POSTGRES_VERSION: ${{inputs.DB_POSTGRES_VERSION}}
+      DB_POSTGRES_IMAGE_NAME: ${{inputs.DB_POSTGRES_IMAGE_NAME}}
     secrets: inherit
 
   django-tests:
@@ -128,6 +133,7 @@ jobs:
       LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
       COVERAGE_THRESHOLD: ${{inputs.COVERAGE_THRESHOLD}}
       DB_POSTGRES_VERSION: ${{inputs.DB_POSTGRES_VERSION}}
+      DB_POSTGRES_IMAGE_NAME: ${{inputs.DB_POSTGRES_IMAGE_NAME}}
     secrets: inherit
 
   jobs-succeded:
