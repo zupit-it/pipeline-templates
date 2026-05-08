@@ -24,20 +24,19 @@ runs:
       shell: ${{ inputs.SHELL }}
       run: echo "NUGET_PACKAGES=${{ github.workspace }}/.nuget/packages" >> $GITHUB_ENV
 
-    # 2) Compute a narrow cache key: OS + SDK pin + only lockfiles under WORKING_DIRECTORY
+    # 2) Compute cache key from SDK pin + all NuGet lockfiles in the repo.
+    # hashFiles() runs from $GITHUB_WORKSPACE, immune to CWD/composite-action quirks.
+    # Falls back to "nolock" if neither file is present so the key is never the
+    # empty-content hash (e69de29...) which would collide across unrelated runs.
     - name: Compute cache key
       id: key
       shell: bash
+      env:
+        HASH: ${{ hashFiles('**/global.json', '**/packages.lock.json') }}
       run: |
         set -euo pipefail
-        SDK="$(cat global.json 2>/dev/null || true)"
-        LOCKS="$(git ls-files '${{ inputs.WORKING_DIRECTORY }}/**/packages.lock.json' 2>/dev/null || true)"
-        CONTENT="$SDK"
-        if [ -n "$LOCKS" ]; then
-          while IFS= read -r f; do CONTENT="$CONTENT$(printf '\n')$(cat "$f")"; done <<< "$LOCKS"
-        fi
-        KEY_SRC="$(printf '%s' "$CONTENT" | git hash-object --stdin)"
-        echo "key=${{ runner.os }}-nuget-$KEY_SRC" >> "$GITHUB_OUTPUT"
+        if [ -z "$HASH" ]; then HASH=nolock; fi
+        echo "key=${{ runner.os }}-nuget-$HASH" >> "$GITHUB_OUTPUT"
 
     # 3) On PRs, restore only (don't create new caches)
     - name: Restore NuGet cache (PRs)
