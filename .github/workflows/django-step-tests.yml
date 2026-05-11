@@ -47,6 +47,10 @@ on:
         required: false
         type: string
         default: "latest"
+      DB_POSTGRES_IMAGE_NAME:
+        required: false
+        type: string
+        default: "postgres"
 
 env: "${{secrets}}"
 
@@ -64,7 +68,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:${{ inputs.DB_POSTGRES_VERSION }}
+        image: ${{ format('{0}:{1}', inputs.DB_POSTGRES_IMAGE_NAME, inputs.DB_POSTGRES_VERSION) }}
         env:
           POSTGRES_USER: django-runner
           POSTGRES_PASSWORD: django-runner
