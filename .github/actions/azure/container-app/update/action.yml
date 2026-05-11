@@ -1,0 +1,43 @@
+name: Update Azure Container App
+
+inputs:
+  AZURE_CREDENTIALS:
+    required: true
+    type: string
+  CONTAINER_APP_NAME:
+    required: true
+    type: string
+    description: Name of the Azure Container App
+  RESOURCE_GROUP:
+    required: true
+    type: string
+    description: Azure resource group for the Container App
+  IMAGE_URI:
+    required: true
+    type: string
+    description: URI of the Docker image to deploy
+
+runs:
+  using: composite
+  steps:
+    - name: Authenticate with Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ inputs.AZURE_CREDENTIALS }}
+
+    - name: Update Azure Container App
+      shell: bash
+      run: |
+        timestamp=$(date +%s)
+        az containerapp update -n ${{ inputs.CONTAINER_APP_NAME }} -g ${{ inputs.RESOURCE_GROUP }} \
+          --image ${{ inputs.IMAGE_URI }} \
+          --set-env-vars FORCE_REVISION=$timestamp
+
+    - name: Logout from Azure
+      shell: "bash"
+      if: always()
+      continue-on-error: true
+      run: |
+        az logout
+        az cache purge
+        az account clear
