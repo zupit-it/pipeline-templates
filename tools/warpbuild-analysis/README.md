@@ -84,7 +84,7 @@ Where:
 {
     "rows": [
         {
-            "repository": "zupit-it/provisus",
+            "repository": "acme/example-api",
             "workflow": "Pull request workflow",
             "job": "pr / backend-common / Run .NET build, check formatting and test",
             "sku": "warp-ubuntu-latest-x64-4x",

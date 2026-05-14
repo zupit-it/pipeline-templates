@@ -127,7 +127,7 @@ npx tsx tools/runner-sizing/analyze.ts usage.csv --target-family buildjet
         {
             "workflow": "pull-request.yml",
             "job": "common / java-common / springboot-tests-mysql / springboot-run-tests",
-            "repositories": ["apss-medico-competente-backend", "…"],
+            "repositories": ["acme-backend", "…"],
             "totalRuns": 378,
             "weightedBaselineSec": 941.9,
             "peakBaselineSec": 2600.2,
@@ -166,7 +166,7 @@ npx tsx tools/runner-sizing/analyze.ts usage.csv --target-family buildjet
             "recommendedTier": 4,
             "recommendedSku": "warp-ubuntu-latest-x64-4x",
             "reason": "typical 588.7s on 2-vCPU gh → on warp-4x ~170.7s (target ≤ 240s)",
-            "repos": ["doable-adoormore", "…"],
+            "repos": ["acme-frontend", "…"],
             "families": ["zupit-agents", "warp"]
         }
     ]
@@ -187,7 +187,7 @@ npx tsx tools/runner-sizing/analyze.ts usage.csv --target-family buildjet
         {
             "workflow": "pull-request.yml",
             "job": "…",
-            "repository": "apss-medico-competente-backend",
+            "repository": "acme-backend",
             "family": "zupit-agents",
             "sku": "zupit-agents",
             "vcpu": 4,
