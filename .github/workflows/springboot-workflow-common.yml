@@ -57,19 +57,25 @@ on:
         type: string
         default: "warp-ubuntu-latest-x64-2x"
         description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
-      # NOTE: RUN_ON_BUILD default kept at warp-ubuntu-latest-x64-4x because we
-      # have no direct WarpBuild profiling data for springboot-step-lint-check,
-      # springboot-step-tests, or springboot-step-tests-mysql. Test/lint jobs in
-      # sibling templates that were profiled (.NET dotnet-common, sonar-analyze,
-      # node lint-check-build) all saturated 4x at p95 ~92-99% CPU; Maven
-      # compile + Surefire is typically in the same regime, so 4x is the
-      # conservative choice. Capture max_sustained_cpu for one full run before
-      # lowering to 2x; if the suite still saturates 4x, consider 8x.
+      # NOTE: RUN_ON_BUILD now drives springboot-step-tests and
+      # springboot-step-tests-mysql only. Lint moved to RUN_ON_LINT (see below)
+      # after the May-2026 runner-sizing sweep showed the linter is cheap.
+      # The tests-mysql suite was the most expensive job in the export
+      # (gh-2vCPU baseline ≈ 942s across 497 runs → ~273s on warp-4x, ~136s on
+      # warp-8x). 4x is the maximum default until someone confirms 8x is
+      # warranted on the actual warp profile; raise per-consumer otherwise.
       RUN_ON_BUILD:
         required: false
         type: string
         default: "warp-ubuntu-latest-x64-4x"
-        description: "Runner forwarded to springboot-step-lint-check, springboot-step-tests, springboot-step-tests-mysql. See note above - kept at 4x conservatively; not directly profiled."
+        description: "Runner forwarded to springboot-step-tests and springboot-step-tests-mysql. Tests-mysql wall ≈ 273s on warp-4x; consider 8x per-consumer for the biggest test suites."
+      # RUN_ON_LINT: the linter is light (gh-2vCPU baseline ≈ 152s across 499
+      # runs → ~88s on warp-2x in profiling). 2x is the right default.
+      RUN_ON_LINT:
+        required: false
+        type: string
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner forwarded to springboot-step-lint-check. p95 wall on warp-2x ≈ 88s in May-2026 sizing data."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -114,7 +120,7 @@ jobs:
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
       RUN: ${{inputs.RUN}}
-      RUN_ON: ${{ inputs.RUN_ON_BUILD }}
+      RUN_ON: ${{ inputs.RUN_ON_LINT }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
