@@ -31,6 +31,6 @@ runs:
         if [[ "$CSHARPIER_VERSION" == 0.* ]]; then
           /tmp/dotnet-tools/dotnet-csharpier . --check
         else
-          /tmp/dotnet-tools/dotnet-csharpier check .
+          /tmp/dotnet-tools/csharpier check .
         fi
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
