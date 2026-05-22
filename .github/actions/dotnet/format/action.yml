@@ -24,9 +24,7 @@ runs:
     - name: Check code formatting
       shell: ${{ inputs.SHELL }}
       run: |
-        CSHARPIER_VERSION=$(/tmp/dotnet-tools/dotnet-csharpier --version)
-
-        echo "CSharpier version: $CSHARPIER_VERSION"
+        CSHARPIER_VERSION="${{ inputs.CSHARPIER_VERSION }}"
 
         if [[ "$CSHARPIER_VERSION" == 0.* ]]; then
           /tmp/dotnet-tools/dotnet-csharpier . --check
