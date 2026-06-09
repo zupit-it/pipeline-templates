@@ -112,7 +112,7 @@ jobs:
         run: ${{ inputs.PRE_SCAN_COMMANDS }}
 
       - name: Run Sonar
-        run: sonar-scanner -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
+        run: sonar-scanner -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
 
   jobs-succeded:
     needs: ["sonar-analyze"]
