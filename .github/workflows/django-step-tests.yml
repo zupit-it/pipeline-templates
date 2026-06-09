@@ -80,11 +80,11 @@ jobs:
       - name: Install prerequisites
         if: ${{ inputs.ENABLE_LFS == true }}
         run: apt-get update && apt-get install -y git-lfs
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         if: ${{ inputs.ENABLE_LFS == true }}
         with:
           lfs: "true"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         if: ${{ inputs.ENABLE_LFS == false }}
       - run: git config --global --add safe.directory ${{ inputs.LFS_REPO_PATH }}
         if: ${{ inputs.ENABLE_LFS == true }}
@@ -107,7 +107,7 @@ jobs:
           coverage report --fail-under ${{ inputs.COVERAGE_THRESHOLD }}
 
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
           path: ${{ inputs.WORKING_DIRECTORY }}/coverage-reports/coverage-django.xml

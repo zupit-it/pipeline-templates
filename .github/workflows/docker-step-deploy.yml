@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Deploy
         uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.35.0
         with:
@@ -81,7 +81,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Deploy
         uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.35.0
         with:

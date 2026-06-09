@@ -87,7 +87,7 @@ jobs:
       - name: Configure Git safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: dorny/paths-filter@v3
@@ -109,7 +109,7 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set Maven settings
         uses: zupit-it/pipeline-templates/.github/actions/maven/settings@v1.35.0
@@ -121,7 +121,7 @@ jobs:
 
       - name: Download coverage artifact
         if: ${{ inputs.DOWNLOAD_ARTIFACT }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{inputs.ARTIFACT_FILENAME}}
           path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}

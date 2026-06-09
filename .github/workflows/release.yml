@@ -11,7 +11,7 @@ jobs:
     name: Release
     runs-on: "ubuntu-24.04"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.ZUPIT_BOT_GITHUB_TOKEN }}
@@ -19,7 +19,7 @@ jobs:
         run: |
           git config user.name "ZupitDevs"
           git config user.email "49716732+ZupitDevs@users.noreply.github.com"
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
           cache: npm
           node-version: 18
