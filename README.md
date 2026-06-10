@@ -1170,6 +1170,8 @@ It groups together these reusable workflows:
 
 - _django-step-lint-check.yml_
 - _django-step-tests.yml_
+- _django-step-lint-check-mssql.yml_ when `DATABASE` is `mssql`
+- _django-step-tests-mssql.yml_ when `DATABASE` is `mssql`
 
 It requires these inputs:
 
@@ -1188,6 +1190,9 @@ In addition, it is possible to specify this optional input:
 - **ENABLE_LFS**: To enable Git LFS support on checkout
 - **LFS_REPO_PATH**: Required when ENABLE_LFS is true. Workaround for https://github.com/actions/checkout/issues/1169. Set to "/\_\_w/repo-name/repo-name"
 - **COVERAGE_THRESHOLD**: The minimal code coverage for this project. If the coverage is lower than this value, the workflow will fail. By default, it is **50**.
+- **DATABASE**: The database service to use. Supported values are **postgres** and **mssql**. Default is **postgres**.
+- **DB_MSSQL_DATABASE**: SQL Server database created before running migrations and tests. Default is **django**.
+- **DB_MSSQL_SA_PASSWORD**: SQL Server SA password for the workflow service. Default is **LocalDevPassword123!**.
 
 This is an example to show how data should be formatted.
 

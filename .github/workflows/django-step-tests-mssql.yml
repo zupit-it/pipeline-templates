@@ -1,0 +1,127 @@
+name: Run Django tests with SQL Server
+
+on:
+  workflow_call:
+    inputs:
+      RUN_ON:
+        required: false
+        type: string
+        default: "zupit-agents"
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: "Container"
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      PYTHON_IMAGE:
+        required: true
+        type: string
+      COVERAGE_ARTIFACT_NAME:
+        required: true
+        type: string
+      RUN:
+        required: false
+        type: boolean
+        default: true
+      SETUP_COMMANDS:
+        required: false
+        type: string
+        default: ""
+      ENABLE_LFS:
+        required: false
+        type: boolean
+        default: false
+      LFS_REPO_PATH:
+        required: false
+        type: string
+        default: ""
+      COVERAGE_THRESHOLD:
+        required: false
+        type: number
+        default: 50
+      DB_MSSQL_VERSION:
+        required: false
+        type: string
+        default: "2022-latest"
+      DB_MSSQL_IMAGE_NAME:
+        required: false
+        type: string
+        default: "mcr.microsoft.com/mssql/server"
+      DB_MSSQL_DATABASE:
+        required: false
+        type: string
+        default: "django"
+      DB_MSSQL_SA_PASSWORD:
+        required: false
+        type: string
+        default: "LocalDevPassword123!"
+
+env: "${{secrets}}"
+
+jobs:
+  django-tests:
+    if: ${{ inputs.RUN }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container: ${{ inputs.PYTHON_IMAGE }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    services:
+      mssql:
+        image: ${{ format('{0}:{1}', inputs.DB_MSSQL_IMAGE_NAME, inputs.DB_MSSQL_VERSION) }}
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: ${{ inputs.DB_MSSQL_SA_PASSWORD }}
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${{ inputs.DB_MSSQL_SA_PASSWORD }}' -C -Q 'SELECT 1' || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 30
+          --health-start-period 30s
+      redis:
+        image: redis
+
+    steps:
+      - name: Install prerequisites
+        if: ${{ inputs.ENABLE_LFS == true }}
+        run: apt-get update && apt-get install -y git-lfs
+      - uses: actions/checkout@v6
+        if: ${{ inputs.ENABLE_LFS == true }}
+        with:
+          lfs: "true"
+      - uses: actions/checkout@v6
+        if: ${{ inputs.ENABLE_LFS == false }}
+      - run: git config --global --add safe.directory ${{ inputs.LFS_REPO_PATH }}
+        if: ${{ inputs.ENABLE_LFS == true }}
+      - name: Checkout LFS objects
+        if: ${{ inputs.ENABLE_LFS == true }}
+        run: git lfs pull
+      - name: Setup
+        run: ${{ inputs.SETUP_COMMANDS }}
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Copy env file
+        run: cp .env.github .env
+      - name: Create SQL Server database
+        run: /opt/mssql-tools18/bin/sqlcmd -S mssql -U sa -P '${{ inputs.DB_MSSQL_SA_PASSWORD }}' -C -Q "IF DB_ID(N'${{ inputs.DB_MSSQL_DATABASE }}') IS NULL CREATE DATABASE [${{ inputs.DB_MSSQL_DATABASE }}]"
+      - name: Migrate django DB
+        run: python manage.py migrate
+      - name: Run django tests
+        run: |
+          coverage erase
+          coverage run --source='.' manage.py test --noinput
+          coverage xml -i -o coverage-reports/coverage-django.xml
+          coverage report --fail-under ${{ inputs.COVERAGE_THRESHOLD }}
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+          path: ${{ inputs.WORKING_DIRECTORY }}/coverage-reports/coverage-django.xml
+          retention-days: 1
