@@ -68,6 +68,27 @@ on:
         required: false
         type: string
         default: "postgres"
+      DATABASE:
+        required: false
+        type: string
+        description: "Database to use: postgres or mssql"
+        default: "postgres"
+      DB_MSSQL_VERSION:
+        required: false
+        type: string
+        default: "2022-latest"
+      DB_MSSQL_IMAGE_NAME:
+        required: false
+        type: string
+        default: "mcr.microsoft.com/mssql/server"
+      DB_MSSQL_DATABASE:
+        required: false
+        type: string
+        default: "django"
+      DB_MSSQL_SA_PASSWORD:
+        required: false
+        type: string
+        default: "LocalDevPassword123!"
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
 
@@ -101,7 +122,7 @@ jobs:
 
   django-lint-check:
     needs: workdir-has-changes
-    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
+    if: ${{ inputs.DATABASE == 'postgres' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
     uses: ./.github/workflows/django-step-lint-check.yml
     with:
       RUN_ON: ${{inputs.RUN_ON}}
@@ -117,9 +138,29 @@ jobs:
       DB_POSTGRES_IMAGE_NAME: ${{inputs.DB_POSTGRES_IMAGE_NAME}}
     secrets: inherit
 
+  django-lint-check-mssql:
+    needs: workdir-has-changes
+    if: ${{ inputs.DATABASE == 'mssql' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
+    uses: ./.github/workflows/django-step-lint-check-mssql.yml
+    with:
+      RUN_ON: ${{inputs.RUN_ON}}
+      RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
+      WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
+      PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
+      RUN: ${{inputs.RUN}}
+      DJANGO_MIGRATIONS_CHECK_APPS: ${{inputs.DJANGO_MIGRATIONS_CHECK_APPS}}
+      SETUP_COMMANDS: ${{inputs.SETUP_COMMANDS}}
+      ENABLE_LFS: ${{inputs.ENABLE_LFS}}
+      LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
+      DB_MSSQL_VERSION: ${{inputs.DB_MSSQL_VERSION}}
+      DB_MSSQL_IMAGE_NAME: ${{inputs.DB_MSSQL_IMAGE_NAME}}
+      DB_MSSQL_DATABASE: ${{inputs.DB_MSSQL_DATABASE}}
+      DB_MSSQL_SA_PASSWORD: ${{inputs.DB_MSSQL_SA_PASSWORD}}
+    secrets: inherit
+
   django-tests:
     needs: workdir-has-changes
-    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
+    if: ${{ inputs.DATABASE == 'postgres' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
     uses: ./.github/workflows/django-step-tests.yml
     with:
       RUN_ON: ${{inputs.RUN_ON}}
@@ -136,12 +177,33 @@ jobs:
       DB_POSTGRES_IMAGE_NAME: ${{inputs.DB_POSTGRES_IMAGE_NAME}}
     secrets: inherit
 
+  django-tests-mssql:
+    needs: workdir-has-changes
+    if: ${{ inputs.DATABASE == 'mssql' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
+    uses: ./.github/workflows/django-step-tests-mssql.yml
+    with:
+      RUN_ON: ${{inputs.RUN_ON}}
+      RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
+      WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+      PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
+      COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
+      RUN: ${{inputs.RUN}}
+      SETUP_COMMANDS: ${{ inputs.SETUP_COMMANDS }}
+      ENABLE_LFS: ${{inputs.ENABLE_LFS}}
+      LFS_REPO_PATH: ${{inputs.LFS_REPO_PATH}}
+      COVERAGE_THRESHOLD: ${{inputs.COVERAGE_THRESHOLD}}
+      DB_MSSQL_VERSION: ${{inputs.DB_MSSQL_VERSION}}
+      DB_MSSQL_IMAGE_NAME: ${{inputs.DB_MSSQL_IMAGE_NAME}}
+      DB_MSSQL_DATABASE: ${{inputs.DB_MSSQL_DATABASE}}
+      DB_MSSQL_SA_PASSWORD: ${{inputs.DB_MSSQL_SA_PASSWORD}}
+    secrets: inherit
+
   jobs-succeded:
-    needs: ["django-lint-check", "django-tests"]
+    needs: ["django-lint-check", "django-lint-check-mssql", "django-tests", "django-tests-mssql"]
     runs-on:
       labels: ${{ inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     if: ${{ always()}}
     steps:
       - name: "Jobs: django-lint-check, django-tests didn't fail."
-        run: if [[ "${{ needs.django-lint-check.result }}" == "failure" || "${{ needs.django-tests.result }}" == "failure" ]]; then exit 1; fi
+        run: if [[ "${{ needs.django-lint-check.result }}" == "failure" || "${{ needs.django-lint-check-mssql.result }}" == "failure" || "${{ needs.django-tests.result }}" == "failure" || "${{ needs.django-tests-mssql.result }}" == "failure" ]]; then exit 1; fi
