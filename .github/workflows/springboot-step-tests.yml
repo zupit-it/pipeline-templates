@@ -70,10 +70,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set Maven settings
-        uses: zupit-it/pipeline-templates/.github/actions/maven/settings@v1.35.0
+        uses: zupit-it/pipeline-templates/.github/actions/maven/settings@TSTR-1/update-node24-actions
         with:
           MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
           MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
@@ -87,7 +87,7 @@ jobs:
         env:
           SPRING_APPLICATION_JSON: ${{ inputs.USE_CI_POSTGRES && inputs.SPRING_APPLICATION_JSON || '{}' }}
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
           path: |

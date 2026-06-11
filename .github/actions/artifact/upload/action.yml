@@ -22,13 +22,13 @@ runs:
   steps:
     - name: Archive build
       id: archive
-      uses: zupit-it/pipeline-templates/.github/actions/artifact/create-archive@v1.35.0
+      uses: zupit-it/pipeline-templates/.github/actions/artifact/create-archive@TSTR-1/update-node24-actions
       with:
         SOURCE_FOLDER: ${{ inputs.SOURCE_FOLDER }}
         ARCHIVE_PATH: ${{ inputs.ARCHIVE_PATH }}
 
     - name: Upload build artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.ARTIFACT_NAME }}
         path: ${{ steps.archive.outputs.ARCHIVE_PATH }}

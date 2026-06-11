@@ -56,9 +56,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Deploy
-        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.35.0
+        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@TSTR-1/update-node24-actions
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
@@ -81,9 +81,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Deploy
-        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.35.0
+        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@TSTR-1/update-node24-actions
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           PROJECT_NAME: ${{ inputs.PROJECT_NAME }}

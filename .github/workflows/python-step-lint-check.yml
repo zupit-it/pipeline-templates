@@ -54,11 +54,11 @@ jobs:
         if: ${{ inputs.ENABLE_LFS == true }}
         run: apt-get update && apt-get install -y git-lfs
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         if: ${{ inputs.ENABLE_LFS == true }}
         with:
           lfs: "true"
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         if: ${{ inputs.ENABLE_LFS == false }}
       - name: Checkout LFS objects
         if: ${{ inputs.ENABLE_LFS == true }}

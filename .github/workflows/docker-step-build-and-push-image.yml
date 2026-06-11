@@ -75,7 +75,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.CHECKOUT_REF }}
       - name: Run pre-build script
@@ -85,7 +85,7 @@ jobs:
           sh -c '${{ inputs.PRE_BUILD_SCRIPT }}'
       - name: Docker Build & Push
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.35.0
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@TSTR-1/update-node24-actions
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}

@@ -23,13 +23,13 @@ runs:
 
   steps:
     - name: Download artifact
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: ${{ inputs.ARTIFACT_NAME }}
         path: ${{ inputs.OUTPUT_FOLDER }}
 
     - name: Unpack
-      uses: zupit-it/pipeline-templates/.github/actions/artifact/extract-archive@v1.35.0
+      uses: zupit-it/pipeline-templates/.github/actions/artifact/extract-archive@TSTR-1/update-node24-actions
       with:
         ARCHIVE_PATH: ${{ inputs.OUTPUT_FOLDER }}/${{ inputs.ARCHIVE_NAME }}
         OUTPUT_FOLDER: ${{ inputs.OUTPUT_FOLDER }}

@@ -87,10 +87,10 @@ jobs:
       - name: Configure Git safe directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -109,10 +109,10 @@ jobs:
         working-directory: ${{ inputs.WORKING_DIRECTORY }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set Maven settings
-        uses: zupit-it/pipeline-templates/.github/actions/maven/settings@v1.35.0
+        uses: zupit-it/pipeline-templates/.github/actions/maven/settings@TSTR-1/update-node24-actions
         with:
           MAVEN_USER_HOME: ${{ inputs.MAVEN_USER_HOME }}
           MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
@@ -121,7 +121,7 @@ jobs:
 
       - name: Download coverage artifact
         if: ${{ inputs.DOWNLOAD_ARTIFACT }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{inputs.ARTIFACT_FILENAME}}
           path: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.ARTIFACT_PATH }}
@@ -131,7 +131,7 @@ jobs:
         run: ${{ inputs.PRE_SCAN_COMMANDS }}
 
       - name: Run Sonar
-        run: ./mvnw -ntp initialize org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
+        run: ./mvnw -ntp initialize org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --settings ${{inputs.MAVEN_USER_HOME}}/settings.xml -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=${{ inputs.CHECK_QUALITY_GATE }}
 
   jobs-succeded:
     needs: ["sonar-analyze"]

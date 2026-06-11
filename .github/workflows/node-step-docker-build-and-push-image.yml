@@ -87,12 +87,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.CHECKOUT_REF }}
 
       - name: NodeJS Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.35.0
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@TSTR-1/update-node24-actions
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
@@ -104,7 +104,7 @@ jobs:
         run: tar czvf dist.tar.gz ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
           path: dist.tar.gz
@@ -126,12 +126,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.CHECKOUT_REF }}
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ inputs.ARTIFACT_NAME }}
           path: .
@@ -141,7 +141,7 @@ jobs:
 
       - name: Docker Build & Push
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.35.0
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@TSTR-1/update-node24-actions
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
