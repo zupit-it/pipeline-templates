@@ -40,13 +40,8 @@ on:
 env: "${{secrets}}"
 
 jobs:
-  deploy-with-runner-group:
-    if: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' }}
-    runs-on:
-      labels:
-        - deploy
-        - ${{ inputs.DEPLOY_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+  deploy:
+    runs-on: ${{ inputs.DEPLOY_ON }}
     env: ${{ fromJson(inputs.IMAGES) }}
     environment:
       name: ${{ inputs.ENVIRONMENT }}
@@ -58,32 +53,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Deploy
-        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.36.0
-        with:
-          REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
-          PROJECT_NAME: ${{ inputs.PROJECT_NAME }}
-          DOCKER_COMPOSE_PATH: ${{ inputs.DOCKER_COMPOSE_PATH }}
-          DOCKER_COMPOSE_EXTRA_ARGS: ${{ inputs.DOCKER_COMPOSE_EXTRA_ARGS }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  deploy-without-runner-group:
-    if: ${{ inputs.RUNNERS_CONTAINER_GROUP == '' }}
-    runs-on:
-      labels:
-        - deploy
-        - ${{ inputs.DEPLOY_ON }}
-    env: ${{ fromJson(inputs.IMAGES) }}
-    environment:
-      name: ${{ inputs.ENVIRONMENT }}
-      url: ${{ inputs.DEPLOY_URL }}
-    container:
-      image: ${{ inputs.DIND_IMAGE }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-      - name: Deploy
-        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@v1.36.0
+        uses: zupit-it/pipeline-templates/.github/actions/docker/deploy@chore/warpbuild-and-action-bumps
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           PROJECT_NAME: ${{ inputs.PROJECT_NAME }}

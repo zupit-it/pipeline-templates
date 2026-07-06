@@ -6,7 +6,8 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for all jobs. workdir-has-changes and jobs-succeeded match the cheap-pattern profiled in sibling templates; deploy mirrors dotnet-step-azure-webapp-build-and-deploy.yml's deploy job (p95 CPU 22% on 4x) - the only work is the Azure App Service publish action."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -58,9 +59,7 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -87,9 +86,7 @@ jobs:
   deploy:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:
@@ -115,7 +112,7 @@ jobs:
           cp -r ${{ inputs.WORKING_DIRECTORY }}/.[!.]* /tmp/deployment/ 2>/dev/null || true
 
       - name: Deploy to Azure App Service
-        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.36.0
+        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@chore/warpbuild-and-action-bumps
         with:
           WORKING_DIRECTORY: /tmp
           BINARIES_DIRECTORY: deployment
@@ -125,9 +122,7 @@ jobs:
 
   jobs-succeeded:
     needs: deploy
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     if: ${{ always()}}
     steps:
       - name: "Jobs: deploy didn't fail."

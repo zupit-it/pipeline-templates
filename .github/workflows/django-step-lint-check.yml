@@ -3,10 +3,14 @@ name: Lint and check a Django app
 on:
   workflow_call:
     inputs:
+      # RUN_ON sized from the May-2026 GitHub Actions usage CSV: gh-2vCPU
+      # baseline ≈ 241s across 413 runs → ~140s on warp-2x, well under the
+      # 4-minute target. The linter is consistently CPU-light, so 2x is the
+      # default. Raise per-consumer if a heavier lint suite emerges.
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-2x"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -52,9 +56,7 @@ env: "${{secrets}}"
 jobs:
   django-linter:
     if: ${{ inputs.RUN }}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: ${{ inputs.PYTHON_IMAGE }}
 
     defaults:

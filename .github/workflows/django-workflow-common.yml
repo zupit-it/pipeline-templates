@@ -22,7 +22,27 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
+      # NOTE: RUN_ON_BUILD now drives django-step-tests only. Lint moved to
+      # RUN_ON_LINT (see below) after the May-2026 runner-sizing sweep showed
+      # the linter is cheap. Tests stay on 4x because the suite still sits
+      # comfortably under the 4-minute target there (gh-2vCPU baseline ≈ 396s
+      # across 413 runs → ~115s on warp-4x). When/if the suite outgrows 4x,
+      # consider 8x — but capture max_sustained_cpu first.
+      RUN_ON_BUILD:
+        required: false
+        type: string
+        default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner forwarded to django-step-tests. Test suite baseline ~115s on warp-4x in profiling; raise to 8x only if a new test suite saturates."
+      # RUN_ON_LINT: the linter is light (gh-2vCPU baseline ≈ 241s across 413
+      # runs → ~140s on warp-2x in profiling). 2x is the right default;
+      # consumers with a heavier lint suite can override.
+      RUN_ON_LINT:
+        required: false
+        type: string
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner forwarded to django-step-lint-check. p95 wall on warp-2x ≈ 140s in May-2026 sizing data."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -94,9 +114,7 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -125,7 +143,7 @@ jobs:
     if: ${{ inputs.DATABASE == 'postgres' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
     uses: ./.github/workflows/django-step-lint-check.yml
     with:
-      RUN_ON: ${{inputs.RUN_ON}}
+      RUN_ON: ${{inputs.RUN_ON_LINT}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
@@ -163,7 +181,7 @@ jobs:
     if: ${{ inputs.DATABASE == 'postgres' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
     uses: ./.github/workflows/django-step-tests.yml
     with:
-      RUN_ON: ${{inputs.RUN_ON}}
+      RUN_ON: ${{inputs.RUN_ON_BUILD}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}
@@ -200,9 +218,7 @@ jobs:
 
   jobs-succeded:
     needs: ["django-lint-check", "django-lint-check-mssql", "django-tests", "django-tests-mssql"]
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     if: ${{ always()}}
     steps:
       - name: "Jobs: django-lint-check, django-tests didn't fail."

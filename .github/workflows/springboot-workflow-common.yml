@@ -55,7 +55,27 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
+      # NOTE: RUN_ON_BUILD now drives springboot-step-tests and
+      # springboot-step-tests-mysql only. Lint moved to RUN_ON_LINT (see below)
+      # after the May-2026 runner-sizing sweep showed the linter is cheap.
+      # The tests-mysql suite was the most expensive job in the export
+      # (gh-2vCPU baseline ≈ 942s across 497 runs → ~273s on warp-4x, ~136s on
+      # warp-8x). 4x is the maximum default until someone confirms 8x is
+      # warranted on the actual warp profile; raise per-consumer otherwise.
+      RUN_ON_BUILD:
+        required: false
+        type: string
+        default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner forwarded to springboot-step-tests and springboot-step-tests-mysql. Tests-mysql wall ≈ 273s on warp-4x; consider 8x per-consumer for the biggest test suites."
+      # RUN_ON_LINT: the linter is light (gh-2vCPU baseline ≈ 152s across 499
+      # runs → ~88s on warp-2x in profiling). 2x is the right default.
+      RUN_ON_LINT:
+        required: false
+        type: string
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner forwarded to springboot-step-lint-check. p95 wall on warp-2x ≈ 88s in May-2026 sizing data."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -66,9 +86,7 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -102,7 +120,7 @@ jobs:
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
       RUN: ${{inputs.RUN}}
-      RUN_ON: ${{ inputs.RUN_ON }}
+      RUN_ON: ${{ inputs.RUN_ON_LINT }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
@@ -120,7 +138,7 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
       RUN: ${{ inputs.RUN }}
-      RUN_ON: ${{ inputs.RUN_ON }}
+      RUN_ON: ${{ inputs.RUN_ON_BUILD }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
@@ -137,15 +155,13 @@ jobs:
       MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       RUN: ${{ inputs.RUN }}
-      RUN_ON: ${{ inputs.RUN_ON }}
+      RUN_ON: ${{ inputs.RUN_ON_BUILD }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
   jobs-succeded:
     needs: ["springboot-lint-check", "springboot-tests", "springboot-tests-mysql"]
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     if: ${{ always()}}
     steps:
       - name: "Jobs: springboot-lint-check, springboot-tests, springboot-tests-mysql didn't fail."

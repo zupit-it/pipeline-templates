@@ -18,6 +18,10 @@ inputs:
     required: false
     type: string
     default: ""
+  CHECKOUT_REF:
+    required: false
+    type: string
+    default: ""
   SHELL:
     required: false
     type: string

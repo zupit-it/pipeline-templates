@@ -6,7 +6,20 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
+      # NOTE: RUN_ON_ANALYZE default kept at warp-ubuntu-latest-x64-4x because
+      # we have no direct WarpBuild profiling data for the Flutter sonar-analyze
+      # job. The .NET equivalent (sonar-step-dotnet-analyze.yml) saturated 4x at
+      # p95 99% CPU; assuming the Flutter scanner has comparable load. Before
+      # lowering this to 2x: capture max_sustained_cpu for one full run on 4x
+      # and only downsize if p95 CPU% stays below ~50% (fits in 2 vCPU at <85%
+      # load). If anything this is a candidate for upsizing to 8x.
+      RUN_ON_ANALYZE:
+        required: false
+        type: string
+        default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner for the Flutter sonar-analyze job. See note above - kept at 4x by analogy with sonar-step-dotnet-analyze.yml; not directly profiled."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -58,9 +71,7 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -87,9 +98,7 @@ jobs:
   sonar-analyze:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON_ANALYZE }}
     container:
       image: ${{ inputs.SONAR_IMAGE }}
       options: --user root
@@ -116,9 +125,7 @@ jobs:
 
   jobs-succeded:
     needs: ["sonar-analyze"]
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     if: ${{ always()}}
     steps:
       - name: "Jobs: sonar-analyze didn't fail."

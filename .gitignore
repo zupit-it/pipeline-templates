@@ -670,3 +670,5 @@ FodyWeavers.xsd
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,macos,windows,intellij,pycharm,visualstudio,visualstudiocode
 .idea
+
+settings.local.json

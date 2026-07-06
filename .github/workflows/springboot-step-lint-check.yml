@@ -3,10 +3,15 @@ name: Lint and check a SpringBoot app
 on:
   workflow_call:
     inputs:
+      # RUN_ON sized from the May-2026 GitHub Actions usage CSV: gh-2vCPU
+      # baseline ≈ 152s across 499 runs → ~88s on warp-2x, well under the
+      # 4-minute target. Lint is consistently CPU-light versus the full
+      # Maven compile + tests pipeline. Raise per-consumer if a project's
+      # lint suite (e.g. heavy code-analysis plugins) outgrows 2x.
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-2x"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -35,9 +40,7 @@ env: "${{secrets}}"
 jobs:
   springboot-lint-check:
     if: ${{ inputs.RUN }}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: ${{ inputs.JAVA_IMAGE }}
 
     defaults:

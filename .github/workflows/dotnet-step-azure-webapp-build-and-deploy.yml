@@ -6,7 +6,13 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, deploy, jobs-succeded). p95 CPU < 25% on 4x in profiling."
+      RUN_ON_BUILD:
+        required: false
+        type: string
+        default: "warp-ubuntu-latest-x64-4x"
+        description: "Runner for the CPU-bound build job. p95 CPU 86-91% on 4x in profiling; downsize at your own risk, consider 8x for headroom."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -67,9 +73,7 @@ env: "${{secrets}}"
 
 jobs:
   workdir-has-changes:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -96,9 +100,7 @@ jobs:
   build:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON_BUILD }}
     container:
       image: ${{ inputs.DOTNET_IMAGE }}
 
@@ -118,12 +120,12 @@ jobs:
 
       - name: Generate artifact name
         id: artifact-name
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.36.0
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@chore/warpbuild-and-action-bumps
         with:
           NAME_PREFIX: dotnet-build
 
       - name: Build
-        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@v1.36.0
+        uses: zupit-it/pipeline-templates/.github/actions/dotnet/release@chore/warpbuild-and-action-bumps
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           BUILD_CONFIG: "Release"
@@ -132,16 +134,14 @@ jobs:
           DISABLE_CACHE: ${{ inputs.DISABLE_CACHE }}
 
       - name: Upload build artifact
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.36.0
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@chore/warpbuild-and-action-bumps
         with:
           SOURCE_FOLDER: ${{ inputs.WORKING_DIRECTORY }}/${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
           ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
 
   deploy:
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:
@@ -158,12 +158,12 @@ jobs:
 
       - name: Download build artifact
         id: output-folder
-        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.36.0
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@chore/warpbuild-and-action-bumps
         with:
           ARTIFACT_NAME: ${{ needs.build.outputs.ARTIFACT_NAME }}
 
       - name: Publish to Azure App Service
-        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@v1.36.0
+        uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@chore/warpbuild-and-action-bumps
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
           BINARIES_DIRECTORY: ""
@@ -172,9 +172,7 @@ jobs:
 
   jobs-succeded:
     needs: [build, deploy]
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     if: ${{ always() }}
     steps:
       - name: "Check if jobs succeeded"

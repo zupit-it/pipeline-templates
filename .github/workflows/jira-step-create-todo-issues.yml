@@ -6,7 +6,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-2x"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -33,15 +33,13 @@ on:
 
 jobs:
   create-todo-jira-issue:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container:
       image: ${{ inputs.DIND_IMAGE }}
 
     steps:
       - name: Login to Jira
-        uses: atlassian/gajira-login@master
+        uses: atlassian/gajira-login@v3
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
