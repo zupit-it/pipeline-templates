@@ -161,7 +161,7 @@ jobs:
     if: ${{ inputs.DATABASE == 'mssql' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
     uses: ./.github/workflows/django-step-lint-check-mssql.yml
     with:
-      RUN_ON: ${{inputs.RUN_ON}}
+      RUN_ON: ${{inputs.RUN_ON_LINT}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}
@@ -200,7 +200,7 @@ jobs:
     if: ${{ inputs.DATABASE == 'mssql' && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))))}}
     uses: ./.github/workflows/django-step-tests-mssql.yml
     with:
-      RUN_ON: ${{inputs.RUN_ON}}
+      RUN_ON: ${{inputs.RUN_ON_BUILD}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
       PYTHON_IMAGE: ${{ inputs.PYTHON_IMAGE }}

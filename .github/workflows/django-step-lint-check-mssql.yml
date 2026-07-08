@@ -3,10 +3,13 @@ name: Lint and check a Django app with SQL Server
 on:
   workflow_call:
     inputs:
+      # RUN_ON: WarpBuild string runner. django-lint-check-mssql runs the same
+      # CPU-light lint steps as the postgres variant (flake8 + black --check +
+      # manage.py checks), so 2x by default - matches django-step-lint-check.
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-x64-2x"
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -59,9 +62,7 @@ env: "${{secrets}}"
 jobs:
   django-linter:
     if: ${{ inputs.RUN }}
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: ${{ inputs.PYTHON_IMAGE }}
 
     defaults:

@@ -6,8 +6,8 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "warp-ubuntu-latest-x64-4x"
-        description: "Runner for the docker-build-and-push job. NOTE: not directly profiled in the WarpBuild usage export (x.json) - this template wasn't exercised by provisus during the 7-day capture window. Kept at 4x because docker buildx + push is typically CPU-bound and IO-bound; downsizing to 2x risks longer wall time. Capture max_sustained_cpu for one full run before deciding to lower to 2x or raise to 8x."
+        default: "warp-ubuntu-latest-x64-2x"
+        description: "Runner for the docker-build-and-push job. The node bundle is already built upstream in build-node-project (RUN_ON_BUILD, 4x) and passed as an artifact; this job only untars dist and runs docker buildx + push, which is IO/push-bound. Defaulted to 2x. Not yet CPU-profiled on WarpBuild; capture max_sustained_cpu and raise if a heavy Dockerfile build saturates 2x."
       RUN_ON_BUILD:
         required: false
         type: string
