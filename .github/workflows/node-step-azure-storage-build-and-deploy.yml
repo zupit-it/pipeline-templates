@@ -87,7 +87,7 @@ on:
       AZURE_CLI_IMAGE:
         required: false
         type: string
-        default: "mcr.microsoft.com/azure-cli:2.69.0"
+        default: "mcr.microsoft.com/azure-cli:2.69.0-azurelinux3.0"
       TDNF_PACKAGE_MANAGER_INSTALL_TAR:
         required: false
         type: boolean
