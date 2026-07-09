@@ -279,11 +279,7 @@ function buildMetrics(records: Record<string, string>[]): Map<string, JobMetrics
   return map;
 }
 
-function buildGroups(
-  billing: Record<string, string>[],
-  metrics: Map<string, JobMetrics>,
-  args: Args,
-): Group[] {
+function buildGroups(billing: Record<string, string>[], metrics: Map<string, JobMetrics>, args: Args): Group[] {
   interface Acc {
     repo: string;
     job: string;
@@ -425,7 +421,11 @@ function recommend(g: Group, execTimes: number[], args: Args): void {
   if (!hasMetrics) g.notes.push("no cpu/mem metrics in jobs report");
   if (g.bimodal)
     g.notes.push(
-      "skip/heavy mix (" + g.activeRuns + "/" + g.runs + " active): cpu/mem p90 may reflect skipped runs — verify heavy-run load before downgrading",
+      "skip/heavy mix (" +
+        g.activeRuns +
+        "/" +
+        g.runs +
+        " active): cpu/mem p90 may reflect skipped runs — verify heavy-run load before downgrading",
     );
   else if (!g.best.safe && g.best.tier !== g.tier) g.notes.push("CPU-bound: expect slower runs on target");
   if (g.best.arch !== g.arch) g.notes.push("arch switch: verify arm64 compatibility");
@@ -475,7 +475,9 @@ function renderMd(groups: Group[], args: Args): string {
     if (recs.length > 0) {
       lines.push(`### Recommendations`);
       lines.push("");
-      lines.push(`| job | runner | runs (active) | cost | cpu p90 | mem p90 | → target | est cost | save | mode | notes |`);
+      lines.push(
+        `| job | runner | runs (active) | cost | cpu p90 | mem p90 | → target | est cost | save | mode | notes |`,
+      );
       lines.push(`|---|---|---:|---:|---:|---:|---|---:|---:|---|---|`);
       for (const g of recs) {
         const b = g.best!;
@@ -518,7 +520,9 @@ function renderMd(groups: Group[], args: Args): string {
   lines.push(
     `- docker build/push jobs: an arm64 runner natively builds \`linux/arm64\` images. Building \`linux/amd64\` there falls back to QEMU emulation (5-10x slower) — keep docker jobs on x64 unless you ship arm images or build multi-arch anyway.`,
   );
-  lines.push(`- node: native modules (\`node-gyp\`, \`esbuild\`, \`sharp\`, …) need arm64 prebuilds — most popular ones have them.`);
+  lines.push(
+    `- node: native modules (\`node-gyp\`, \`esbuild\`, \`sharp\`, …) need arm64 prebuilds — most popular ones have them.`,
+  );
   lines.push(`- .NET: fine on arm64 since .NET 6; check any RID-specific publish (\`-r linux-x64\`).`);
   lines.push(`- sonar scanners, az cli, gh cli: all ship arm64 builds.`);
   lines.push(`- anything downloading x64-only binaries in a script will break at runtime, not at label change.`);
@@ -535,7 +539,8 @@ function main() {
 
   const parsed = args.files.map((f) => ({ path: f, records: toRecords(parseCsv(readFileSync(f, "utf-8"))) }));
   const kinds = parsed.map((p) => sniff(p.records, p.path));
-  if (kinds[0] === kinds[1]) throw new Error(`need one jobs-report CSV and one ci-billing CSV, got two ${kinds[0]} files`);
+  if (kinds[0] === kinds[1])
+    throw new Error(`need one jobs-report CSV and one ci-billing CSV, got two ${kinds[0]} files`);
 
   const jobs = parsed[kinds[0] === "jobs" ? 0 : 1].records;
   const billing = parsed[kinds[0] === "billing" ? 0 : 1].records;

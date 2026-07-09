@@ -19,15 +19,15 @@ The two positional CSVs are sniffed by header, so order does not matter. No depe
 
 ### Options
 
-| Flag                | Default                   | Effect                                                                                    |
-| ------------------- | ------------------------- | ----------------------------------------------------------------------------------------- |
-| `--repo <substr>`   | all                       | Only repos whose name contains the substring. Repeatable.                                 |
-| `--cpu-max <n>`     | 75                        | Max projected cpu% on the target SKU to call a candidate "safe" (no slowdown expected).   |
-| `--mem-max <n>`     | 80                        | Max projected mem% on the target SKU; above this the candidate is rejected outright.      |
-| `--min-savings <n>` | 0.01                      | Hide recommendations saving less than n dollars over the CSV window.                      |
-| `--skip-cutoff <s>` | 30                        | Runs shorter than this many seconds count as "skipped" (gated steps did not run).         |
-| `--output <path>`   | `warpbuild-cost-analysis` | Output base path; writes `<path>.json` and `<path>.md`.                                   |
-| `--no-md`           |                           | JSON only.                                                                                 |
+| Flag                | Default                   | Effect                                                                                  |
+| ------------------- | ------------------------- | --------------------------------------------------------------------------------------- |
+| `--repo <substr>`   | all                       | Only repos whose name contains the substring. Repeatable.                               |
+| `--cpu-max <n>`     | 75                        | Max projected cpu% on the target SKU to call a candidate "safe" (no slowdown expected). |
+| `--mem-max <n>`     | 80                        | Max projected mem% on the target SKU; above this the candidate is rejected outright.    |
+| `--min-savings <n>` | 0.01                      | Hide recommendations saving less than n dollars over the CSV window.                    |
+| `--skip-cutoff <s>` | 30                        | Runs shorter than this many seconds count as "skipped" (gated steps did not run).       |
+| `--output <path>`   | `warpbuild-cost-analysis` | Output base path; writes `<path>.json` and `<path>.md`.                                 |
+| `--no-md`           |                           | JSON only.                                                                              |
 
 ## Model
 
