@@ -55,7 +55,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "warp-ubuntu-latest-x64-2x"
+        default: "warp-ubuntu-latest-arm64-2x"
         description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
       # NOTE: RUN_ON_BUILD now drives springboot-step-tests and
       # springboot-step-tests-mysql only. Lint moved to RUN_ON_LINT (see below)
@@ -68,7 +68,7 @@ on:
         required: false
         type: string
         default: "warp-ubuntu-latest-x64-4x"
-        description: "Runner forwarded to springboot-step-tests and springboot-step-tests-mysql. Tests-mysql wall ≈ 273s on warp-4x; consider 8x per-consumer for the biggest test suites."
+        description: "Runner forwarded to springboot-step-tests and springboot-step-tests-mysql. Tests-mysql wall ≈ 273s on warp-4x; consider 8x per-consumer for the biggest test suites. The arm64 flavor of the same size is ~25% cheaper - override to warp-ubuntu-latest-arm64-4x if your container image is multi-arch."
       # RUN_ON_LINT: the linter is light (gh-2vCPU baseline ≈ 152s across 499
       # runs → ~88s on warp-2x in profiling). 2x is the right default.
       RUN_ON_LINT:

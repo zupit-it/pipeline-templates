@@ -6,13 +6,13 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "warp-ubuntu-latest-x64-2x"
-        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). p95 CPU < 13% on 4x in provisus profiling."
+        default: "warp-ubuntu-latest-arm64-2x"
+        description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). p95 CPU < 13% on 4x in reference-project profiling."
       RUN_ON_ANALYZE:
         required: false
         type: string
         default: "warp-ubuntu-latest-x64-2x"
-        description: "Runner for the sonar-analyze job. This flavor only downloads the coverage artifact and runs sonar-scanner + quality-gate wait (no compile), so it is IO/wait-bound - 2x by default. Confirm CPU with warpbuild-analysis before assuming 4x helps: a bigger runner cannot shorten the gate wait. Raise per-consumer for very large codebases."
+        description: "Runner for the sonar-analyze job. This flavor only downloads the coverage artifact and runs sonar-scanner + quality-gate wait (no compile), so it is IO/wait-bound - 2x by default. Confirm CPU with warpbuild-analysis before assuming 4x helps: a bigger runner cannot shorten the gate wait. Raise per-consumer for very large codebases. Kept on x64: the pinned sonar-scanner-cli image is amd64-only."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string

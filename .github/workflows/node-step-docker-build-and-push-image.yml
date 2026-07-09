@@ -7,11 +7,11 @@ on:
         required: false
         type: string
         default: "warp-ubuntu-latest-x64-2x"
-        description: "Runner for the docker-build-and-push job. The node bundle is already built upstream in build-node-project (RUN_ON_BUILD, 4x) and passed as an artifact; this job only untars dist and runs docker buildx + push, which is IO/push-bound. Defaulted to 2x. Not yet CPU-profiled on WarpBuild; capture max_sustained_cpu and raise if a heavy Dockerfile build saturates 2x."
+        description: "Runner for the docker-build-and-push job. The node bundle is already built upstream in build-node-project (RUN_ON_BUILD, 4x) and passed as an artifact; this job only untars dist and runs docker buildx + push, which is IO/push-bound. Defaulted to 2x. Not yet CPU-profiled on WarpBuild; capture max_sustained_cpu and raise if a heavy Dockerfile build saturates 2x. Kept on x64: it builds linux/amd64 images (arm64 would mean QEMU or arm images)."
       RUN_ON_BUILD:
         required: false
         type: string
-        default: "warp-ubuntu-latest-x64-4x"
+        default: "warp-ubuntu-latest-arm64-4x"
         description: "Runner for the build-node-project job. Same job ID and action as node-step-azure-storage-build-and-deploy.yml's build-node-project, which p95'd at 95% CPU on 4x in profiling - so kept at 4x and a candidate for upsizing to 8x."
       RUNNERS_CONTAINER_GROUP:
         required: false

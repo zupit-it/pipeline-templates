@@ -6,12 +6,12 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "warp-ubuntu-latest-x64-2x"
+        default: "warp-ubuntu-latest-arm64-2x"
         description: "Runner for cheap jobs (workdir-has-changes, node-deploy-azure-storage, jobs-succeded). p95 CPU 10-22% on 4x in profiling."
       RUN_ON_BUILD:
         required: false
         type: string
-        default: "warp-ubuntu-latest-x64-4x"
+        default: "warp-ubuntu-latest-arm64-4x"
         description: "Runner for the CPU-bound build-node-project job. p95 CPU 93-95% on 4x in profiling; consider 8x for headroom."
       RUNNERS_CONTAINER_GROUP:
         required: false

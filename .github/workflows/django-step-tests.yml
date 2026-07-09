@@ -5,7 +5,7 @@ on:
     inputs:
       # NOTE: RUN_ON default kept at warp-ubuntu-latest-x64-4x because we have no
       # WarpBuild profiling data for this template. Sibling workflows in this
-      # directory were tuned from a 7-day provisus usage export (x.json) which
+      # directory were tuned from a 7-day usage export of a reference project which
       # showed CPU-light jobs (deploy, workdir-has-changes, jobs-succeded, lint,
       # jira, release) safely fitting on a 2x runner, while build / sonar-analyze
       # / dotnet-common / lint-check-build saturated 4x. This template was not

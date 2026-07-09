@@ -18,7 +18,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "warp-ubuntu-latest-x64-2x"
+        default: "warp-ubuntu-latest-arm64-2x"
         description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
       # RUN_ON_LINT: python-step-lint-check only runs `pip install` + `flake8`
       # + `black --check` - the same CPU-light lint profile django/springboot
