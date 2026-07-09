@@ -11,6 +11,8 @@ on:
         required: false
         type: string
         default: "Container"
+      # Unused since the job no longer runs in a container (JS actions in Alpine
+      # containers are x64-only on GitHub runners); kept for call compatibility.
       DIND_IMAGE:
         required: false
         type: string
@@ -20,8 +22,6 @@ jobs:
   release:
     name: release
     runs-on: ${{ inputs.RUN_ON }}
-    container:
-      image: ${{ inputs.DIND_IMAGE }}
     steps:
       - uses: actions/checkout@v6
         with:
