@@ -6,6 +6,7 @@ Standalone CLI utilities for tuning the runner SKUs used by the reusable workflo
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | [`runner-sizing/`](./runner-sizing/)           | GitHub Actions **Usage data > Export** CSV (wall time, queue time, failure rate, runner labels). | Per-`(workflow, job)` SKU recommendation, plus a rollup by job-ID that maps directly to a pipeline-templates _step_. Outliers are separated for manual review. | After exporting fresh GH Actions usage. Best for cross-runner comparisons (mixed warpbuild / buildjet / zupit-agents / github-hosted pools). |
 | [`warpbuild-analysis/`](./warpbuild-analysis/) | Warpbuild **usage-data export** JSON (per-instance CPU%, memory%, disk-io, network-io, fs%).     | Per-`(workflow, job, sku)` `upgrade` / `downgrade` / `keep` action driven by real CPU/memory percentiles.                                                      | When the workload already runs on warpbuild and you have direct per-instance metrics.                                                        |
+| [`warpbuild-cost/`](./warpbuild-cost/)         | Warpbuild dashboard **jobs report** CSV + **CI billing** CSV.                                    | Per-`(repo, job, runner_label)` downgrade / arm64-switch recommendation with estimated $ savings over the billing window.                                      | When you want $-quantified savings, including the 25%-cheaper arm64 SKUs, from just the two dashboard CSVs.                                  |
 
 The two tools are complementary:
 
@@ -14,11 +15,12 @@ The two tools are complementary:
 
 ## Running
 
-Both tools are zero-dependency TypeScript scripts that run with any Node-compatible runner. From the repo root:
+All tools are zero-dependency TypeScript scripts that run with any Node-compatible runner. From the repo root:
 
 ```bash
-npx tsx tools/runner-sizing/analyze.ts <input.csv>          [options]
-npx tsx tools/warpbuild-analysis/analyze.ts <input.json>    [options]
+npx tsx tools/runner-sizing/analyze.ts <input.csv>                            [options]
+npx tsx tools/warpbuild-analysis/analyze.ts <input.json>                      [options]
+npx tsx tools/warpbuild-cost/analyze.ts <jobs-report.csv> <ci-billing.csv>    [options]
 ```
 
 `bun`, `ts-node`, `tsx`, `deno` (with `--allow-read --allow-write`) all work.
