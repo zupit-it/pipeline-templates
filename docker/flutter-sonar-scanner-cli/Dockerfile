@@ -4,7 +4,7 @@ RUN apt update -y && apt install -y curl xz-utils clang cmake git ninja-build pk
 
 WORKDIR /opt
 
-ENV FLUTTER_VERSION="3.38.7"
+ENV FLUTTER_VERSION="3.41.9"
 ENV FLUTTER_HOME "/opt/flutter"
 ENV PATH $PATH:$FLUTTER_HOME/bin:/opt/sonar-scanner-cli/bin
 
