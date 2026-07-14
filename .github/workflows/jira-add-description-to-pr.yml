@@ -20,7 +20,9 @@ on:
 
 jobs:
   jira-description:
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
 
     steps:
       - uses: cakeinpanic/jira-description-action@v0.4.0

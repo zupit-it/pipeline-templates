@@ -27,7 +27,9 @@ on:
 
 jobs:
   move-jira-issue:
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.DIND_IMAGE }}
 

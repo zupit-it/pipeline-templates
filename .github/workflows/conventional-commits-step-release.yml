@@ -21,7 +21,9 @@ on:
 jobs:
   release:
     name: release
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     steps:
       - uses: actions/checkout@v6
         with:

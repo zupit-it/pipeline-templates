@@ -73,7 +73,9 @@ env: "${{secrets}}"
 
 jobs:
   workdir-has-changes:
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -141,7 +143,9 @@ jobs:
 
   deploy:
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     env: ${{ fromJson(inputs.ENV_VARIABLES) }}
     environment: ${{ inputs.RELEASE_ENVIRONMENT }}
     container:
@@ -172,7 +176,9 @@ jobs:
 
   jobs-succeded:
     needs: [build, deploy]
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     if: ${{ always() }}
     steps:
       - name: "Check if jobs succeeded"

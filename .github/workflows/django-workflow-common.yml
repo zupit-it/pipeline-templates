@@ -114,7 +114,9 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -218,7 +220,9 @@ jobs:
 
   jobs-succeded:
     needs: ["django-lint-check", "django-lint-check-mssql", "django-tests", "django-tests-mssql"]
-    runs-on: ${{ inputs.RUN_ON }}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     if: ${{ always()}}
     steps:
       - name: "Jobs: django-lint-check, django-tests didn't fail."
