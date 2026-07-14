@@ -55,7 +55,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "warp-ubuntu-latest-arm64-2x"
+        default: "zupit-agents"
         description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
       # NOTE: RUN_ON_BUILD now drives springboot-step-tests and
       # springboot-step-tests-mysql only. Lint moved to RUN_ON_LINT (see below)

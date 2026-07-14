@@ -6,7 +6,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "warp-ubuntu-latest-arm64-2x"
+        default: "zupit-agents"
         description: "Runner for cheap jobs (workdir-has-changes, node-deploy-azure-storage, jobs-succeded). p95 CPU 10-22% on 4x in profiling."
       RUN_ON_BUILD:
         required: false
