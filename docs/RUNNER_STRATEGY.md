@@ -52,6 +52,41 @@ runs-on: ${{ inputs.RUN_ON_BUILD }} # e.g. warp-ubuntu-latest-x64-4x
 > back to `zupit-agents`, restore the grouped block **and** set the label
 > default — doing only one is not enough.
 
+## Second gotcha: self-hosted jobs must run in a `container:`
+
+The `zupit-agents` runners execute jobs as a non-root user that **cannot write to
+the runner's tool cache** (`/opt/github-runner/.../_work/_tool`). A job that runs
+directly on the host and tries to provision a toolchain fails, e.g.:
+
+```
+EACCES: permission denied, mkdir '/opt/github-runner/.../_work/_tool/node/24.18.0'
+```
+
+(`actions/setup-node` was the trigger; `setup-dotnet` / any tool-cache install
+behaves the same.) This is why **every** self-hosted job in these templates
+declares a `container:` — inside the container the steps run as root, so tool
+installs and the checkout's git work. Pick the image by what the job needs:
+
+```yaml
+runs-on:
+    labels: ${{ inputs.RUN_ON }}
+    group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+container: buildpack-deps:24.04-scm # git + perl + curl; add `apt-get install jq` if needed
+# container: node:24                 # for a Node job — node + npm + git preinstalled, drop setup-node
+```
+
+Rules of thumb:
+
+- **Node job** → `container: node:24` and delete the `actions/setup-node` step
+  (the image already has the right Node).
+- **git-only job** (checkout, diff, tag, push) → `container: buildpack-deps:24.04-scm`.
+- **needs `jq`/other apt pkg** → same image + a step
+  `apt-get update && apt-get install -y --no-install-recommends <pkg>` (`perl` is
+  already present via `perl-base`).
+- **needs `gh` CLI** → `gh` is _not_ in the standard images and adding its apt repo
+  is fragile; for a low-frequency job it is not worth it — leave that job on
+  WarpBuild (github-hosted-style, `gh` preinstalled).
+
 ## Input convention
 
 | Input                     | Drives                                                                        | Default (cheap→self-hosted / heavy→WarpBuild) | `runs-on:` form    |
