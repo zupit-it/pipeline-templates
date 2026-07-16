@@ -1,0 +1,87 @@
+name: Deploy app to Azure Function App
+
+# Deploys a PRE-BUILT .NET isolated (or any pre-packaged) Functions app using the
+# official Azure/functions-action with Run-From-Package.
+#
+# Why this exists (and why it is separate from azure/app-service/deploy):
+#   - app-service/deploy uses Azure/webapps-deploy@v2.2.5 (Kudu zip-deploy), which
+#     is the Web App action. On a single-instance Linux Function App it extracts the
+#     zip into /home/site/wwwroot and recycles the worker; while the SCM/Kudu site is
+#     briefly unavailable the front-end returns 502 Bad Gateway and the deploy client
+#     fails as a false-negative (the deploy usually finishes server-side anyway).
+#   - Azure/functions-action is Microsoft's official Function App action and mirrors
+#     the pattern already used for Python functions in this repo.
+#   - WEBSITE_RUN_FROM_PACKAGE=1 mounts the package read-only instead of extracting
+#     it, which shrinks the recycle window and removes the 502 failure mode without
+#     any retry logic.
+#
+# The build is unchanged: this action consumes the same pre-built publish output that
+# app-service/deploy consumed, so no server-side Oryx build is needed or wanted.
+
+inputs:
+  WORKING_DIRECTORY:
+    required: true
+    type: string
+  BINARIES_DIRECTORY:
+    required: true
+    type: string
+  AZURE_CREDENTIALS:
+    required: true
+    type: string
+  WEBAPP_NAME:
+    required: true
+    type: string
+  WEBAPP_SLOT:
+    required: false
+    type: string
+    default: "production"
+
+runs:
+  using: composite
+  steps:
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        creds: ${{ inputs.AZURE_CREDENTIALS }}
+
+    - name: Ensure Run-From-Package is enabled
+      # Idempotent: only writes (and thus recycles) when the setting is not already 1,
+      # so steady-state deploys don't pay an extra restart. Resource group is derived
+      # from the app name to keep this action's interface identical to the web-app one.
+      shell: bash
+      run: |
+        set -euo pipefail
+        RG=$(az functionapp list --query "[?name=='${{ inputs.WEBAPP_NAME }}'].resourceGroup | [0]" -o tsv)
+        if [ -z "$RG" ]; then
+          echo "::error::Could not resolve resource group for function app '${{ inputs.WEBAPP_NAME }}'"
+          exit 1
+        fi
+        CURRENT=$(az functionapp config appsettings list -g "$RG" -n "${{ inputs.WEBAPP_NAME }}" \
+          --query "[?name=='WEBSITE_RUN_FROM_PACKAGE'].value | [0]" -o tsv)
+        if [ "$CURRENT" != "1" ]; then
+          echo "Setting WEBSITE_RUN_FROM_PACKAGE=1 on ${{ inputs.WEBAPP_NAME }} (was '${CURRENT:-<unset>}')"
+          az functionapp config appsettings set -g "$RG" -n "${{ inputs.WEBAPP_NAME }}" \
+            --settings WEBSITE_RUN_FROM_PACKAGE=1 -o none
+        else
+          echo "WEBSITE_RUN_FROM_PACKAGE already 1 - no change"
+        fi
+
+    - name: Deploy to Azure Function App
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ inputs.WEBAPP_NAME }}
+        slot-name: ${{ inputs.WEBAPP_SLOT }}
+        package: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.BINARIES_DIRECTORY }}
+        respect-funcignore: true
+        # Package is already built in the `build` job; never trigger a server-side
+        # (Oryx) build - that is exactly what broke webapps-deploy v3/OneDeploy here.
+        scm-do-build-during-deployment: false
+        enable-oryx-build: false
+
+    - name: Azure logout
+      shell: "bash"
+      if: always()
+      run: |
+        az logout
+        az cache purge
+        az account clear

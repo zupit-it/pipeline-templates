@@ -29,6 +29,11 @@ on:
       WEBAPP_NAME:
         required: true
         type: string
+      IS_FUNCTION_APP:
+        required: false
+        type: boolean
+        default: false
+        description: "When true, deploy via Azure/functions-action + Run-From-Package (for Azure Function Apps). When false (default), deploy via webapps-deploy (App Service web apps)."
       CHECKOUT_REF:
         required: false
         type: string
@@ -166,8 +171,18 @@ jobs:
         with:
           ARTIFACT_NAME: ${{ needs.build.outputs.ARTIFACT_NAME }}
 
-      - name: Publish to Azure App Service
+      - name: Publish to Azure App Service (web app)
+        if: ${{ !inputs.IS_FUNCTION_APP }}
         uses: zupit-it/pipeline-templates/.github/actions/azure/app-service/deploy@chore/warpbuild-and-action-bumps
+        with:
+          WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
+          BINARIES_DIRECTORY: ""
+          AZURE_CREDENTIALS: ${{ secrets.CI_AZURE_CREDENTIALS }}
+          WEBAPP_NAME: ${{ inputs.WEBAPP_NAME }}
+
+      - name: Publish to Azure Function App
+        if: ${{ inputs.IS_FUNCTION_APP }}
+        uses: zupit-it/pipeline-templates/.github/actions/azure/function-app/deploy@chore/warpbuild-and-action-bumps
         with:
           WORKING_DIRECTORY: ${{ steps.output-folder.outputs.OUTPUT_FOLDER }}
           BINARIES_DIRECTORY: ""
