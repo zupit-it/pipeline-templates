@@ -48,7 +48,12 @@ runs:
             esac
             _anchored+=("$p")
           done
-          params+=(-p:ExcludeByFile="$(IFS=,; echo "${_anchored[*]}")")
+          exclude_by_file=$(IFS=,; echo "${_anchored[*]}")
+          # The value is a comma-separated list. Wrap it in literal quotes: MSBuild strips
+          # the quotes when reading the property, but without them it splits the value on
+          # commas into separate -p switches (each fragment after the first has no '=',
+          # causing "MSB1006: Property is not valid").
+          params+=(-p:ExcludeByFile=\"$exclude_by_file\")
         fi
 
         dotnet test --no-build \
