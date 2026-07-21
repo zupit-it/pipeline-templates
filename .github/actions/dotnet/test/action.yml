@@ -23,9 +23,33 @@ runs:
     - name: Run tests with coverage report
       if: ${{ inputs.GENERATE_CODE_COVERAGE == 'true' }}
       shell: "bash"
+      env:
+        EXCLUDE_FILES: ${{ inputs.EXCLUDE_FILES }}
       run: |
         params=()
-        [[ -n "${{ inputs.EXCLUDE_FILES }}" ]] && params+=(-p:ExcludeByFile=\"${{ inputs.EXCLUDE_FILES }}\")
+
+        # Coverlet's ExcludeByFile matches against ABSOLUTE source paths on the runner
+        # (e.g. /__w/<repo>/<dir>/Foo/Bar.cs), but the exclusion globs are authored
+        # project-relative for Sonar (e.g. "Foo/**", "Dir/File.cs"). An unanchored pattern
+        # never matches an absolute path, so without the **/ prefix Coverlet silently
+        # instruments everything anyway (a large generated project like EF migrations then
+        # dominates the "Calculating coverage result" phase). Anchor each pattern with **/
+        # unless it is already anchored (**/…) or absolute (/…) so the exclusions take effect.
+        if [[ -n "$EXCLUDE_FILES" ]]; then
+          IFS=',' read -ra _patterns <<< "$EXCLUDE_FILES"
+          _anchored=()
+          for p in "${_patterns[@]}"; do
+            p="${p#"${p%%[![:space:]]*}"}"   # trim leading whitespace
+            p="${p%"${p##*[![:space:]]}"}"   # trim trailing whitespace
+            [[ -z "$p" ]] && continue
+            case "$p" in
+              '**/'* | /*) ;; # already anchored or absolute
+              *) p="**/$p" ;;
+            esac
+            _anchored+=("$p")
+          done
+          params+=(-p:ExcludeByFile="$(IFS=,; echo "${_anchored[*]}")")
+        fi
 
         dotnet test --no-build \
           --logger trx -p:CollectCoverage=true \
