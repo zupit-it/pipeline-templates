@@ -77,6 +77,8 @@ on:
     secrets:
       GCP_SA_KEY:
         required: true
+      GH_PACKAGES_TOKEN:
+        required: false
 
     outputs:
       DOCKER_IMAGE_NAME:

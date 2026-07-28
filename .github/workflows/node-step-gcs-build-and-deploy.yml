@@ -82,6 +82,8 @@ on:
     secrets:
       GCP_SA_KEY:
         required: true
+      GH_PACKAGES_TOKEN:
+        required: false
 
 env: "${{secrets}}"
 
