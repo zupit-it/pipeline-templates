@@ -74,6 +74,10 @@ on:
         type: string
         default: ""
 
+    secrets:
+      GCP_SA_KEY:
+        required: true
+
     outputs:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
