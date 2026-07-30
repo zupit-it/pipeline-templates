@@ -1,0 +1,212 @@
+name: Node build and deploy to Google Cloud Storage
+
+on:
+  workflow_call:
+    inputs:
+      RUN_ON:
+        required: false
+        type: string
+        default: "zupit-agents"
+      RUNNERS_CONTAINER_GROUP:
+        required: false
+        type: string
+        default: "Container"
+      NODE_VERSION:
+        required: true
+        type: string
+      RELEASE_ENVIRONMENT:
+        required: true
+        type: string
+      WORKING_DIRECTORY:
+        required: true
+        type: string
+      DIST_PATH:
+        required: true
+        type: string
+      BUILD_ARGS:
+        required: false
+        type: string
+        default: ""
+      ENV_VARIABLES:
+        required: false
+        type: string
+        default: "{}"
+      PROJECT:
+        required: false
+        type: string
+        default: ""
+      IMAGE:
+        required: false
+        type: string
+        default: "ubuntu:23.04"
+      GCP_CLI_IMAGE:
+        required: false
+        type: string
+        default: "google/cloud-sdk:slim"
+      CHECKOUT_REF:
+        required: false
+        type: string
+        default: ""
+      GCS_BUCKET_NAME:
+        required: true
+        type: string
+      GCP_PROJECT_ID:
+        required: true
+        type: string
+      URL_MAP_NAME:
+        required: false
+        type: string
+        default: ""
+        description: "If set, CDN cache is invalidated on this url map after deploy"
+      PRESERVE_PATTERN:
+        required: false
+        type: string
+        default: ""
+        description: "Regex pattern of bucket paths to exclude from rsync (preserves matching objects across deployments)"
+      CHECK_WORKDIR_CHANGES:
+        required: false
+        type: boolean
+        default: false
+        description: "When true, enables change detection. When false, always runs jobs"
+      CHECK_CUSTOM_DIR:
+        required: false
+        type: string
+        default: ""
+        description: "Override directory to check for changes. Defaults to WORKING_DIRECTORY if empty"
+      CHECK_CHANGES_BY_JOBS:
+        required: false
+        type: string
+        default: "all"
+        description: "JSON array of job IDs to run change detection for. The default 'all' runs for all jobs"
+
+env: "${{secrets}}"
+
+jobs:
+  workdir-has-changes:
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container: buildpack-deps:24.04-scm
+    outputs:
+      changes-detected: ${{ steps.filter.outputs.changes-detected }}
+    steps:
+      - name: Set CHECK_DIR to custom directory if provided
+        if: ${{ inputs.CHECK_CUSTOM_DIR != '' }}
+        run: echo "CHECK_DIR=${{ inputs.CHECK_CUSTOM_DIR }}" >> $GITHUB_ENV
+      - name: Set default CHECK_DIR
+        if: ${{ inputs.CHECK_CUSTOM_DIR == '' }}
+        run: echo "CHECK_DIR=${{ inputs.WORKING_DIRECTORY }}" >> $GITHUB_ENV
+      - name: Configure Git safe directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            changes-detected:
+              - "${{ inputs.WORKING_DIRECTORY }}/**"
+
+  build-node-project:
+    needs: workdir-has-changes
+    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    container:
+      image: ${{ inputs.IMAGE }}
+
+    defaults:
+      run:
+        working-directory: ${{ inputs.WORKING_DIRECTORY }}
+
+    outputs:
+      ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+
+    env: ${{ fromJson(inputs.ENV_VARIABLES) }}
+    steps:
+      - name: Generate artifact name
+        id: artifact-name
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/generate-name@v1.36.0
+        with:
+          NAME_PREFIX: node-build
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.CHECKOUT_REF }}
+
+      - name: Build
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.36.0
+        with:
+          NODE_VERSION: ${{ inputs.NODE_VERSION }}
+          RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
+          WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
+          BUILD_ARGS: ${{ inputs.BUILD_ARGS }}
+          PROJECT: ${{ inputs.PROJECT }}
+          CHECKOUT_REF: ${{ inputs.CHECKOUT_REF }}
+
+      - name: Upload build artifact
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/upload@v1.36.0
+        with:
+          SOURCE_FOLDER: ${{ inputs.WORKING_DIRECTORY }}/${{ inputs.DIST_PATH }}
+          ARTIFACT_NAME: ${{ steps.artifact-name.outputs.ARTIFACT_NAME }}
+
+  node-deploy-gcs:
+    needs: [workdir-has-changes, build-node-project]
+    if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    env: ${{ fromJson(inputs.ENV_VARIABLES) }}
+    environment: ${{ inputs.RELEASE_ENVIRONMENT }}
+    container:
+      image: ${{ inputs.GCP_CLI_IMAGE }}
+
+    steps:
+      - name: Download build artifact
+        id: output-folder
+        uses: zupit-it/pipeline-templates/.github/actions/artifact/download@v1.36.0
+        with:
+          ARTIFACT_NAME: ${{ needs.build-node-project.outputs.ARTIFACT_NAME }}
+
+      - name: Auth to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Sync to bucket
+        run: |
+          EXCLUDE_ARGS="--exclude=\".*index\\.html$\""
+          if [ -n "${{ inputs.PRESERVE_PATTERN }}" ]; then
+            EXCLUDE_ARGS="$EXCLUDE_ARGS --exclude=\"${{ inputs.PRESERVE_PATTERN }}\""
+          fi
+          eval gcloud storage rsync "${{ steps.output-folder.outputs.OUTPUT_FOLDER }}" "gs://${{ inputs.GCS_BUCKET_NAME }}" \
+            --recursive --delete-unmatched-destination-objects \
+            $EXCLUDE_ARGS \
+            --cache-control="public,max-age=31536000,immutable" \
+            --project="${{ inputs.GCP_PROJECT_ID }}"
+
+      - name: Upload index.html
+        run: |
+          gcloud storage cp "${{ steps.output-folder.outputs.OUTPUT_FOLDER }}/index.html" "gs://${{ inputs.GCS_BUCKET_NAME }}/index.html" \
+            --cache-control="no-cache" \
+            --project="${{ inputs.GCP_PROJECT_ID }}"
+
+      - name: Invalidate CDN cache
+        if: ${{ inputs.URL_MAP_NAME != '' }}
+        run: |
+          gcloud compute url-maps invalidate-cdn-cache "${{ inputs.URL_MAP_NAME }}" \
+            --path "/*" --project="${{ inputs.GCP_PROJECT_ID }}" --quiet --async
+
+  jobs-succeded:
+    needs: [build-node-project, node-deploy-gcs]
+    runs-on:
+      labels: ${{ inputs.RUN_ON }}
+      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    if: ${{ always() }}
+    steps:
+      - name: "Check if jobs succeeded"
+        run: if [[ "${{ needs.build-node-project.result }}" == "failure" || "${{ needs.node-deploy-gcs.result }}" == "failure" ]]; then exit 1; fi
