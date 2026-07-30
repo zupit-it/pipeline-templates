@@ -98,7 +98,7 @@ jobs:
           ref: ${{ inputs.CHECKOUT_REF }}
 
       - name: NodeJS Build
-        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.36.0
+        uses: zupit-it/pipeline-templates/.github/actions/node/build@v1.37.0
         with:
           NODE_VERSION: ${{ inputs.NODE_VERSION }}
           RELEASE_ENVIRONMENT: ${{ inputs.RELEASE_ENVIRONMENT }}
@@ -148,7 +148,7 @@ jobs:
 
       - name: Docker Build & Push to GAR
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push-gar@v1.36.0
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push-gar@v1.37.0
         with:
           GCP_CREDENTIALS_JSON: ${{ secrets.GCP_SA_KEY }}
           GAR_LOCATION: ${{ inputs.GAR_LOCATION }}
