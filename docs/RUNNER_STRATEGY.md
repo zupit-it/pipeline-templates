@@ -1,36 +1,80 @@
-# Runner strategy: WarpBuild vs self-hosted (`zupit-agents`)
+# Runner strategy: WarpBuild
 
-How reusable workflows in this repo choose a runner, and the one wiring detail
-that is easy to get wrong.
+How reusable workflows in this repo choose a runner.
 
 ## TL;DR
 
-- **Two runner backends** are used side by side:
-    - **`zupit-agents`** — our free self-hosted pool (runner group `Container`).
-    - **WarpBuild** — on-demand cloud runners (`warp-ubuntu-latest-<arch>-<size>`),
-      billed **per minute, 1-minute minimum**.
-- **Cheap, sub-minute jobs run on `zupit-agents`.** A 5–20s gate job billed a
-  full WarpBuild minute is pure waste, so those go to the self-hosted pool.
-- **Heavy jobs (build / lint / test / sonar-analyze / docker build) run on
-  WarpBuild**, sized per workload.
-- **The `runs-on:` wiring is different for the two backends.** Getting it wrong
-  silently sends a job to the wrong pool (or leaves it unschedulable). See the
-  gotcha below.
+- **Every job runs on WarpBuild** — on-demand cloud runners
+  (`warp-ubuntu-latest-<arch>-<size>`), billed per minute with a 1-minute
+  minimum.
+- **`runs-on:` is always a flat single label**, driven by an input:
+  `runs-on: ${{ inputs.RUN_ON }}`.
+- **Size the runner per workload.** Cheap gate jobs default to
+  `warp-ubuntu-latest-arm64-2x`; build / lint / test / analyze jobs default to a
+  larger x64 or arm64 SKU. All defaults are overridable per call.
+- The self-hosted `zupit-agents` pool is **not used** by these templates. If you
+  are considering it again, read [the appendix](#appendix-the-self-hosted-zupit-agents-detour)
+  first — it costs more than the label change.
 
-## Why the split exists
+## Input convention
 
-WarpBuild charges a **1-minute minimum per job**. The pipelines fan out into
-many tiny orchestration/gate jobs — `workdir-has-changes` (~20s), `jobs-succeded`
-(~5s), `jira-*`, `conventional-commits` lint (~9s), tag/version helpers — that
-run hundreds of times a week. Each one billed a full minute dwarfs its real
-cost. Those jobs are CPU-trivial, so they belong on the free self-hosted pool.
+| Input                     | Drives                                                                        | Default                       |
+| ------------------------- | ----------------------------------------------------------------------------- | ----------------------------- |
+| `RUN_ON`                  | cheap jobs: `workdir-has-changes`, `jobs-succeded`, jira, commit-lint, deploy | `warp-ubuntu-latest-arm64-2x` |
+| `RUN_ON_BUILD`            | build / compile / bundle jobs                                                 | larger WarpBuild SKU          |
+| `RUN_ON_LINT`             | lint jobs                                                                     | larger WarpBuild SKU          |
+| `RUN_ON_ANALYZE`          | sonar-analyze job                                                             | larger WarpBuild SKU          |
+| `RUNNERS_CONTAINER_GROUP` | **unused** — legacy input, kept so existing callers don't break               | `Container`                   |
 
-The heavy jobs (compile, bundle, sonar scan, docker build) genuinely need cores
-and are not sub-minute, so they stay on WarpBuild where we can size them.
+All inputs are `required: false` with a default — **a caller can override any of
+them per call.** Consumers that don't pass anything inherit these defaults, so a
+default change here propagates to every repo on this branch.
 
-## The gotcha: `runs-on:` wiring differs by backend
+## Choosing arch and size
 
-**Self-hosted `zupit-agents`** must be targeted with the **labels + group** block:
+- **arm64 is the cheaper flavor** and is the default wherever the job is
+  arch-safe (shell, git, node, dotnet). Prefer it.
+- **x64 is required** when the job produces or consumes an amd64 artifact, or
+  when a JS action / container image has no arm64 build. Two known cases:
+    - **Docker image builds** use plain `docker build` (no `--platform`), so the
+      image arch follows the runner arch. Images that must be `linux/amd64`
+      (e.g. a Keycloak image bundling an amd64 `promtail` binary) stay on x64.
+      An arm64 runner silently produces a broken image.
+    - **glibc-only tool images** — `mcr.microsoft.com/azure-cli` must be the
+      `azurelinux`/glibc tag, not alpine, or the bundled JS actions fail to run
+      on arm64.
+- **Size from real data, not intuition.** `tools/warpbuild-analysis/` turns a
+  WarpBuild usage export into per-`(workflow, job, sku)` upgrade / downgrade /
+  keep recommendations with CPU and memory p95s.
+
+## Checklist when adding or moving a job
+
+- **Flat `runs-on: ${{ inputs.RUN_ON* }}`** — never the `labels:` + `group:`
+  block; that form only targets self-hosted runner groups and will leave the job
+  unschedulable on WarpBuild.
+- **Arch-safe?** → arm64. **Produces amd64 artifacts / needs a glibc-only
+  image?** → x64.
+- **Needs a toolchain?** → either a `container:` image that ships it or the
+  matching `actions/setup-*` step. Both work on WarpBuild; the setup actions can
+  write the tool cache here.
+- **Sub-minute job?** It still costs a full minute. That is accepted — see the
+  appendix for why chasing it was not worth it.
+
+## Appendix: the self-hosted `zupit-agents` detour
+
+For a period the cheap sub-minute jobs (`workdir-has-changes` ~20s,
+`jobs-succeded` ~5s, `jira-*`, `conventional-commits` lint ~9s) were pointed at
+the free self-hosted `zupit-agents` pool to dodge WarpBuild's 1-minute minimum.
+That has been reverted; everything is back on WarpBuild. Keeping the notes here
+because the wiring is non-obvious and the next person to try will hit the same
+walls.
+
+Targeting the self-hosted pool takes **two** coordinated changes, and doing only
+one leaves the job unschedulable:
+
+1. the label default (`RUN_ON: "zupit-agents"`), **and**
+2. the grouped `runs-on:` form — those runners live in the `Container` runner
+   group and a bare `runs-on: zupit-agents` does not reliably reach them:
 
 ```yaml
 runs-on:
@@ -38,110 +82,22 @@ runs-on:
     group: ${{ inputs.RUNNERS_CONTAINER_GROUP }} # Container
 ```
 
-**WarpBuild** is targeted with a **flat single label**:
-
-```yaml
-runs-on: ${{ inputs.RUN_ON_BUILD }} # e.g. warp-ubuntu-latest-x64-4x
-```
-
-> A bare `runs-on: zupit-agents` (label only, no `group:`) does **not** reliably
-> reach the self-hosted pool — those runners live in the `Container` group and
-> are selected with the `labels`+`group` form. `main` has always used the
-> grouped form; a WarpBuild migration that flattens every `runs-on:` to a single
-> label will break self-hosted scheduling for the cheap jobs. When moving a job
-> back to `zupit-agents`, restore the grouped block **and** set the label
-> default — doing only one is not enough.
-
-## Second gotcha: self-hosted jobs must run in a `container:`
-
-The `zupit-agents` runners execute jobs as a non-root user that **cannot write to
-the runner's tool cache** (`/opt/github-runner/.../_work/_tool`). A job that runs
-directly on the host and tries to provision a toolchain fails, e.g.:
+On top of that, **every** self-hosted job needs a `container:`. The runners
+execute jobs as a non-root user that cannot write the runner's tool cache, so
+any `actions/setup-*` step fails on the host:
 
 ```
 EACCES: permission denied, mkdir '/opt/github-runner/.../_work/_tool/node/24.18.0'
 ```
 
-(`actions/setup-node` was the trigger; `setup-dotnet` / any tool-cache install
-behaves the same.) This is why **every** self-hosted job in these templates
-declares a `container:` — inside the container the steps run as root, so tool
-installs and the checkout's git work. Pick the image by what the job needs:
+Inside a container the steps run as root, so tool installs and the checkout's
+git work. That constraint drove a set of per-job workarounds — `container:
+node:24` instead of `actions/setup-node`, `container: buildpack-deps:24.04-scm`
+plus an `apt-get install jq` step for git/jq jobs, and jobs needing the `gh` CLI
+had to stay on WarpBuild because `gh` is not in the standard images. Docker
+builds also could not move: they need privileged docker-in-docker and an amd64
+host.
 
-```yaml
-runs-on:
-    labels: ${{ inputs.RUN_ON }}
-    group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-container: buildpack-deps:24.04-scm # git + perl + curl; add `apt-get install jq` if needed
-# container: node:24                 # for a Node job — node + npm + git preinstalled, drop setup-node
-```
-
-Rules of thumb:
-
-- **Node job** → `container: node:24` and delete the `actions/setup-node` step
-  (the image already has the right Node).
-- **git-only job** (checkout, diff, tag, push) → `container: buildpack-deps:24.04-scm`.
-- **needs `jq`/other apt pkg** → same image + a step
-  `apt-get update && apt-get install -y --no-install-recommends <pkg>` (`perl` is
-  already present via `perl-base`).
-- **needs `gh` CLI** → `gh` is _not_ in the standard images and adding its apt repo
-  is fragile; for a low-frequency job it is not worth it — leave that job on
-  WarpBuild (github-hosted-style, `gh` preinstalled).
-
-## Input convention
-
-| Input                     | Drives                                                                        | Default (cheap→self-hosted / heavy→WarpBuild) | `runs-on:` form    |
-| ------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------- | ------------------ |
-| `RUN_ON`                  | cheap jobs: `workdir-has-changes`, `jobs-succeded`, jira, commit-lint, deploy | `zupit-agents`                                | labels + group     |
-| `RUNNERS_CONTAINER_GROUP` | runner group for the self-hosted jobs                                         | `Container`                                   | (used as `group:`) |
-| `RUN_ON_BUILD`            | build / compile / bundle jobs                                                 | WarpBuild string                              | flat label         |
-| `RUN_ON_LINT`             | lint jobs                                                                     | WarpBuild string                              | flat label         |
-| `RUN_ON_ANALYZE`          | sonar-analyze job                                                             | WarpBuild string                              | flat label         |
-
-All inputs are `required: false` with a default — **a caller can override any of
-them per call.** Consumers that don't pass anything inherit these defaults, so a
-default change here propagates to every repo on this branch.
-
-## Which jobs go where
-
-- **Self-hosted (`RUN_ON`, grouped):** the gate/orchestration jobs in the
-  `*-workflow-common` files, the `workdir-has-changes` + `jobs-succeded` jobs in
-  the `sonar-step-*-analyze` files, the `jira-*` and `conventional-commits-step-*`
-  workflows, `docker-step-delete-images`, and the deploy jobs in the
-  `*-build-and-deploy` / `azure-webapp-code-deploy` workflows (CPU-light, and
-  free self-hosted beats paying WarpBuild for a multi-minute deploy).
-- **WarpBuild (`RUN_ON_BUILD` / `RUN_ON_LINT` / `RUN_ON_ANALYZE`, flat):** the
-  build / lint / test / cypress / sonar-analyze jobs, plus **all docker image
-  builds** (`docker-step-build-and-push-image*`, `springboot-step-docker-*`,
-  `node-step-docker-*`).
-
-### Docker builds stay on WarpBuild
-
-Two reasons, both hard blockers for the self-hosted `Container` runners:
-
-1. **Privileged docker-in-docker** — the build job runs a DinD container with
-   `--privileged`; the self-hosted runners are not guaranteed to support that.
-2. **Architecture** — the builds use plain `docker build` (no `--platform`), so
-   the image arch follows the runner arch. They must produce `linux/amd64`
-   images (e.g. the Keycloak image bundles an amd64 `promtail` binary), so they
-   stay on x64 WarpBuild. An arm64 runner would silently produce a broken image.
-
-## Checklist when adding or moving a job
-
-- **Sub-minute + CPU-light?** → `zupit-agents`, grouped `runs-on:` (labels+group).
-- **Heavy / not sub-minute?** → WarpBuild via `RUN_ON_BUILD`/`_LINT`/`_ANALYZE`,
-  flat `runs-on:`.
-- **Polls or waits** (e.g. a migrator-trigger that retries, or a long deploy)? It
-  is _not_ sub-minute — judge by real p90, not by CPU. Keep long pollers on
-  WarpBuild.
-- **Needs docker/privileged?** → WarpBuild (see above).
-- **Runs directly on the host (no `container:`)?** Confirm the self-hosted
-  runners have the tools it calls (`git`, `gh`, `node`, …); the `Container` group
-  name refers to the runner group, not to auto-provisioned tooling.
-
-## How the target list was derived
-
-Job durations came from a jobs-usage CSV export (per `workflow / job` with
-`run_count`, `success_rate`, `duration_p75/p90` in **seconds**). "Sub-minute" =
-`duration_p90 < 60`. The highest-volume offenders are `jobs-succeded` (~5s) and
-`workdir-has-changes` (~20s), which recur in almost every pipeline — those are
-where the 1-minute-floor savings are largest.
+Net: the savings were confined to jobs measured in seconds, while every one of
+them acquired an image pin and a bespoke tool-install step. The flat WarpBuild
+label is the simpler default.
