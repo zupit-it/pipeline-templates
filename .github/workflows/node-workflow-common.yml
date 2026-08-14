@@ -29,7 +29,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-arm64-2x"
         description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). p95 CPU < 12% on 4x in profiling."
       RUN_ON_BUILD:
         required: false
@@ -66,9 +66,7 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -122,9 +120,7 @@ jobs:
 
   jobs-succeded:
     needs: ["lint-check-build", "cypress-run"]
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     if: ${{ always()}}
     steps:
       - name: "Jobs: lint-check-build, cypress-run didn't fail."

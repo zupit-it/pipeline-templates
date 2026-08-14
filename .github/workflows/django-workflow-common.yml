@@ -22,7 +22,7 @@ on:
       RUN_ON:
         required: false
         type: string
-        default: "zupit-agents"
+        default: "warp-ubuntu-latest-arm64-2x"
         description: "Runner for cheap jobs (workdir-has-changes, jobs-succeded). Both match cheap patterns profiled at p95 CPU < 13% on 4x in sibling templates."
       # NOTE: RUN_ON_BUILD now drives django-step-tests only. Lint moved to
       # RUN_ON_LINT (see below) after the May-2026 runner-sizing sweep showed
@@ -114,9 +114,7 @@ env:
 
 jobs:
   workdir-has-changes:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     container: buildpack-deps:24.04-scm
     outputs:
       changes-detected: ${{ steps.filter.outputs.changes-detected }}
@@ -220,9 +218,7 @@ jobs:
 
   jobs-succeded:
     needs: ["django-lint-check", "django-lint-check-mssql", "django-tests", "django-tests-mssql"]
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUN_ON }}
     if: ${{ always()}}
     steps:
       - name: "Jobs: django-lint-check, django-tests didn't fail."
