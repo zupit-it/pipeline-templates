@@ -7,6 +7,11 @@ on:
         required: false
         type: string
         default: "zupit-agents"
+      RUN_ON_ANALYZE:
+        required: false
+        type: string
+        default: ""
+        description: "Runner for the sonar-analyze job. Empty (default) falls back to whatever RUN_ON is set to; set to override the runner for this job independently."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -65,6 +70,10 @@ on:
         required: false
         type: boolean
         default: false
+      ALPINE_OS:
+        required: false
+        type: boolean
+        default: true
 
 env:
   CHECK_DIR: ${{ inputs.WORKING_DIRECTORY }}
@@ -101,7 +110,7 @@ jobs:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job))) }}
     runs-on:
-      labels: ${{ inputs.RUN_ON }}
+      labels: ${{ inputs.RUN_ON_ANALYZE || inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.SONAR_IMAGE }}
@@ -121,7 +130,7 @@ jobs:
         with:
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOTNET_VERSION: ${{ inputs.DOTNET_VERSION }}
-          ALPINE_OS: true
+          ALPINE_OS: ${{ inputs.ALPINE_OS }}
 
       - name: Install SonarSource for .NET
         run: |

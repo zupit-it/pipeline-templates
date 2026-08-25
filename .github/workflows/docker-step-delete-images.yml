@@ -76,7 +76,7 @@ jobs:
     needs: [clean-untagged-images]
     steps:
       - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
-        uses: vlaurin/action-ghcr-prune@v0.4.0
+        uses: vlaurin/action-ghcr-prune@v0.6.0
         with:
           container: "${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
           organization: zupit-it
@@ -96,7 +96,7 @@ jobs:
       image: ${{ inputs.DIND_IMAGE }}
     steps:
       - name: Delete tagged images ${{ inputs.IMAGE_NAME }}
-        uses: vlaurin/action-ghcr-prune@v0.4.0
+        uses: vlaurin/action-ghcr-prune@v0.6.0
         with:
           container: "${{ github.event.repository.name }}/${{ inputs.IMAGE_NAME }}"
           organization: zupit-it

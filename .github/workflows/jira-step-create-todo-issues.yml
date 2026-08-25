@@ -7,14 +7,6 @@ on:
         required: false
         type: string
         default: "zupit-agents"
-      RUNNERS_CONTAINER_GROUP:
-        required: false
-        type: string
-        default: "Container"
-      DIND_IMAGE:
-        required: false
-        type: string
-        default: "docker:26.0.0-dind"
       PROJECT_KEY:
         required: true
         type: string
@@ -33,15 +25,11 @@ on:
 
 jobs:
   create-todo-jira-issue:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-    container:
-      image: ${{ inputs.DIND_IMAGE }}
+    runs-on: ${{ inputs.RUN_ON }}
 
     steps:
       - name: Login to Jira
-        uses: atlassian/gajira-login@master
+        uses: atlassian/gajira-login@v3
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}

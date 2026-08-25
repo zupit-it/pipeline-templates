@@ -22,11 +22,15 @@ runs:
   using: composite
   steps:
     - name: Azure login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
     - name: Deploy to Azure App Service
+      # Keep v2.2.5 (Kudu zip-deploy). v3 switches to OneDeploy which triggers a
+      # server-side Oryx build and can 502 on single-instance Linux apps while the
+      # site recycles. Revisit only after confirming SCM_DO_BUILD_DURING_DEPLOYMENT
+      # is configured for OneDeploy.
       uses: Azure/webapps-deploy@v2.2.5
       with:
         app-name: ${{ inputs.WEBAPP_NAME }}

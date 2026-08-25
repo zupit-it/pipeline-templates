@@ -7,19 +7,12 @@ on:
         required: false
         type: string
         default: "zupit-agents"
-      RUNNERS_CONTAINER_GROUP:
-        required: false
-        type: string
-        default: "Container"
 
 jobs:
   lint-pr:
     name: Lint PR
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-    container: node:20-alpine
+    runs-on: ${{ inputs.RUN_ON }}
     steps:
-      - uses: amannn/action-semantic-pull-request@v5
+      - uses: amannn/action-semantic-pull-request@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
