@@ -7,23 +7,11 @@ on:
         required: false
         type: string
         default: "zupit-agents"
-      RUNNERS_CONTAINER_GROUP:
-        required: false
-        type: string
-        default: "Container"
-      DIND_IMAGE:
-        required: false
-        type: string
-        default: "docker:26.0.0-dind"
 
 jobs:
   release:
     name: release
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
-    container:
-      image: ${{ inputs.DIND_IMAGE }}
+    runs-on: ${{ inputs.RUN_ON }}
     steps:
       - uses: actions/checkout@v6
         with:
