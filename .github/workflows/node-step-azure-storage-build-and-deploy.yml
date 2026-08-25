@@ -63,6 +63,10 @@ on:
         required: false
         type: string
         default: ""
+      PURGE_CONTENT_PATHS:
+        required: false
+        type: string
+        default: "/*"
       ENV_VARIABLES:
         required: false
         type: string
@@ -198,6 +202,7 @@ jobs:
     steps:
       - name: Installing tar package with tdnf
         if: ${{ inputs.TDNF_PACKAGE_MANAGER_INSTALL_TAR == true }}
+        working-directory: /
         run: |
           tdnf install -y tar
 
@@ -221,6 +226,7 @@ jobs:
           FD_ENDPOINT_NAME: ${{ inputs.FD_ENDPOINT_NAME }}
           FD_DOMAIN_NAME: ${{ inputs.FD_DOMAIN_NAME }}
           FD_PROFILE_NAME: ${{ inputs.FD_PROFILE_NAME }}
+          PURGE_CONTENT_PATHS: ${{ inputs.PURGE_CONTENT_PATHS }}
 
   jobs-succeded:
     needs: [build-node-project, node-deploy-azure-storage]
