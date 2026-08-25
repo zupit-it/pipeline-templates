@@ -7,6 +7,11 @@ on:
         required: false
         type: string
         default: "zupit-agents"
+      RUN_ON_BUILD:
+        required: false
+        type: string
+        default: ""
+        description: "Runner for the CPU-bound build-node-project job. Empty (default) falls back to whatever RUN_ON is set to; set to override the runner for this job independently."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -132,7 +137,7 @@ jobs:
     needs: workdir-has-changes
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
     runs-on:
-      labels: ${{ inputs.RUN_ON }}
+      labels: ${{ inputs.RUN_ON_BUILD || inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.IMAGE }}
