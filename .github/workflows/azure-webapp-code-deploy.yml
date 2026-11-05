@@ -96,6 +96,7 @@ jobs:
       image: ${{ inputs.AZURE_CLI_IMAGE }}
       env:
         GNUPGHOME: /root/.gnupg
+        AZURE_CONFIG_DIR: /tmp/azure-config
 
     steps:
       - name: Installing tar package with tdnf
