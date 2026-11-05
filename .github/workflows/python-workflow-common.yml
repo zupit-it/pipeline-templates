@@ -19,6 +19,16 @@ on:
         required: false
         type: string
         default: "zupit-agents"
+      RUN_ON_LINT:
+        required: false
+        type: string
+        default: ""
+        description: "Runner forwarded to python-step-lint-check. Empty (default) falls back to whatever RUN_ON is set to; set to override the runner for this job independently."
+      RUN_ON_BUILD:
+        required: false
+        type: string
+        default: ""
+        description: "Deprecated / unused - python-workflow-common has no build/test job of its own. Use RUN_ON_LINT to size python-step-lint-check."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -85,7 +95,7 @@ jobs:
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
     uses: ./.github/workflows/python-step-lint-check.yml
     with:
-      RUN_ON: ${{inputs.RUN_ON}}
+      RUN_ON: ${{inputs.RUN_ON_LINT || inputs.RUN_ON}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       PYTHON_IMAGE: ${{inputs.PYTHON_IMAGE}}

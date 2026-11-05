@@ -56,6 +56,16 @@ on:
         required: false
         type: string
         default: "zupit-agents"
+      RUN_ON_BUILD:
+        required: false
+        type: string
+        default: ""
+        description: "Runner forwarded to springboot-step-tests / springboot-step-tests-mysql. Empty (default) falls back to whatever RUN_ON is set to; set to override the runner for these jobs independently."
+      RUN_ON_LINT:
+        required: false
+        type: string
+        default: ""
+        description: "Runner forwarded to springboot-step-lint-check. Empty (default) falls back to whatever RUN_ON is set to; set to override the runner for this job independently."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -102,7 +112,7 @@ jobs:
       MAVEN_USER_HOME: ${{inputs.MAVEN_USER_HOME}}
       EXTRA_MAVEN_ARGS: ${{inputs.EXTRA_MAVEN_ARGS}}
       RUN: ${{inputs.RUN}}
-      RUN_ON: ${{ inputs.RUN_ON }}
+      RUN_ON: ${{ inputs.RUN_ON_LINT || inputs.RUN_ON }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
@@ -120,7 +130,7 @@ jobs:
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       USE_CI_POSTGRES: ${{ inputs.USE_CI_POSTGRES }}
       RUN: ${{ inputs.RUN }}
-      RUN_ON: ${{ inputs.RUN_ON }}
+      RUN_ON: ${{ inputs.RUN_ON_BUILD || inputs.RUN_ON }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 
@@ -137,7 +147,7 @@ jobs:
       MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
       COVERAGE_ARTIFACT_NAME: ${{ inputs.COVERAGE_ARTIFACT_NAME }}
       RUN: ${{ inputs.RUN }}
-      RUN_ON: ${{ inputs.RUN_ON }}
+      RUN_ON: ${{ inputs.RUN_ON_BUILD || inputs.RUN_ON }}
       RUNNERS_CONTAINER_GROUP: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     secrets: inherit
 

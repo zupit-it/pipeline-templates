@@ -30,6 +30,11 @@ on:
         required: false
         type: string
         default: "zupit-agents"
+      RUN_ON_BUILD:
+        required: false
+        type: string
+        default: ""
+        description: "Runner forwarded to node-step-format-lint-build and node-step-test-cypress. Empty (default) falls back to whatever RUN_ON is set to; set to override the runner for these jobs independently."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -91,7 +96,7 @@ jobs:
     if: ${{ !inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))}}
     uses: ./.github/workflows/node-step-format-lint-build.yml
     with:
-      RUN_ON: ${{inputs.RUN_ON}}
+      RUN_ON: ${{inputs.RUN_ON_BUILD || inputs.RUN_ON}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       NODE_VERSION: ${{inputs.NODE_VERSION}}
@@ -104,7 +109,7 @@ jobs:
     if: ${{ inputs.ENABLE_TESTS && (!inputs.CHECK_WORKDIR_CHANGES || (needs.workdir-has-changes.outputs.changes-detected == 'true' && (inputs.CHECK_CHANGES_BY_JOBS == 'all' || contains(fromJson(inputs.CHECK_CHANGES_BY_JOBS), github.job)))) }}
     uses: ./.github/workflows/node-step-test-cypress.yml
     with:
-      RUN_ON: ${{inputs.RUN_ON}}
+      RUN_ON: ${{inputs.RUN_ON_BUILD || inputs.RUN_ON}}
       RUNNERS_CONTAINER_GROUP: ${{inputs.RUNNERS_CONTAINER_GROUP}}
       WORKING_DIRECTORY: ${{inputs.WORKING_DIRECTORY}}
       CYPRESS_IMAGE: ${{inputs.CYPRESS_IMAGE}}

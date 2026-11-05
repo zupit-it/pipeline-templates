@@ -43,12 +43,16 @@ inputs:
     required: false
     type: string
     default: ""
+  PURGE_CONTENT_PATHS:
+    required: false
+    type: string
+    default: "/*"
 
 runs:
   using: composite
   steps:
     - name: Azure login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ inputs.AZURE_CREDENTIALS }}
 
@@ -66,13 +70,17 @@ runs:
       shell: "bash"
       if: ${{ inputs.CDN_RG_NAME != '' }}
       run: |
-        az cdn endpoint purge --content-paths  "/*" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
+        az cdn endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --profile-name "${{ inputs.CDN_PROFILE_NAME }}" --name "${{ inputs.CDN_ENDPOINT_NAME }}" --resource-group "${{ inputs.CDN_RG_NAME }}"
 
     - name: Purge Azure Front Door endpoint
       shell: "bash"
       if: ${{ inputs.FD_RG_NAME != '' }}
       run: |
-        az afd endpoint purge --content-paths  "/*" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" --domains "${{ inputs.FD_DOMAIN_NAME }}" --profile-name "${{ inputs.FD_PROFILE_NAME }}"
+        DOMAIN_PARAM=""
+        if [ -n "${{ inputs.FD_DOMAIN_NAME }}" ]; then
+          DOMAIN_PARAM="--domains ${{ inputs.FD_DOMAIN_NAME }}"
+        fi
+        az afd endpoint purge --content-paths  "${{ inputs.PURGE_CONTENT_PATHS }}" --endpoint-name "${{ inputs.FD_ENDPOINT_NAME }}" --resource-group "${{ inputs.FD_RG_NAME }}" $DOMAIN_PARAM --profile-name "${{ inputs.FD_PROFILE_NAME }}"
 
     - name: Azure logout
       shell: "bash"

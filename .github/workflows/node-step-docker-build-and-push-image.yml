@@ -7,6 +7,11 @@ on:
         required: false
         type: string
         default: "zupit-agents"
+      RUN_ON_BUILD:
+        required: false
+        type: string
+        default: ""
+        description: "Runner for the build-node-project job. Empty (default) falls back to whatever RUN_ON is set to; set to override the runner for this job independently."
       RUNNERS_CONTAINER_GROUP:
         required: false
         type: string
@@ -78,7 +83,7 @@ env: "${{secrets}}"
 jobs:
   build-node-project:
     runs-on:
-      labels: ${{ inputs.RUN_ON }}
+      labels: ${{ inputs.RUN_ON_BUILD || inputs.RUN_ON }}
       group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
     container:
       image: ${{ inputs.IMAGE }}
