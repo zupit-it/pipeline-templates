@@ -148,6 +148,7 @@ jobs:
       image: ${{ inputs.AZURE_CLI_IMAGE }}
       env:
         GNUPGHOME: /root/.gnupg
+        AZURE_CONFIG_DIR: /tmp/azure-config
 
     needs: [workdir-has-changes, build]
     steps:
