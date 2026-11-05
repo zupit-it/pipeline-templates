@@ -25,11 +25,11 @@ jobs:
     container:
       image: ${{ inputs.DIND_IMAGE }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         with:
           cache: npm
           node-version: 16

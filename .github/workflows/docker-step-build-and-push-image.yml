@@ -55,6 +55,9 @@ on:
       DOCKER_IMAGE_NAME:
         description: "The docker image name that has been built"
         value: ${{ jobs.docker-build-push-image.outputs.DOCKER_IMAGE_NAME }}
+    secrets:
+      REGISTRY_PASSWORD:
+        required: false
 
 env: "${{secrets}}"
 
@@ -72,7 +75,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ inputs.CHECKOUT_REF }}
       - name: Run pre-build script
@@ -82,11 +85,11 @@ jobs:
           sh -c '${{ inputs.PRE_BUILD_SCRIPT }}'
       - name: Docker Build & Push
         id: docker
-        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.31.2
+        uses: zupit-it/pipeline-templates/.github/actions/docker/build-and-push@v1.37.1
         with:
           REGISTRY_URL: ${{ inputs.REGISTRY_URL }}
           REGISTRY_USER: ${{ inputs.REGISTRY_USER }}
-          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD || secrets.GITHUB_TOKEN }}
           WORKING_DIRECTORY: ${{ inputs.WORKING_DIRECTORY }}
           DOCKERFILE_PATH: ${{ inputs.DOCKERFILE_PATH }}
           DOCKER_IMAGE_NAME: ${{ inputs.DOCKER_IMAGE_NAME }}

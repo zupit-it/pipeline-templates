@@ -23,5 +23,12 @@ runs:
 
     - name: Check code formatting
       shell: ${{ inputs.SHELL }}
-      run: /tmp/dotnet-tools/dotnet-csharpier . --check
+      run: |
+        CSHARPIER_VERSION="${{ inputs.CSHARPIER_VERSION }}"
+
+        if [[ "$CSHARPIER_VERSION" == 0.* ]]; then
+          /tmp/dotnet-tools/dotnet-csharpier . --check
+        else
+          /tmp/dotnet-tools/csharpier check .
+        fi
       working-directory: ${{ inputs.WORKING_DIRECTORY }}
