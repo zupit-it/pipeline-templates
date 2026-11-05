@@ -61,8 +61,10 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
           verified_states=("verified" "non compliant" "done" "billed" "to be billed")
-          output=$(/tmp/jira view ${{ steps.find.outputs.issue }} --field status -e ${{ secrets.JIRA_BASE_URL }} --login ${{ secrets.JIRA_USER_EMAIL }} | sed -n 's/status: \(.*\)/\L\1/p')
+          output=$(/tmp/jira view ${{ steps.find.outputs.issue }} --field status -e ${{ secrets.JIRA_BASE_URL }} --login ${{ secrets.JIRA_USER_EMAIL }} | sed -n 's/status: \(.*\)/\1/p' | tr '[:upper:]' '[:lower:]')
+          printf 'Stato estratto: %q\n' "$output"
           [[ ${verified_states[*]} =~ ${output} ]] && is_verified=true || is_verified=false
+          echo "verified=$is_verified"
           echo "verified=$is_verified" >> "$GITHUB_OUTPUT"
 
       - name: Transition issue
