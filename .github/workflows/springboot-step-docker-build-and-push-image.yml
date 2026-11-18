@@ -46,9 +46,7 @@ env: "${{secrets}}"
 
 jobs:
   docker-build-and-push:
-    runs-on:
-      labels: ${{ inputs.RUN_ON }}
-      group: ${{ inputs.RUNNERS_CONTAINER_GROUP }}
+    runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
     container: ${{ inputs.JAVA_IMAGE }}
 
     defaults:
