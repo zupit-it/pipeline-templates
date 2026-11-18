@@ -128,7 +128,7 @@ In addition, it is possible to specify this optional input:
 - **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
 - **CHECKOUT_REF**: The ref of the branch/tag to check out before running the build. See the ref parameter of the [checkout action](https://github.com/actions/checkout). By default, it is `''`.
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
@@ -984,7 +984,7 @@ In addition, it is possible to specify these optional inputs:
 - **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 - **PROJECT**: The project to use when running npm scripts. If set, the executed npm script will be `{PROJECT}:{SCRIPT_NAME}` instead of `{SCRIPT_NAME}`.
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
@@ -1080,7 +1080,7 @@ It requires these inputs:
 In addition, it is possible to specify these optional inputs:
 
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 - **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
 - **REGISTRY_USER**: The registry url where to push the Docker image.
   By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
@@ -1127,7 +1127,7 @@ Also, these input parameters are optional:
 - **AZURE_CLI_IMAGE**: the docker image to use when running the deployment to Azure Storage. By default, it is **mcr.microsoft.com/azure-cli:2.69.0**.
 - **TDNF_PACKAGE_MANAGER_INSTALL_TAR**: a boolean that determines whether the tar package should be installed. Default is **true**.
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
@@ -1182,7 +1182,7 @@ It requires these inputs:
 In addition, it is possible to specify this optional input:
 
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 - **COVERAGE_ARTIFACT_NAME**: The artifact's name for the _coverage-django.xml_ file. By default, it is **coverage-django.xml**.
 - **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 - **DJANGO_MIGRATIONS_CHECK_APPS**: The Django apps on which to run migration checks.
@@ -1293,7 +1293,7 @@ In addition, it is possible to specify this optional input:
 - **USE_CI_POSTGRES**: Whether to use Postgres for tests or not. If enabled, it injects the connection string to the DB for tests. By default, it is **true**.
 - **RUN**: Whether to run all the jobs inside workflows or not. This is useful when you want to skip checks since the code didn't change. By default, it is **true**.
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
@@ -1380,7 +1380,7 @@ In addition, it is possible to specify this optional input:
 - **MAVEN_USER_HOME**: The path to Maven directory. By default, it is **./m2**.
 - **EXTRA_MAVEN_ARGS**: Additional arguments for Maven. By default, it is **""**.
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 It then outputs this variable:
 
@@ -1437,7 +1437,7 @@ In addition, it is possible to specify these optional inputs:
 - **CSHARPIER_VERSION**: The version of the CSharpier tool to use. For the default value, see the `dotnet/format` action.
 - **RUN_LINT**: Whatever or not the lint command should be executed. By default, it is **true**.
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
@@ -1482,7 +1482,7 @@ It requires these inputs:
 In addition, it is possible to specify these optional inputs:
 
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 - **REGISTRY_URL**: The registry url where to push the Docker image. By default, it is **ghcr.io**.
 - **REGISTRY_USER**: The registry url where to push the Docker image.
   By default, it is the GitHub variable **github.actor**, the user who started the workflow. If you need a different user, remember to override the **GITHUB_TOKEN** secret.
@@ -1533,7 +1533,7 @@ It requires these inputs:
   Docker compose file and as value the name of the images that will be downloaded from the registry.
   You can retrieve dynamically the image name from the _docker build and push step_ by adding the step's name to the **needs** array of the workflow
   and using `${{ needs.{STEP_NAME}.outputs.DOCKER_IMAGE_NAME }}` where STEP_NAME is the step's name.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If the runner has no group, set it to **''**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners). If the runner has no group, set it to **''**.
 
 This is an example to show how data should be formatted.
 
@@ -1581,7 +1581,7 @@ It also requires these secrets:
 In addition, it is possible to specify these optional inputs:
 
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 - **DRY_RUN**: Only for tagged images, it shows which ones will be deleted without deleting them. By default, it is **false**.
 
 This is an example to show how data should be formatted.
@@ -1621,7 +1621,7 @@ It also requires these secrets:
 In addition, it is possible to specify this optional inputs:
 
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
@@ -1725,7 +1725,7 @@ It requires these secrets:
 In addition, it is possible to specify this optional inputs:
 
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 - **DIND_IMAGE**: Docker image to use. Default is docker:26.0.0-dind.
 
 This is an example to show how data should be formatted.
@@ -1757,7 +1757,7 @@ It requires these secrets:
 In addition, it is possible to specify this optional inputs:
 
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 - **DIND_IMAGE**: Docker image to use. Default is docker:26.0.0-dind.
 - **ISSUE_TYPE**: The type of the issue to create. Default is Task.
 - **ISSUE_DESCRIPTION**: The description of the issue to create. Default is "Created automatically via GitHub Actions".
@@ -1786,7 +1786,7 @@ jobs:
 It is possible to specify this optional input:
 
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
@@ -1810,7 +1810,7 @@ It requires these secrets:
 In addition, it is possible to specify this optional input:
 
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
@@ -1850,7 +1850,7 @@ In addition, it is possible to specify these optional inputs:
 - **DOWNLOAD_ARTIFACT**: Whether it should download an artifact or not to analyze. By default, it is **true**.
 - **ARTIFACT_FILENAME**: The name of the artifact. By default, it is an empty string.
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
@@ -1908,7 +1908,7 @@ In addition, it is possible to specify these optional inputs:
 - **COVERAGE_EXCLUSIONS**: A comma separated list of glob patterns to match files and/or folders that should be excluded when computing tests code coverage ([docs](https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/MSBuildIntegration.md#source-files)). Since `dotnet test` expect absolute path for the exclusion list, you should provide this parameter in the form `**/my-path/*.cs` (always starting with `**/*`).
 - **DOTNET_VERSION**: The .NET version to build the solution. By default, it is `7`.
 - **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
-- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
 
 This is an example to show how data should be formatted.
 
