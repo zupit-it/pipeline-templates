@@ -1883,7 +1883,7 @@ jobs:
 
 A job fails only for findings at or above `FAIL_ON` (default **high**); the ones below are reported and the job passes. Severity is the CVSS score for osv-scanner (9 critical, 7 high, 4 medium; advisories without a score count as medium) and the scanner's own level for zizmor, trivy and Nuclei. Trivy image vulnerabilities fail the job only if a fixed version exists. Secrets found by gitleaks, API operations that answer without authentication and ZAP rules marked `FAIL` always fail.
 
-Always executed, on the repository:
+Executed by default, on the repository:
 
 - **osv-scanner**: known vulnerabilities in every lockfile (npm, PyPI, NuGet, Maven, ...).
 - **gitleaks**: secrets in the whole git history. Accepted false positives go in `.gitleaksignore` (one fingerprint per line).
@@ -1902,6 +1902,8 @@ The jobs run `docker`, so the runner must provide it.
 It accepts these optional inputs:
 
 - **FAIL_ON**: lowest severity that fails a job: `low`, `medium`, `high` or `critical`. Default is **high**.
+- **RUN_OSV**, **RUN_GITLEAKS**, **RUN_ZIZMOR**, **RUN_TRIVY**, **RUN_ZAP**, **RUN_NUCLEI**: set one to `false` to skip that job
+  (`RUN_TRIVY` covers both trivy config and trivy image, `RUN_ZAP` also the API auth check). Default is **true**.
 - **OSV_CONFIG**: an `osv-scanner.toml` applied to every lockfile (osv-scanner alone applies a root one only to the root lockfile).
 - **ZIZMOR_EXCLUDE**: workflow files left out of the zizmor audit, one per line.
 - **TRIVY_IMAGES**: container images to scan, one full reference per line. GHCR images are pulled with the workflow token.
@@ -1911,6 +1913,7 @@ It accepts these optional inputs:
 - **ZAP_RULES_FILE**: ZAP rules file (tab-separated rule id, `IGNORE`/`WARN`/`FAIL`/`OUTOFSCOPE`, description). Rules marked `FAIL` fail the job.
 - **OPENAPI_FILE**: OpenAPI 3 JSON document of the API on `TARGET_URL`. Enables the API auth check and the ZAP API scan.
 - **OPENAPI_COMMAND**: commands that generate `OPENAPI_FILE` before the API checks (leave it empty if the file is committed).
+  To export it from an image that runs as a non-root user, write it to stdout (`docker run … > openapi.json`): that user can't write to a mounted workspace folder.
 - **API_AUTH_ALLOWLIST**: allowlist of the operations public on purpose, never called by the API auth check.
 - **API_AUTH_METHODS**: methods called by the API auth check. Default is **GET,POST,PUT,PATCH,DELETE**.
 - **KEYCLOAK_TOKEN_URL** and **KEYCLOAK_CLIENT_ID**: Keycloak token endpoint and public client (with direct access grants) used to authenticate the ZAP API scan.

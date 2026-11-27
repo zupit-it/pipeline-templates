@@ -22,6 +22,36 @@ on:
         required: false
         type: string
         default: "high"
+      RUN_OSV:
+        description: Scan every lockfile with osv-scanner
+        required: false
+        type: boolean
+        default: true
+      RUN_GITLEAKS:
+        description: Scan the git history for secrets with gitleaks
+        required: false
+        type: boolean
+        default: true
+      RUN_ZIZMOR:
+        description: Audit the GitHub Actions workflows with zizmor
+        required: false
+        type: boolean
+        default: true
+      RUN_TRIVY:
+        description: Scan the Dockerfiles / IaC files and TRIVY_IMAGES with trivy
+        required: false
+        type: boolean
+        default: true
+      RUN_ZAP:
+        description: Scan TARGET_URL with ZAP and, with OPENAPI_FILE, run the API authentication check
+        required: false
+        type: boolean
+        default: true
+      RUN_NUCLEI:
+        description: Scan NUCLEI_TARGETS with Nuclei
+        required: false
+        type: boolean
+        default: true
       OSV_CONFIG:
         description: osv-scanner.toml applied to every lockfile (osv-scanner alone applies a root one only to the root lockfile)
         required: false
@@ -113,6 +143,7 @@ env:
 
 jobs:
   osv-scan:
+    if: inputs.RUN_OSV
     runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
     steps:
       - uses: actions/checkout@v6
@@ -178,6 +209,7 @@ jobs:
           retention-days: 90
 
   gitleaks:
+    if: inputs.RUN_GITLEAKS
     runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
     steps:
       - uses: actions/checkout@v6
@@ -219,6 +251,7 @@ jobs:
           retention-days: 90
 
   zizmor:
+    if: inputs.RUN_ZIZMOR
     runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
     steps:
       - uses: actions/checkout@v6
@@ -266,6 +299,7 @@ jobs:
           retention-days: 90
 
   trivy:
+    if: inputs.RUN_TRIVY
     runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
     permissions:
       contents: read
@@ -368,7 +402,7 @@ jobs:
           retention-days: 90
 
   zap:
-    if: inputs.TARGET_URL != ''
+    if: inputs.RUN_ZAP && inputs.TARGET_URL != ''
     runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
     permissions:
       contents: read
@@ -515,7 +549,7 @@ jobs:
           retention-days: 90
 
   nuclei:
-    if: inputs.NUCLEI_TARGETS != ''
+    if: inputs.RUN_NUCLEI && inputs.NUCLEI_TARGETS != ''
     runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
     timeout-minutes: 30 # ~10 min at -rl 50 on 3 hosts (5k templates); the GitHub default would be 6 hours
     steps:
