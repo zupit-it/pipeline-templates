@@ -34,6 +34,8 @@ If you would like to get more details of these tasks, just look at this [doc](do
         5. [Extract archive](#artifact-action---extract-archive)
     8. [Maven](#maven-action)
         1. [Settings](#maven-action---settings)
+    9. [Security](#security-action)
+        1. [API auth check](#security-action---api-auth-check)
 2. [Reusable Workflows](#reusable-workflows)
     1. [Naming Convention](#naming-convention)
     2. [NodeJS](#nodejs---backend--frontend)
@@ -57,10 +59,12 @@ If you would like to get more details of these tasks, just look at this [doc](do
     8. [Conventional Commits](#conventional-commits)
         1. [Conventional Commits Lint Step](#conventional-commits-lint-step)
         2. [Conventional Commits Release Step](#conventional-commits-release-step)
-    9. [Others](#others)
+    9. [Security](#security)
+        1. [Security Scan](#security-scan)
+    10. [Others](#others)
         1. [Sonar Analyze](#sonar-analyze)
         2. [Sonar Analyze - .NET](#sonar-analyze---net)
-    10. [Concurrent workflow runs](#concurrent-workflow-runs)
+    11. [Concurrent workflow runs](#concurrent-workflow-runs)
 
 ## Composite Actions
 
@@ -910,6 +914,54 @@ This action configures Maven settings for your build environment by generating a
       MAVEN_SERVER_ID: ${{ inputs.MAVEN_SERVER_ID }}
       MAVEN_SERVER_USERNAME: ${{ inputs.MAVEN_SERVER_USERNAME }}
       MAVEN_SERVER_PASSWORD: ${{ secrets.CI_MAVEN_SERVER_PASSWORD }}
+```
+
+### Security Action
+
+#### Security Action - API auth check
+
+This action calls every operation of an OpenAPI 3 document **without credentials** on a running deployment and fails if any of them answers something other than `401`/`403`: it finds the endpoints that anyone can reach without logging in. It only needs the OpenAPI JSON and a base URL, so it works with any backend (Django with drf-spectacular, ASP.NET Core, Spring Boot with springdoc, ...).
+
+**Requirements**
+
+- An OpenAPI 3 document in JSON format (file or URL).
+- A deployed environment (e.g. testing) and `python3` on the runner (standard library only).
+
+**Action Details**
+
+**`.github/actions/security/api-auth-check`** is a composite action that:
+
+- Calls every operation of the document, all methods by default, without an `Authorization` header.
+- Uses ids that should not exist (`0`, the nil UUID) and an empty JSON body, so a protected endpoint rejects the request before running any logic.
+- Does not follow redirects: a redirect to a login page is reported as `302`.
+- Never calls the operations listed in the allowlist (public on purpose, e.g. webhooks): they are reported in the summary.
+- Writes a summary with the operations that answered without authentication and fails if there are any.
+
+The allowlist is a text file with one `METHOD /path  # reason` per line, the path as written in the OpenAPI document:
+
+```text
+POST /api/app/keycloak/webhooks/users/  # called by Keycloak; protected by a shared secret
+```
+
+**Inputs**
+
+- **spec**: _Required_. The OpenAPI 3 JSON document, file path or URL.
+- **base-url**: _Required_. The URL the paths are appended to (include any path prefix of the `servers` block).
+- **allowlist**: _Optional_. The allowlist file. Default is empty.
+- **methods**: _Optional_. Comma-separated methods to call. Default is `GET,POST,PUT,PATCH,DELETE`; use `GET` for a read-only run.
+- **reject-status**: _Optional_. Comma-separated statuses meaning "authentication required". Default is `401,403`; add `302` for applications that redirect to a login page.
+
+The script can also be run locally: `python3 api_auth_check.py --spec openapi.json --base-url https://... --dry-run` prints the requests without sending them, `--self-test` checks the script against a fake API.
+
+**Example Usage**
+
+```yaml
+- name: Check that every API operation requires authentication
+  uses: zupit-it/pipeline-templates/.github/actions/security/api-auth-check@v1.37.1
+  with:
+      spec: openapi.json
+      base-url: https://my-app.testing.zupit.software
+      allowlist: .github/api-auth-allowlist.txt
 ```
 
 ## Reusable Workflows
@@ -1819,6 +1871,84 @@ jobs:
     lint-pr:
         uses: zupit-it/pipeline-templates/.github/workflows/conventional-commits-step-release.yml@v1.37.1
         secrets: inherit
+```
+
+---
+
+### Security
+
+#### Security Scan
+
+**security-step-scan.yml** runs the security scans of a repository and, optionally, of a deployed environment. Each scanner runs in its own job, writes its findings to the job summary and uploads its reports as artifacts (90 days). Every scanner image is pinned by digest.
+
+Always executed, on the repository:
+
+- **osv-scanner**: known vulnerabilities in every lockfile (npm, PyPI, NuGet, Maven, ...).
+- **gitleaks**: secrets in the whole git history. Accepted false positives go in `.gitleaksignore` (one fingerprint per line).
+- **zizmor**: security issues in the GitHub Actions workflows. The `.github/zizmor.yml` of the repository is used, if present.
+- **trivy config**: misconfigurations in Dockerfiles, docker-compose and other IaC files (HIGH and CRITICAL).
+
+Executed only when their inputs are set:
+
+- **trivy image** (`TRIVY_IMAGES`): vulnerabilities and secrets in the published container images.
+- **ZAP baseline** (`TARGET_URL`): passive scan of the pages in `ZAP_PAGES`.
+- **API auth check** and **ZAP API scan** (`TARGET_URL` and `OPENAPI_FILE`): every operation of the OpenAPI document called without credentials (see [Security Action - API auth check](#security-action---api-auth-check)), then a passive ZAP scan of the GET operations, authenticated with Keycloak if configured.
+- **Nuclei** (`NUCLEI_TARGETS`): safe exposure, misconfiguration, TLS and known-CVE checks on the given hosts.
+
+The jobs run `docker`, so the runner must provide it.
+
+It accepts these optional inputs:
+
+- **OSV_CONFIG**: an `osv-scanner.toml` applied to every lockfile (osv-scanner alone applies a root one only to the root lockfile).
+- **ZIZMOR_EXCLUDE**: workflow files left out of the zizmor audit, one per line.
+- **TRIVY_IMAGES**: container images to scan, one full reference per line. GHCR images are pulled with the workflow token.
+- **TRIVY_IGNOREFILE**: trivy ignore file with the accepted Dockerfile / IaC findings.
+- **TARGET_URL**: URL of the deployed environment (e.g. testing). Enables the ZAP job.
+- **ZAP_PAGES**: paths of `TARGET_URL` scanned by the ZAP baseline, one per line. Default is **/**.
+- **ZAP_RULES_FILE**: ZAP rules file (tab-separated rule id, `IGNORE`/`WARN`/`FAIL`/`OUTOFSCOPE`, description). Rules marked `FAIL` fail the job.
+- **OPENAPI_FILE**: OpenAPI 3 JSON document of the API on `TARGET_URL`. Enables the API auth check and the ZAP API scan.
+- **OPENAPI_COMMAND**: commands that generate `OPENAPI_FILE` before the API checks (leave it empty if the file is committed).
+- **API_AUTH_ALLOWLIST**: allowlist of the operations public on purpose, never called by the API auth check.
+- **API_AUTH_METHODS**: methods called by the API auth check. Default is **GET,POST,PUT,PATCH,DELETE**.
+- **KEYCLOAK_TOKEN_URL** and **KEYCLOAK_CLIENT_ID**: Keycloak token endpoint and public client (with direct access grants) used to authenticate the ZAP API scan.
+- **NUCLEI_TARGETS**: URLs scanned by Nuclei, one per line. Enables the Nuclei job.
+- **RUN_ON**: the _label_ to select the correct _github-runner_ that will execute this workflow. Default is **zupit-agents**.
+- **RUNNERS_CONTAINER_GROUP**: The runners group used to execute this workflow. Default is **Container**. If set to an empty string (`''`), the group is omitted and `runs-on` uses only the **RUN_ON** label (e.g. to run on WarpBuild runners).
+
+It also accepts these optional secrets:
+
+- **ZAP_KEYCLOAK_USERNAME** and **ZAP_KEYCLOAK_PASSWORD**: Keycloak user for the authenticated ZAP API scan.
+- **TRIVY_REGISTRY_USERNAME** and **TRIVY_REGISTRY_PASSWORD**: registry credentials for `TRIVY_IMAGES` outside GHCR.
+
+The calling job must grant `contents: read` and `packages: read`.
+
+This is an example to show how data should be formatted.
+
+```yaml
+on:
+    schedule:
+        - cron: "0 5 * * 1"
+    workflow_dispatch:
+
+jobs:
+    security-scan:
+        permissions:
+            contents: read
+            packages: read
+        uses: zupit-it/pipeline-templates/.github/workflows/security-step-scan.yml@v1.37.1
+        with:
+            TRIVY_IMAGES: |
+                ghcr.io/zupit-it/my-app/backend:latest
+                ghcr.io/zupit-it/my-app/frontend:latest
+            TARGET_URL: https://my-app.testing.zupit.software
+            OPENAPI_FILE: openapi.json
+            OPENAPI_COMMAND: curl -sSf -o openapi.json https://my-app.testing.zupit.software/api/schema/
+            API_AUTH_ALLOWLIST: .github/api-auth-allowlist.txt
+            NUCLEI_TARGETS: |
+                https://my-app.testing.zupit.software
+        secrets:
+            ZAP_KEYCLOAK_USERNAME: ${{ secrets.ZAP_KEYCLOAK_USERNAME }}
+            ZAP_KEYCLOAK_PASSWORD: ${{ secrets.ZAP_KEYCLOAK_PASSWORD }}
 ```
 
 ---

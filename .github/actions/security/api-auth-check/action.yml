@@ -1,0 +1,44 @@
+# Works in any project with an OpenAPI 3 JSON document (drf-spectacular, ASP.NET MapOpenApi, springdoc, ...):
+#
+#   - uses: zupit-it/pipeline-templates/.github/actions/security/api-auth-check@chore/add-security-scan
+#     with:
+#       spec: openapi.json
+#       base-url: https://app.testing.example.com
+#       allowlist: .github/api-auth-allowlist.txt
+name: API auth check
+description: Calls every operation of an OpenAPI document without credentials and fails if any answers something other than 401/403
+
+inputs:
+  spec:
+    description: OpenAPI 3 JSON document, file path or URL
+    required: true
+  base-url:
+    description: URL the spec paths are appended to (include any path prefix the servers block would add)
+    required: true
+  allowlist:
+    description: File of 'METHOD /path # reason' lines for endpoints public on purpose; they are reported, never called
+    required: false
+    default: ""
+  methods:
+    description: Comma-separated methods to call; GET alone for a read-only run
+    required: false
+    default: GET,POST,PUT,PATCH,DELETE
+  reject-status:
+    description: Comma-separated statuses that mean 'authentication required' (add 302 for apps that redirect to a login page)
+    required: false
+    default: 401,403
+
+runs:
+  using: composite
+  steps:
+    - name: Call every API operation without credentials
+      shell: bash
+      env:
+        SPEC: ${{ inputs.spec }}
+        BASE_URL: ${{ inputs.base-url }}
+        ALLOWLIST: ${{ inputs.allowlist }}
+        METHODS: ${{ inputs.methods }}
+        REJECT_STATUS: ${{ inputs.reject-status }}
+      run: |
+        python3 "$GITHUB_ACTION_PATH/api_auth_check.py" --spec "$SPEC" --base-url "$BASE_URL" \
+          ${ALLOWLIST:+--allowlist "$ALLOWLIST"} --methods "$METHODS" --reject-status "$REJECT_STATUS"
