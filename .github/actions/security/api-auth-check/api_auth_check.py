@@ -14,7 +14,6 @@ usage: api_auth_check.py --spec openapi.json --base-url https://app.example.com 
 """
 
 import argparse
-import collections
 import json
 import os
 import re
@@ -114,27 +113,22 @@ def probe(base_url, method, url, timeout):
         return f"error: {getattr(e, 'reason', e)}"
 
 
-def report(args, called, statuses, exposed, errors, allowed, stale):
-    lines = [
-        f"## API auth check: {len(exposed)} operations answer without authentication",
-        "",
-        f"Called {called} operations of `{args.spec}` on {args.base_url} without credentials, expecting "
-        f"{args.reject_status}. Responses: "
-        + ", ".join(f"{s} ×{n}" for s, n in sorted(statuses.items(), key=str))
-        + ".",
-    ]
-    if exposed:
-        hint = " (path parameters may not match the route: set them with --param)"
-        lines += ["", "| Method | Path | Status |", "| --- | --- | --- |"]
-        lines += [f"| {m} | `{p}` | {s}{hint if s == 404 else ''} |" for m, p, s in exposed]
-    if errors:
-        lines += ["", "**Requests that failed:**"] + [f"- {m} `{p}`: {e}" for m, p, e in errors]
+def report(called, exposed, errors, allowed, stale):
+    if exposed or errors:
+        head = f"### ❌ API auth check: {len(exposed)} of {called} operations answer without authentication"
+        head += f", {len(errors)} requests failed" if errors else ""
+    else:
+        head = f"### ✅ API auth check: all {called} operations require authentication"
+    lines = [head]
     if allowed:
-        lines += ["", "**Public on purpose (allowlist, not called):**"] + [
-            f"- {m} `{p}`{': ' + r if r else ''}" for (m, p), r in allowed
-        ]
+        lines += ["", "Public on purpose (not called): " + ", ".join(f"`{m} {p}`" for (m, p), _ in allowed)]
     if stale:
-        lines += ["", "**Allowlist entries not in the spec (remove them):**"] + [f"- {m} `{p}`" for m, p in stale]
+        lines += ["", "Allowlist entries not in the spec, to remove: " + ", ".join(f"`{m} {p}`" for m, p in stale)]
+    if exposed or errors:
+        hint = " (path parameters may not match the route: set them with --param)"
+        lines += ["", "| Method | Path | Response |", "| --- | --- | --- |"]
+        lines += [f"| {m} | `{p}` | {s}{hint if s == 404 else ''} |" for m, p, s in exposed]
+        lines += [f"| {m} | `{p}` | {e} |" for m, p, e in errors]
     text = "\n".join(lines) + "\n"
     print(text)
     if os.environ.get("GITHUB_STEP_SUMMARY"):
@@ -153,7 +147,7 @@ def run(args):
     overrides = dict(p.split("=", 1) for p in args.param)
     ops = list(operations(spec, methods, overrides))
 
-    statuses, exposed, errors, allowed = collections.Counter(), [], [], []
+    exposed, errors, allowed = [], [], []
     for method, path, url in ops:
         if (method, path) in allowlist:
             allowed.append(((method, path), allowlist[method, path]))
@@ -163,14 +157,12 @@ def run(args):
             status = probe(args.base_url, method, url, args.timeout)
             if isinstance(status, str):
                 errors.append((method, path, status))
-                continue
-            statuses[status] += 1
-            if status not in reject:
+            elif status not in reject:
                 exposed.append((method, path, status))
     if args.dry_run:
         return 0
     stale = sorted(k for k in allowlist if k[0] in methods and k not in {(m, p) for m, p, _ in ops})
-    report(args, len(ops) - len(allowed), statuses, exposed, errors, allowed, stale)
+    report(len(ops) - len(allowed), exposed, errors, allowed, stale)
     return 1 if exposed or errors else 0
 
 

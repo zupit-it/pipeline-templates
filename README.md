@@ -1879,7 +1879,9 @@ jobs:
 
 #### Security Scan
 
-**security-step-scan.yml** runs the security scans of a repository and, optionally, of a deployed environment. Each scanner runs in its own job, writes its findings to the job summary and uploads its reports as artifacts (90 days). Every scanner image is pinned by digest.
+**security-step-scan.yml** runs the security scans of a repository and, optionally, of a deployed environment. Each scanner runs in its own job and writes a short job summary: one line with the outcome (✅ nothing found, ⚠️ only findings below `FAIL_ON`, ❌ blocking findings), then a compact table (findings grouped by package, audit or alert, at most 20 rows). The full reports are uploaded as artifacts (90 days). Every scanner image is pinned by digest.
+
+A job fails only for findings at or above `FAIL_ON` (default **high**); the ones below are reported and the job passes. Severity is the CVSS score for osv-scanner (9 critical, 7 high, 4 medium; advisories without a score count as medium) and the scanner's own level for zizmor, trivy and Nuclei. Trivy image vulnerabilities fail the job only if a fixed version exists. Secrets found by gitleaks, API operations that answer without authentication and ZAP rules marked `FAIL` always fail.
 
 Always executed, on the repository:
 
@@ -1899,6 +1901,7 @@ The jobs run `docker`, so the runner must provide it.
 
 It accepts these optional inputs:
 
+- **FAIL_ON**: lowest severity that fails a job: `low`, `medium`, `high` or `critical`. Default is **high**.
 - **OSV_CONFIG**: an `osv-scanner.toml` applied to every lockfile (osv-scanner alone applies a root one only to the root lockfile).
 - **ZIZMOR_EXCLUDE**: workflow files left out of the zizmor audit, one per line.
 - **TRIVY_IMAGES**: container images to scan, one full reference per line. GHCR images are pulled with the workflow token.

@@ -2,7 +2,8 @@ name: Security scan
 
 # Scans of the repository (dependencies, secrets in the git history, GitHub Actions workflows, Dockerfiles) and,
 # when a deployed environment is given, of the running application (ZAP, API authentication check, Nuclei).
-# Every scanner image is pinned by digest. Each job writes its findings to the job summary and uploads the reports.
+# Every scanner image is pinned by digest. Each job writes a short summary (one line with the outcome, then the
+# findings that matter) and uploads the full reports as artifacts.
 on:
   workflow_call:
     inputs:
@@ -14,6 +15,13 @@ on:
         required: false
         type: string
         default: "Container"
+      FAIL_ON:
+        description: >-
+          Lowest severity that fails a job: low, medium, high or critical. Findings below it are only reported.
+          Secrets, API operations without authentication and ZAP rules marked FAIL always fail
+        required: false
+        type: string
+        default: "high"
       OSV_CONFIG:
         description: osv-scanner.toml applied to every lockfile (osv-scanner alone applies a root one only to the root lockfile)
         required: false
@@ -98,26 +106,67 @@ on:
 permissions:
   contents: read
 
+env:
+  FAIL_ON: ${{ inputs.FAIL_ON }}
+  # findings ranked at or above it fail the job: 1 low, 2 medium, 3 high (also for unknown values), 4 critical
+  FAIL_RANK: ${{ inputs.FAIL_ON == 'critical' && 4 || inputs.FAIL_ON == 'medium' && 2 || inputs.FAIL_ON == 'low' && 1 || 3 }}
+
 jobs:
   osv-scan:
     runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
-    # v2.2.2, pinned by digest
-    container: ghcr.io/google/osv-scanner@sha256:fd62daecbaaed24442031574540e8af6dbaf0ab0a3e28c626bec0dd235a28346
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
-      # every lockfile in the repository; exit code 1 = vulnerabilities found: reports first, the job fails afterwards
-      # POSIX sh only: the scanner image may not have bash
+      # Every lockfile in the repository. Blocking: packages whose worst advisory reaches FAIL_ON
+      # (CVSS 9 critical, 7 high, 4 medium; advisories without a score count as medium).
       - name: Scan lockfiles
         env:
           OSV_CONFIG: ${{ inputs.OSV_CONFIG }}
         run: |
-          /osv-scanner scan source -r . ${OSV_CONFIG:+--config "$OSV_CONFIG"} --format markdown --output osv-report.md || rc=$?
-          /osv-scanner scan source -r . ${OSV_CONFIG:+--config "$OSV_CONFIG"} --format html --output osv-report.html || true
-          cat osv-report.md >> "$GITHUB_STEP_SUMMARY"
-          exit "${rc:-0}"
+          osv() {
+            # v2.2.2, pinned by digest
+            docker run --rm -v "$PWD:/repo" -w /repo --entrypoint /osv-scanner \
+              ghcr.io/google/osv-scanner@sha256:fd62daecbaaed24442031574540e8af6dbaf0ab0a3e28c626bec0dd235a28346 \
+              scan source -r . ${OSV_CONFIG:+--config "$OSV_CONFIG"} "$@"
+          }
+          # exit code 1 = vulnerabilities found, anything above is an error of the scanner
+          osv --format json --output osv-report.json || rc=$?
+          [ "${rc:-0}" -le 1 ] || exit "$rc"
+          osv --format markdown --output osv-report.md || true
+
+          # one row per vulnerable package: worst score, number of advisories, lowest version that fixes them all
+          jq '
+            def vt: [splits("[^0-9]+") | select(. != "") | tonumber];
+            def score: (tonumber? // 0) as $s | if $s == 0 then 5 else $s end;
+            [.results[]? | (.source.path | sub("^/repo/"; "")) as $src
+              | .packages[]? | select(.vulnerabilities) | .package as $p
+              | (.vulnerabilities | map({key: .id, value: .}) | from_entries) as $v
+              | .groups[] | {
+                  key: "\($p.ecosystem)|\($p.name)|\($p.version)", eco: $p.ecosystem, name: $p.name, version: $p.version,
+                  src: $src, cvss: (.max_severity // ""), score: (.max_severity | score),
+                  fix: ([.ids[] as $id | $v[$id].affected[]? | select((.package.name | ascii_downcase) == ($p.name | ascii_downcase))
+                         | .ranges[]?.events[]? | .fixed // empty | select(vt > ($p.version | vt))] | min_by(vt))
+                }]
+            | group_by(.key)
+            | map({eco: .[0].eco, name: .[0].name, version: .[0].version, score: (map(.score) | max),
+                   cvss: (max_by(.score).cvss), advisories: length, srcs: (map(.src) | unique),
+                   fix: ([.[].fix | select(. != null)] | max_by(vt))})
+            | map(.rank = (.score | if . >= 9 then 4 elif . >= 7 then 3 elif . >= 4 then 2 else 1 end))
+            | sort_by(-.score)
+          ' osv-report.json > osv-rows.json
+
+          jq -r --argjson fail "$FAIL_RANK" --arg fail_on "$FAIL_ON" '
+            map(select(.rank >= $fail)) as $b
+            | "### \(if ($b | length) > 0 then "❌" elif length > 0 then "⚠️" else "✅" end) osv-scanner: \($b | length) blocking, \(length - ($b | length)) below \($fail_on) (\(length) vulnerable packages)",
+              (if ($b | length) > 0 then
+                "", "| CVSS | Package | Version | Fixed in | Advisories | Lockfile |", "| --- | --- | --- | --- | --- | --- |",
+                ($b[:20][] | "| \(if .cvss == "" then "?" else .cvss end) | \(.name) (\(.eco)) | \(.version) | \(.fix // "no fix yet") | \(.advisories) | `\(.srcs[0])`\(if (.srcs | length) > 1 then " +\((.srcs | length) - 1)" else "" end) |"),
+                (if ($b | length) > 20 then "", "\(($b | length) - 20) more in the osv-report artifact." else empty end)
+              else empty end)
+          ' osv-rows.json >> "$GITHUB_STEP_SUMMARY"
+          [ "$(jq --argjson fail "$FAIL_RANK" 'map(select(.rank >= $fail)) | length' osv-rows.json)" -eq 0 ]
 
       - uses: actions/upload-artifact@v7
         if: always()
@@ -125,7 +174,7 @@ jobs:
           name: osv-report
           path: |
             osv-report.md
-            osv-report.html
+            osv-report.json
           retention-days: 90
 
   gitleaks:
@@ -136,16 +185,29 @@ jobs:
           fetch-depth: 0 # the whole git history, not only the current tree
           persist-credentials: false
 
-      # secrets are redacted in the report; accepted false positives go in .gitleaksignore at the repository root
+      # Always blocking. Secrets are redacted in the report; false positives go in .gitleaksignore at the repository root.
       - name: Scan git history for secrets
         run: |
           docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f git /repo --redact --no-banner \
             --report-format json --report-path /repo/gitleaks-report.json || rc=$?
+          count=$(jq length gitleaks-report.json)
           {
-            echo "## Gitleaks: $(jq length gitleaks-report.json) secrets found"
-            echo "Accepted false positives go in \`.gitleaksignore\` (one fingerprint per line)."
-            echo
-            jq -r '.[] | "- `\(.RuleID)` \(.File):\(.StartLine), commit \(.Commit[0:8]) (\(.Date[0:10])), fingerprint `\(.Fingerprint)`"' gitleaks-report.json
+            if [ "$count" -eq 0 ]; then
+              echo "### ✅ gitleaks: no secrets in the git history"
+            else
+              echo "### ❌ gitleaks: $count secrets in the git history"
+              echo
+              echo "| Rule | Location | Commit |"
+              echo "| --- | --- | --- |"
+              jq -r '.[] | "| \(.RuleID) | `\(.File):\(.StartLine)` | \(.Commit[0:8]) (\(.Date[0:10])) |"' gitleaks-report.json
+              echo
+              echo "<details><summary>Fingerprints, to add to <code>.gitleaksignore</code> if they are false positives</summary>"
+              echo
+              echo '```'
+              jq -r '.[].Fingerprint' gitleaks-report.json
+              echo '```'
+              echo "</details>"
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
           exit "${rc:-0}"
 
@@ -163,7 +225,7 @@ jobs:
         with:
           persist-credentials: false
 
-      # .github/zizmor.yml of the calling repository is picked up; findings as a table, most severe first
+      # .github/zizmor.yml of the calling repository is picked up. Blocking: findings whose severity reaches FAIL_ON.
       - name: Audit GitHub Actions workflows
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # online audits: known vulnerable actions, impostor commits
@@ -174,30 +236,50 @@ jobs:
           # v1.31.1, pinned by digest
           docker run --rm -e GH_TOKEN -v "$PWD:/repo:ro" -w /repo \
             ghcr.io/zizmorcore/zizmor@sha256:42d409dbb851d4c5d35a058cf042b828bea1e3f2884378c526eb0974780e18d9 --format sarif . > zizmor.sarif
-          count=$(jq '[.runs[].results[]] | length' zizmor.sarif)
-          {
-            echo "## zizmor: $count findings"
-            echo "| Severity | Audit | Location | Finding |"
-            echo "| --- | --- | --- | --- |"
-            jq -r '[.runs[].results[]]
-              | sort_by((.properties["zizmor/severity"] // "" | ascii_downcase) as $s | ["high", "medium", "low", "informational"] | index($s) // 9)
-              | .[] | (.ruleId | ltrimstr("zizmor/")) as $audit
-              | "| \(.properties["zizmor/severity"]) | [\($audit)](https://docs.zizmor.sh/audits/#\($audit)) | \(.locations[0].physicalLocation | "\(.artifactLocation.uri | ltrimstr("./")):\(.region.startLine)") | \(.message.text | gsub("[|\n]"; " ")) |"' zizmor.sarif
-          } >> "$GITHUB_STEP_SUMMARY"
-          [ "$count" -eq 0 ]
+
+          # one row per audit, with its worst severity and where it occurs
+          jq '
+            [.runs[].results[] | {
+              sev: .properties["zizmor/severity"], audit: (.ruleId | ltrimstr("zizmor/")),
+              loc: (.locations[0].physicalLocation | "\(.artifactLocation.uri | ltrimstr("./")):\(.region.startLine)")
+            } | .rank = ({"high": 3, "medium": 2, "low": 1}[.sev | ascii_downcase] // 0)]
+          ' zizmor.sarif > zizmor-rows.json
+
+          jq -r --argjson fail "$FAIL_RANK" --arg fail_on "$FAIL_ON" '
+            (map(select(.rank >= $fail)) | length) as $b
+            | "### \(if $b > 0 then "❌" elif length > 0 then "⚠️" else "✅" end) zizmor: \($b) blocking, \(length - $b) below \($fail_on)",
+              (if length > 0 then
+                "", "| Severity | Audit | Findings | Where |", "| --- | --- | --- | --- |",
+                (group_by(.audit) | map(max_by(.rank) as $top | {audit: $top.audit, sev: $top.sev, rank: $top.rank, n: length,
+                   files: (map(.loc | split(":")[0] | split("/") | last) | unique)})
+                 | sort_by(-.rank, -.n) | .[]
+                 | "| \(if .rank >= $fail then "**\(.sev)**" else .sev end) | [\(.audit)](https://docs.zizmor.sh/audits/#\(.audit)) | \(.n) | \(.files[:3] | join(", "))\(if (.files | length) > 3 then " and \((.files | length) - 3) more" else "" end) |")
+              else empty end)
+          ' zizmor-rows.json >> "$GITHUB_STEP_SUMMARY"
+          [ "$(jq --argjson fail "$FAIL_RANK" 'map(select(.rank >= $fail)) | length' zizmor-rows.json)" -eq 0 ]
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: zizmor-report
+          path: zizmor.sarif
+          retention-days: 90
 
   trivy:
     runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
     permissions:
       contents: read
       packages: read
+    env:
+      TRIVY_RANK_JQ: 'def rank: {"critical": 4, "high": 3, "medium": 2, "low": 1}[ascii_downcase] // 0;'
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
 
-      # OS packages, bundled binaries and embedded secrets of the published images
-      - name: Scan container images (HIGH/CRITICAL)
+      # OS packages, bundled binaries and embedded secrets of the published images (HIGH and CRITICAL).
+      # Blocking: vulnerabilities reaching FAIL_ON that already have a fixed version, and secrets.
+      - name: Scan container images
         if: inputs.TRIVY_IMAGES != ''
         env:
           TRIVY_IMAGES: ${{ inputs.TRIVY_IMAGES }}
@@ -205,16 +287,8 @@ jobs:
           TRIVY_PASSWORD: ${{ secrets.TRIVY_REGISTRY_PASSWORD || secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p trivy-out
-          rc=0
-          {
-            echo "## Trivy: container images (HIGH / CRITICAL)"
-            echo "| Image | Type | Severity | ID | Package / Rule | Installed | Fixed |"
-            echo "| --- | --- | --- | --- | --- | --- | --- |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
           for ref in $TRIVY_IMAGES; do
             image=${ref##*/}
-            file="trivy-image-${image%%[:@]*}.json"
             # credentials passed by name: their values stay out of the command line
             docker run --rm \
               -e TRIVY_USERNAME \
@@ -224,33 +298,37 @@ jobs:
                 --scanners vuln,secret \
                 --severity HIGH,CRITICAL \
                 --no-progress \
-                --exit-code 1 \
                 --format json \
-                --output "/out/$file" \
-                "$ref" || rc=$?
-
-            if [ -f "trivy-out/$file" ]; then
-              jq -r --arg img "$image" '
-                [
-                  (.Results // [] | .[] | (.Vulnerabilities // [])[] | {
-                    type: "vuln", sev: .Severity, id: .VulnerabilityID,
-                    pkg: .PkgName, cur: (.InstalledVersion // "-"), fix: (.FixedVersion // "-")
-                  }),
-                  (.Results // [] | .[] | (.Secrets // [])[] | {
-                    type: "secret", sev: .Severity, id: .RuleID,
-                    pkg: .Title, cur: "-", fix: "-"
-                  })
-                ]
-                | sort_by((.sev | ascii_downcase) as $s | ["critical", "high"] | index($s) // 9)
-                | .[]
-                | "| `\($img)` | \(.type) | \(.sev) | `\(.id)` | \(.pkg | gsub("[|\n]"; " ")) | `\(.cur)` | `\(.fix)` |"
-              ' "trivy-out/$file" >> "$GITHUB_STEP_SUMMARY"
-            fi
+                --output "/out/trivy-image-${image%%[:@]*}.json" \
+                "$ref"
           done
-          exit "$rc"
 
-      # Dockerfiles, docker-compose and other IaC files across the repository
-      - name: Scan IaC / Dockerfiles (HIGH/CRITICAL)
+          # one row per package and image: worst severity, number of CVEs, lowest version that fixes them all
+          jq -s "$TRIVY_RANK_JQ"'
+            def vt: [splits("[^0-9]+") | select(. != "") | tonumber];
+            [.[] | (.ArtifactName | split("/") | last) as $img | .Results[]? |
+              ((.Vulnerabilities // [])[] | {img: $img, pkg: .PkgName, cur: (.InstalledVersion // ""), fix: (.FixedVersion // ""), sev: .Severity}),
+              ((.Secrets // [])[] | {img: $img, pkg: "secret: \(.Title)", cur: "", fix: "remove it", sev: .Severity})]
+            | map(.rank = (.sev | rank))
+            | group_by([.img, .pkg, .cur])
+            | map(max_by(.rank) as $top | {img: $top.img, pkg: $top.pkg, cur: $top.cur, sev: $top.sev, rank: $top.rank, cves: length,
+                fix: ([.[] | .cur as $c | .fix | split(", ") | map(select(. != "" and (. == "remove it" or vt > ($c | vt)))) | min_by(vt) // empty] | max_by(vt) // "")})
+            | sort_by(-.rank, .img, .pkg)
+          ' trivy-out/trivy-image-*.json > trivy-image-rows.json
+
+          jq -r --argjson fail "$FAIL_RANK" --arg fail_on "$FAIL_ON" '
+            map(select(.rank >= $fail and .fix != "")) as $b
+            | "### \(if ($b | length) > 0 then "❌" elif length > 0 then "⚠️" else "✅" end) trivy images: \($b | length) blocking (\($fail_on) or above, with a fix), \(length - ($b | length)) without a fix or below \($fail_on)",
+              (if ($b | length) > 0 then
+                "", "| Image | Package | Installed | Fixed in | Severity | CVEs |", "| --- | --- | --- | --- | --- | --- |",
+                ($b[:20][] | "| `\(.img)` | \(.pkg) | \(.cur) | \(.fix) | \(.sev) | \(.cves) |"),
+                (if ($b | length) > 20 then "", "\(($b | length) - 20) more in the trivy-report artifact." else empty end)
+              else empty end)
+          ' trivy-image-rows.json >> "$GITHUB_STEP_SUMMARY"
+          [ "$(jq --argjson fail "$FAIL_RANK" 'map(select(.rank >= $fail and .fix != "")) | length' trivy-image-rows.json)" -eq 0 ]
+
+      # Dockerfiles, docker-compose and other IaC files across the repository (HIGH and CRITICAL).
+      - name: Scan IaC / Dockerfiles
         if: always()
         env:
           TRIVY_IGNOREFILE: ${{ inputs.TRIVY_IGNOREFILE }}
@@ -262,28 +340,25 @@ jobs:
             ghcr.io/aquasecurity/trivy:0.76.2@sha256:8f6bb947dbc528902e11f2f5be52f7b519f6a39d5d148f41166f2040499768fb config \
               --severity HIGH,CRITICAL \
               ${TRIVY_IGNOREFILE:+--ignorefile "/repo/$TRIVY_IGNOREFILE"} \
-              --exit-code 1 \
               --format json \
               --output /out/trivy-config.json \
-              /repo || rc=$?
+              /repo
 
-          if [ -f trivy-out/trivy-config.json ]; then
-            {
-              echo
-              echo "## Trivy: IaC / Dockerfile misconfigurations (HIGH / CRITICAL)"
-              echo "| Severity | ID | Target | Title |"
-              echo "| --- | --- | --- | --- |"
-              jq -r '
-                [.Results // [] | .[] as $r | ($r.Misconfigurations // [])[] | select(.Status == "FAIL") | {
-                  sev: .Severity, id: .ID, target: $r.Target, title: .Title
-                }]
-                | sort_by((.sev | ascii_downcase) as $s | ["critical", "high"] | index($s) // 9)
-                | .[]
-                | "| \(.sev) | `\(.id)` | `\(.target)` | \(.title | gsub("[|\n]"; " ")) |"
-              ' trivy-out/trivy-config.json
-            } >> "$GITHUB_STEP_SUMMARY"
-          fi
-          exit "${rc:-0}"
+          jq "$TRIVY_RANK_JQ"'
+            [.Results[]? | .Target as $t | (.Misconfigurations // [])[] | select(.Status == "FAIL")
+              | {t: $t, id: .ID, sev: .Severity, rank: (.Severity | rank), title: .Title}]
+            | sort_by(-.rank, .t)
+          ' trivy-out/trivy-config.json > trivy-config-rows.json
+
+          jq -r --argjson fail "$FAIL_RANK" --arg fail_on "$FAIL_ON" '
+            (map(select(.rank >= $fail)) | length) as $b
+            | "### \(if $b > 0 then "❌" elif length > 0 then "⚠️" else "✅" end) trivy config: \($b) blocking, \(length - $b) below \($fail_on)",
+              (if length > 0 then
+                "", "| Severity | ID | File | Title |", "| --- | --- | --- | --- |",
+                (.[] | "| \(if .rank >= $fail then "**\(.sev)**" else .sev end) | `\(.id)` | `\(.t)` | \(.title | gsub("[|\n]"; " ")) |")
+              else empty end)
+          ' trivy-config-rows.json >> "$GITHUB_STEP_SUMMARY"
+          [ "$(jq --argjson fail "$FAIL_RANK" 'map(select(.rank >= $fail)) | length' trivy-config-rows.json)" -eq 0 ]
 
       - uses: actions/upload-artifact@v7
         if: always()
@@ -301,6 +376,24 @@ jobs:
     env:
       TARGET_URL: ${{ inputs.TARGET_URL }}
       ZAP_RULES_FILE: ${{ inputs.ZAP_RULES_FILE }}
+      # Summary of ZAP JSON reports, shared by both ZAP steps: one row per alert, with the level from the rules file
+      # (default WARN; IGNORE and OUTOFSCOPE URLs left out, as ZAP does) and the number of distinct URLs.
+      ZAP_SUMMARY_JQ: |
+        ($rules | split("\n") | map(split("\t")) | map(select(length >= 3 and (.[0] | test("^[0-9*]"))))) as $r
+        | ($r | map(select(.[1] != "OUTOFSCOPE") | {(.[0]): .[1]}) | add // {}) as $levels
+        | ([$r[] | select(.[1] == "OUTOFSCOPE") | (.[0] | split(",")[]) as $id | [$id, .[2]]]) as $oos
+        | [.[] | .site[]? | .alerts[]? | .pluginid as $id
+            | ($levels[$id] // "WARN") as $level | select($level != "IGNORE")
+            | {id: $id, level: $level, alert: .alert, risk: (.riskdesc | split(" ")[0]), riskcode: (.riskcode | tonumber),
+               uris: [.instances[]?.uri | select(. as $u | any($oos[]; .[1] as $re | (.[0] == $id or .[0] == "*") and ($u | test("^(?:" + $re + ")"))) | not)]}
+            | select((.uris | length) > 0)]
+        | group_by([.id, .alert]) | map(.[0] + {uris: (map(.uris[]) | unique)})
+        | (map(select(.level == "FAIL")) | length) as $f
+        | "### \(if $f > 0 then "❌" elif length > 0 then "⚠️" else "✅" end) \($title): \($f) failing, \(length - $f) warnings",
+          (if length > 0 then
+            "", "| Level | Alert | Risk | URLs |", "| --- | --- | --- | --- |",
+            (sort_by(.level != "FAIL", -.riskcode) | .[] | "| \(if .level == "FAIL" then "**FAIL**" else .level end) | \(.alert) | \(.risk) | \(.uris | length) |")
+          else empty end)
     steps:
       - uses: actions/checkout@v6
         with:
@@ -324,12 +417,16 @@ jobs:
           mkdir -p zap-out
           chmod a+w zap-out
           [ -z "$ZAP_RULES_FILE" ] || cp "$ZAP_RULES_FILE" zap-out/rules.tsv
+          reports=()
           for page in $ZAP_PAGES; do
             name="zap$(tr / - <<< "${page%/}")"
             docker run --rm -v "$PWD/zap-out:/zap/wrk:rw" ghcr.io/zaproxy/zaproxy:2.16.1@sha256:7840969c7c9fead565bf9734b12f49f6886db90b1d35b1f74d79710bbd081dab zap-baseline.py \
               -t "$TARGET_URL$page" -I ${ZAP_RULES_FILE:+-c rules.tsv} -r "$name.html" -w "$name.md" -J "$name.json" || rc=$?
-            [ -f "zap-out/$name.md" ] && cat "zap-out/$name.md" >> "$GITHUB_STEP_SUMMARY"
+            [ ! -f "zap-out/$name.json" ] || reports+=("zap-out/$name.json")
           done
+          if [ "${#reports[@]}" -gt 0 ]; then
+            jq -rs --rawfile rules "${ZAP_RULES_FILE:-/dev/null}" --arg title "ZAP baseline ($(xargs <<< "$ZAP_PAGES"))" "$ZAP_SUMMARY_JQ" "${reports[@]}" >> "$GITHUB_STEP_SUMMARY"
+          fi
           exit "${rc:-0}"
 
       - name: Prepare OpenAPI document
@@ -347,8 +444,8 @@ jobs:
           cp "$OPENAPI_FILE" zap-out/openapi-full.json
 
       # Every operation, all methods, called without credentials must answer 401/403: finds what anyone can reach.
-      # Ids that do not exist and empty bodies, so a protected endpoint rejects the request before running any logic;
-      # the operations public on purpose go in API_AUTH_ALLOWLIST and are never called.
+      # Always blocking. Ids that do not exist and empty bodies, so a protected endpoint rejects the request before
+      # running any logic; the operations public on purpose go in API_AUTH_ALLOWLIST and are never called.
       - name: Check that every API operation requires authentication
         if: always() && steps.schema.outcome == 'success'
         uses: zupit-it/pipeline-templates/.github/actions/security/api-auth-check@chore/add-security-scan
@@ -373,6 +470,7 @@ jobs:
           jq '.paths |= with_entries(select(.value.get) | .value |= {get})' zap-out/openapi-full.json > zap-out/openapi.json
 
           auth_args=()
+          mode="unauthenticated: set KEYCLOAK_TOKEN_URL, KEYCLOAK_CLIENT_ID and the ZAP_KEYCLOAK_* secrets to scan with a token"
           if [ -n "$KEYCLOAK_TOKEN_URL" ] && [ -n "$KEYCLOAK_USERNAME" ] && [ -n "$KEYCLOAK_PASSWORD" ]; then
             # ponytail: one token, valid for the realm's access token lifespan (5 min by default): enough for the
             # safe-mode import of the GET operations; an active or longer scan needs a ZAP auth script that refreshes it.
@@ -394,12 +492,7 @@ jobs:
               -e "ZAP_AUTH_HEADER_VALUE=Bearer $access_token"
               -e "ZAP_AUTH_HEADER_SITE=${site%%/*}"
             )
-          else
-            {
-              echo
-              echo "> **Note (ZAP API scan):** running unauthenticated. Set \`KEYCLOAK_TOKEN_URL\`, \`KEYCLOAK_CLIENT_ID\` and the \`ZAP_KEYCLOAK_USERNAME\` / \`ZAP_KEYCLOAK_PASSWORD\` secrets to scan with a token."
-              echo
-            } >> "$GITHUB_STEP_SUMMARY"
+            mode="authenticated"
           fi
 
           docker run --rm \
@@ -409,7 +502,9 @@ jobs:
               -t openapi.json -f openapi -O "$TARGET_URL" -S -I ${ZAP_RULES_FILE:+-c rules.tsv} \
               -r zap-api.html -w zap-api.md -J zap-api.json || rc=$?
 
-          [ -f zap-out/zap-api.md ] && cat zap-out/zap-api.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -f zap-out/zap-api.json ]; then
+            jq -rs --rawfile rules "${ZAP_RULES_FILE:-/dev/null}" --arg title "ZAP API scan ($mode)" "$ZAP_SUMMARY_JQ" zap-out/zap-api.json >> "$GITHUB_STEP_SUMMARY"
+          fi
           exit "${rc:-0}"
 
       - uses: actions/upload-artifact@v7
@@ -424,8 +519,8 @@ jobs:
     runs-on: ${{ inputs.RUNNERS_CONTAINER_GROUP != '' && fromJSON(format('{{"labels":"{0}","group":"{1}"}}', inputs.RUN_ON, inputs.RUNNERS_CONTAINER_GROUP)) || inputs.RUN_ON }}
     timeout-minutes: 30 # ~10 min at -rl 50 on 3 hosts (5k templates); the GitHub default would be 6 hours
     steps:
-      # Safe exposure, misconfiguration, TLS/SSL, and known-CVE checks against the given hosts.
-      # Reports medium/high/critical findings; fails the job on high or critical findings.
+      # Safe exposure, misconfiguration, TLS/SSL, and known-CVE checks against the given hosts (medium and above).
+      # Blocking: findings whose severity reaches FAIL_ON.
       - name: Scan hosts with Nuclei
         env:
           NUCLEI_TARGETS: ${{ inputs.NUCLEI_TARGETS }}
@@ -446,19 +541,21 @@ jobs:
 
           # the report is written by root in the container: create it only if missing (touch on it is denied)
           [ -f nuclei-out/nuclei-report.jsonl ] || : > nuclei-out/nuclei-report.jsonl
-          total=$(jq -s 'length' nuclei-out/nuclei-report.jsonl)
-          severe=$(jq -s '[.[] | select(.info.severity == "high" or .info.severity == "critical")] | length' nuclei-out/nuclei-report.jsonl)
-          {
-            echo "## Nuclei: $total findings ($severe high/critical)"
-            echo "| Severity | Template | Target | Name |"
-            echo "| --- | --- | --- | --- |"
-            jq -rs '
-              sort_by((.info.severity // "" | ascii_downcase) as $s | ["critical", "high", "medium", "low", "info"] | index($s) // 9)
-              | .[]
-              | "| \(.info.severity) | `\(.["template-id"])` | `\(.["matched-at"] // .host)` | \(.info.name | gsub("[|\n]"; " ")) |"
-            ' nuclei-out/nuclei-report.jsonl
-          } >> "$GITHUB_STEP_SUMMARY"
-          [ "$severe" -eq 0 ]
+          jq -s '
+            map({sev: .info.severity, template: .["template-id"], target: (.["matched-at"] // .host), name: .info.name}
+                | .rank = ({"critical": 4, "high": 3, "medium": 2, "low": 1}[.sev | ascii_downcase] // 0))
+            | sort_by(-.rank)
+          ' nuclei-out/nuclei-report.jsonl > nuclei-rows.json
+
+          jq -r --argjson fail "$FAIL_RANK" --arg fail_on "$FAIL_ON" '
+            (map(select(.rank >= $fail)) | length) as $b
+            | "### \(if $b > 0 then "❌" elif length > 0 then "⚠️" else "✅" end) Nuclei: \($b) blocking, \(length - $b) below \($fail_on)",
+              (if length > 0 then
+                "", "| Severity | Template | Target | Name |", "| --- | --- | --- | --- |",
+                (.[] | "| \(if .rank >= $fail then "**\(.sev)**" else .sev end) | `\(.template)` | `\(.target)` | \(.name | gsub("[|\n]"; " ")) |")
+              else empty end)
+          ' nuclei-rows.json >> "$GITHUB_STEP_SUMMARY"
+          [ "$(jq --argjson fail "$FAIL_RANK" 'map(select(.rank >= $fail)) | length' nuclei-rows.json)" -eq 0 ]
 
       - uses: actions/upload-artifact@v7
         if: always()
